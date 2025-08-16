@@ -1,14 +1,18 @@
 #pragma once
 
-#include "../common/Constants.h"
+#include "../common/Action.h"
+#include "../common/ResultItem.h"
 #include "../modules/IModule.h"
+#include "../modules/LauncherCommands.h"
 #include "../widgets/ResultItemDelegate.h"
 #include <QMainWindow>
 #include <QBoxLayout>
 #include <QFrame>
 #include <QLabel>
 #include <QLineEdit>
-#include <QListWidget>
+#include <QListWidgetItem>
+#include <QKeyEvent>
+#include <windows.h>
 
 class Launcher final : public QMainWindow
 {
