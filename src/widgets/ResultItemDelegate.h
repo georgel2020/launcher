@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include <QEvent>
+#include <QFileIconProvider>
+#include <QFileInfo>
 #include <QFontMetrics>
 #include <QIcon>
 #include <QModelIndex>
@@ -12,8 +14,6 @@
 #include <QStyle>
 #include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
-#include <QFileIconProvider>
-#include <QFileInfo>
 #include <QVariant>
 #include "../common/Action.h"
 #include "../common/Constants.h"

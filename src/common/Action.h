@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QString>
 #include <QMetaType>
+#include <QString>
 #include <functional>
 
 /**
@@ -14,7 +14,8 @@
  * - iconGlyph: A single character representing an icon in glyph form.
  * - handler: The action handler to be called when triggered.
  */
-struct Action {
+struct Action
+{
     QString name;
     QChar iconGlyph;
     std::function<void()> handler;

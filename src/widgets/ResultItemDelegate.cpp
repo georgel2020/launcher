@@ -1,8 +1,6 @@
 #include "ResultItemDelegate.h"
 
-ResultItemDelegate::ResultItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
-{
-}
+ResultItemDelegate::ResultItemDelegate(QObject* parent) : QStyledItemDelegate(parent) {}
 
 /**
  * Paint a custom delegate item in a list widget.
@@ -109,20 +107,14 @@ QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMo
  *
  * @return An integer representing the action index.
  */
-int ResultItemDelegate::getCurrentActionIndex() const
-{
-    return m_currentActionIndex;
-}
+int ResultItemDelegate::getCurrentActionIndex() const { return m_currentActionIndex; }
 
 /**
  * Set the focused action index.
  *
  * @param index An integer representing the action index
  */
-void ResultItemDelegate::setCurrentActionIndex(const int index)
-{
-    m_currentActionIndex = index;
-}
+void ResultItemDelegate::setCurrentActionIndex(const int index) { m_currentActionIndex = index; }
 
 /**
  * Draw a QIcon at the given location.
@@ -213,12 +205,7 @@ void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOption
  */
 QRect ResultItemDelegate::getIconRect(const QRect& itemRect)
 {
-    return {
-        itemRect.left() + RESULT_PADDING + (BUTTON_SIZE - ICON_SIZE) / 2,
-        itemRect.center().y() - ICON_SIZE / 2,
-        ICON_SIZE,
-        ICON_SIZE
-    };
+    return {itemRect.left() + RESULT_PADDING + (BUTTON_SIZE - ICON_SIZE) / 2, itemRect.center().y() - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE};
 }
 
 /**
@@ -232,12 +219,8 @@ QRect ResultItemDelegate::getTitleRect(const QRect& itemRect, const int& actions
 {
     constexpr int leftMargin = RESULT_PADDING + BUTTON_SIZE + RESULT_PADDING;
     constexpr int topMargin = RESULT_PADDING;
-    return {
-        itemRect.left() + leftMargin,
-        itemRect.top() + topMargin,
-        itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
-        itemRect.height() / 2 - topMargin
-    };
+    return {itemRect.left() + leftMargin, itemRect.top() + topMargin, itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
+            itemRect.height() / 2 - topMargin};
 }
 
 /**
@@ -251,12 +234,8 @@ QRect ResultItemDelegate::getSubtitleRect(const QRect& itemRect, const int& acti
 {
     constexpr int leftMargin = RESULT_PADDING + BUTTON_SIZE + RESULT_PADDING;
     const int topPosition = itemRect.top() + itemRect.height() / 2;
-    return {
-        itemRect.left() + leftMargin,
-        topPosition,
-        itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
-        itemRect.height() / 2 - RESULT_PADDING
-    };
+    return {itemRect.left() + leftMargin, topPosition, itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
+            itemRect.height() / 2 - RESULT_PADDING};
 }
 
 /**
@@ -270,10 +249,6 @@ QRect ResultItemDelegate::getActionsRect(const QRect& itemRect, const int& actio
 {
     const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + RESULT_PADDING) + RESULT_PADDING; // The primary action is not displayed as a button.
 
-    return {
-        itemRect.right() - actionsWidth + 2, // For perfect button alignment.
-        itemRect.top(),
-        actionsWidth,
-        itemRect.height()
-    };
+    return {itemRect.right() - actionsWidth + 2, // For perfect button alignment.
+            itemRect.top(), actionsWidth, itemRect.height()};
 }

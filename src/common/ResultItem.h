@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Action.h"
 #include <QString>
 #include <QVector>
+#include "Action.h"
 
 /**
  * @struct ResultItem
