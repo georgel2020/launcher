@@ -2,6 +2,15 @@
 
 Launcher::Launcher(QWidget* parent)
 {
+    // Register hotkey.
+    m_hotkeyManager = new HotkeyManager(MOD_ALT, VK_SPACE, 0);
+    connect(m_hotkeyManager, &HotkeyManager::hotkeyPressed, this,
+            [&](const long long id)
+            {
+                if (id == 0)
+                    showWindow(!isWindowShown);
+            });
+
     // Set window attributes.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -9,8 +18,21 @@ Launcher::Launcher(QWidget* parent)
 
     setupUi();
     setupModules();
+}
 
-    show();
+void Launcher::showWindow(const bool visibility)
+{
+    isWindowShown = visibility;
+    if (!visibility)
+    {
+        m_resultsList->clear();
+        hide();
+    }
+    else
+    {
+        show();
+        SetForegroundWindow(reinterpret_cast<HWND>(winId()));
+    }
 }
 
 /**
@@ -178,7 +200,7 @@ void Launcher::handleTabNavigation() const
 /**
  * Launch the highlighted action of the current result.
  */
-void Launcher::executeCurrentAction() const
+void Launcher::executeCurrentAction()
 {
     const QListWidgetItem* currentItem = m_resultsList->currentItem();
     if (!currentItem)
@@ -188,6 +210,8 @@ void Launcher::executeCurrentAction() const
     const auto item = data.value<ResultItem>();
     if (item.actions.isEmpty())
         return;
+
+    showWindow(false);
 
     // Get current action index from delegate.
     const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();
