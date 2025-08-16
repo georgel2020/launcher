@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include "../common/Action.h"
 #include "../common/ResultItem.h"
+#include "../modules/LauncherCommands.h"
 #include "../widgets/ResultItemDelegate.h"
 
 Launcher::Launcher(QWidget* parent)
@@ -15,8 +16,8 @@ Launcher::Launcher(QWidget* parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    // Setup user interface.
     setupUi();
+    setupModules();
 
     show();
 }
@@ -49,6 +50,7 @@ void Launcher::setupUi()
     m_searchEdit = new QLineEdit(this);
     m_searchEdit->setPlaceholderText("Start typing...");
     m_searchEdit->setFocus();
+    connect(m_searchEdit, &QLineEdit::textChanged, this, &Launcher::onInputTextChanged);
     m_searchLayout->addWidget(m_searchIcon);
     m_searchLayout->addWidget(m_searchEdit);
 
@@ -68,6 +70,50 @@ void Launcher::setupUi()
     m_mainLayout->addWidget(m_resultsList);
 }
 
+/**
+ * Setup modules and connect to slots.
+ */
+void Launcher::setupModules()
+{
+    const auto launcherCommandsModule = new LauncherCommands(this);
+    m_modules.append(launcherCommandsModule);
+    connect(launcherCommandsModule, &LauncherCommands::resultsReady, this, &Launcher::onResultsReady);
+}
+
+/**
+ * Handle results ready signal from modules.
+ *
+ * @param results The list of results to be displayed.
+ */
+void Launcher::onResultsReady(const QVector<ResultItem>& results) const
+{
+    for (const auto& item : results)
+    {
+        const auto listItem = new QListWidgetItem(m_resultsList);
+        listItem->setData(Qt::UserRole, QVariant::fromValue(item));
+        m_resultsList->addItem(listItem);
+    }
+
+    if (m_resultsList->count() > 0)
+    {
+        m_resultsList->setCurrentRow(0);
+    }
+}
+
+/**
+ * Handle change of search text.
+ *
+ * @param text The search text.
+ */
+void Launcher::onInputTextChanged(const QString& text)
+{
+    m_resultsList->clear();
+
+    for (IModule* module : m_modules)
+    {
+        module->query(text);
+    }
+}
 
 /**
  * Filter and handle specific key press events for the application.
