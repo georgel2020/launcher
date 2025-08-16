@@ -7,6 +7,7 @@ constexpr int SEARCH_HEIGHT = 50;
 constexpr int RESULT_LIST_HEIGHT = 400;
 constexpr int WINDOW_SPACING = 10;
 constexpr int RESULTS_SPACING = 2;
+constexpr int MIN_HOTKEY_TIME_INTERVAL = 300;
 
 // Result item.
 constexpr int TITLE_FONT_SIZE = 16;

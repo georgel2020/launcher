@@ -8,6 +8,7 @@
 #include <QListWidgetItem>
 #include <QMainWindow>
 #include <windows.h>
+#include "../app/HotkeyManager.h"
 #include "../common/Action.h"
 #include "../common/ResultItem.h"
 #include "../modules/IModule.h"
@@ -29,11 +30,13 @@ private slots:
     void onResultsReady(const QVector<ResultItem>& results) const;
 
 private:
+    void showWindow(bool visibility);
     void setupUi();
     void setupModules();
     void handleTabNavigation() const;
-    void executeCurrentAction() const;
+    void executeCurrentAction();
 
+    bool isWindowShown = false;
     QWidget* m_centralWidget = nullptr;
     QVBoxLayout* m_mainLayout = nullptr;
     QFrame* m_searchFrame = nullptr;
@@ -43,5 +46,6 @@ private:
     QListWidget* m_resultsList = nullptr;
     ResultItemDelegate* m_resultItemDelegate = nullptr;
 
+    HotkeyManager* m_hotkeyManager;
     QList<IModule*> m_modules;
 };

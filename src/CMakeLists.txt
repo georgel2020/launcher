@@ -16,6 +16,8 @@ qt_add_executable(launcher
         # Widgets.
         widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
         ${RESOURCES}
+        app/HotkeyManager.cpp
+        app/HotkeyManager.h
 )
 
 # Link Qt libraries.
