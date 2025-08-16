@@ -12,9 +12,9 @@ qt_add_executable(launcher
         common/Constants.h
         # Modules.
         modules/IModule.h
+        modules/LauncherCommands.cpp modules/LauncherCommands.h
         # Widgets.
-        widgets/ResultItemDelegate.cpp
-        widgets/ResultItemDelegate.h
+        widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
         ${RESOURCES}
 )
 
