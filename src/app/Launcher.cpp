@@ -1,20 +1,11 @@
 #include "Launcher.h"
-#include <QApplication>
-#include <QDebug>
-#include <QListWidgetItem>
-#include <QStyle>
-#include <QVariant>
-#include <QKeyEvent>
-#include "../common/Action.h"
-#include "../common/ResultItem.h"
-#include "../modules/LauncherCommands.h"
-#include "../widgets/ResultItemDelegate.h"
 
 Launcher::Launcher(QWidget* parent)
 {
     // Set window attributes.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
+    SetForegroundWindow(reinterpret_cast<HWND>(winId()));
 
     setupUi();
     setupModules();
