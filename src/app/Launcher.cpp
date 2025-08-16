@@ -156,11 +156,13 @@ bool Launcher::eventFilter(QObject* obj, QEvent* event)
 void Launcher::handleTabNavigation() const
 {
     const QListWidgetItem* currentItem = m_resultsList->currentItem();
-    if (!currentItem) return;
+    if (!currentItem)
+        return;
 
     const QVariant data = currentItem->data(Qt::UserRole);
     const auto item = data.value<ResultItem>();
-    if (item.actions.isEmpty()) return;
+    if (item.actions.isEmpty())
+        return;
 
     // Get current action index from delegate.
     const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();
@@ -179,11 +181,13 @@ void Launcher::handleTabNavigation() const
 void Launcher::executeCurrentAction() const
 {
     const QListWidgetItem* currentItem = m_resultsList->currentItem();
-    if (!currentItem) return;
+    if (!currentItem)
+        return;
 
     const QVariant data = currentItem->data(Qt::UserRole);
     const auto item = data.value<ResultItem>();
-    if (item.actions.isEmpty()) return;
+    if (item.actions.isEmpty())
+        return;
 
     // Get current action index from delegate.
     const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();

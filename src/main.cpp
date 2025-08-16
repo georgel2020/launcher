@@ -1,6 +1,6 @@
-#include "app/Launcher.h"
 #include <QApplication>
 #include <QFontDatabase>
+#include "app/Launcher.h"
 
 int main(int argc, char* argv[])
 {
