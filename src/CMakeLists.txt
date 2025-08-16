@@ -1,8 +1,20 @@
+# Define the Qt resource file.
+qt_add_resources(RESOURCES ../resources/launcher.qrc)
+
 # Define the executable.
 qt_add_executable(launcher
         main.cpp
         # Core app.
         app/Launcher.cpp app/Launcher.h
+        # Common.
+        common/Action.h
+        common/ResultItem.h
+        common/Constants.h
+        # Modules.
+        modules/IModule.h
+        # Widgets.
+        widgets/ResultItemDelegate.cpp
+        widgets/ResultItemDelegate.h
         ${RESOURCES}
 )
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/Constants.h"
+#include "../widgets/ResultItemDelegate.h"
 #include <QMainWindow>
 #include <QBoxLayout>
 #include <QFrame>
@@ -15,14 +16,20 @@ class Launcher final : public QMainWindow
 public:
     explicit Launcher(QWidget* parent = nullptr);
 
+protected:
+    bool eventFilter(QObject* obj, QEvent* event) override;
+
 private:
     void setupUi();
+    void handleTabNavigation() const;
+    void executeCurrentAction() const;
 
-    QWidget* m_centralWidget;
-    QVBoxLayout* m_mainLayout;
-    QFrame* m_searchFrame;
-    QHBoxLayout* m_searchLayout;
-    QLabel* m_searchIcon;
-    QLineEdit* m_searchEdit;
-    QListWidget* m_resultsList;
+    QWidget* m_centralWidget = nullptr;
+    QVBoxLayout* m_mainLayout = nullptr;
+    QFrame* m_searchFrame = nullptr;
+    QHBoxLayout* m_searchLayout = nullptr;
+    QLabel* m_searchIcon = nullptr;
+    QLineEdit* m_searchEdit = nullptr;
+    QListWidget* m_resultsList = nullptr;
+    ResultItemDelegate* m_resultItemDelegate = nullptr;
 };
