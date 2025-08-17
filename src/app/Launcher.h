@@ -1,19 +1,20 @@
 #pragma once
 
-#include <QBoxLayout>
-#include <QFrame>
-#include <QKeyEvent>
-#include <QLabel>
-#include <QLineEdit>
-#include <QListWidgetItem>
 #include <QMainWindow>
 #include <windows.h>
-#include "../app/HotkeyManager.h"
 #include "../common/Action.h"
 #include "../common/ResultItem.h"
-#include "../modules/IModule.h"
-#include "../modules/LauncherCommands.h"
-#include "../widgets/ResultItemDelegate.h"
+
+class QVBoxLayout;
+class QHBoxLayout;
+class QLabel;
+class QFrame;
+class QLineEdit;
+class QListWidget;
+
+class ResultItemDelegate;
+class HotkeyManager;
+class IModule;
 
 class Launcher final : public QMainWindow
 {
@@ -47,5 +48,5 @@ private:
     ResultItemDelegate* m_resultItemDelegate = nullptr;
 
     HotkeyManager* m_hotkeyManager;
-    QList<IModule*> m_modules;
+    QVector<IModule*> m_modules;
 };
