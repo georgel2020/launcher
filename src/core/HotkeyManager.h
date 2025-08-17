@@ -4,7 +4,6 @@
 #include <QDateTime>
 #include <QObject>
 #include <windows.h>
-#include "../common/Constants.h"
 
 class HotkeyManager final : public QObject, public QAbstractNativeEventFilter
 {

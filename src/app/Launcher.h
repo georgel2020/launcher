@@ -34,7 +34,7 @@ private:
     void showWindow(bool visibility);
     void setupUi();
     void setupModules();
-    void handleTabNavigation() const;
+    void handleActionsNavigation(bool right) const;
     void executeCurrentAction();
 
     bool isWindowShown = false;
