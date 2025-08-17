@@ -2,7 +2,6 @@
 
 LauncherCommands::LauncherCommands(QObject* parent) : IModule(parent) {}
 
-
 QString LauncherCommands::name() const { return "Launcher Commands"; }
 
 void LauncherCommands::query(const QString& text)

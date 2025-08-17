@@ -4,8 +4,11 @@ qt_add_resources(RESOURCES ../resources/launcher.qrc)
 # Define the executable.
 qt_add_executable(launcher
         main.cpp
-        # Core app.
+        # App.
         app/Launcher.cpp app/Launcher.h
+        # Core.
+        core/HotkeyManager.cpp core/HotkeyManager.h
+        core/ConfigLoader.cpp core/ConfigLoader.h
         # Common.
         common/Action.h
         common/ResultItem.h
@@ -13,11 +16,10 @@ qt_add_executable(launcher
         # Modules.
         modules/IModule.h
         modules/LauncherCommands.cpp modules/LauncherCommands.h
+        modules/EverythingSearch.cpp modules/EverythingSearch.h
         # Widgets.
         widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
         ${RESOURCES}
-        app/HotkeyManager.cpp
-        app/HotkeyManager.h
 )
 
 # Link Qt libraries.
@@ -32,4 +34,19 @@ add_custom_command(
         --dir "$<TARGET_FILE_DIR:launcher>"
         "$<TARGET_FILE:launcher>"
         COMMENT "Running windeployqt to deploy Qt libraries. "
+)
+
+# Link Everything SDK.
+target_include_directories(launcher PRIVATE
+        "${PROJECT_SOURCE_DIR}/third-party/everything-sdk/include"
+)
+target_link_libraries(launcher PRIVATE
+        "${PROJECT_SOURCE_DIR}/third-party/everything-sdk/lib/Everything64.lib"
+)
+add_custom_command(
+        TARGET launcher POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/third-party/everything-sdk/dll/Everything64.dll"
+        "$<TARGET_FILE_DIR:launcher>"
+        COMMENT "Copying Everything DLL to output directory. "
 )

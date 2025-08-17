@@ -1,4 +1,17 @@
 #include "ResultItemDelegate.h"
+#include <QApplication>
+#include <QFileIconProvider>
+#include <QFileInfo>
+#include <QFontMetrics>
+#include <QIcon>
+#include <QModelIndex>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPalette>
+#include <QStyle>
+#include <QStyleOptionViewItem>
+#include <QVariant>
 
 ResultItemDelegate::ResultItemDelegate(QObject* parent) : QStyledItemDelegate(parent) {}
 

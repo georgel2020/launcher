@@ -1,8 +1,9 @@
 #include "HotkeyManager.h"
+#include <QApplication>
 
 /**
  * Register a global hotkey in Windows.
- * 
+ *
  * @param fsModifiers The modifiers.
  * @param vk The virtual key.
  * @param id The unique id of the hotkey.

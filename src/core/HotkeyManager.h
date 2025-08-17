@@ -1,9 +1,8 @@
 #pragma once
 
 #include <QAbstractNativeEventFilter>
-#include <QApplication>
 #include <QDateTime>
-#include <QString>
+#include <QObject>
 #include <windows.h>
 #include "../common/Constants.h"
 

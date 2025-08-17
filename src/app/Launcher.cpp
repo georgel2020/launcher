@@ -1,4 +1,15 @@
 #include "Launcher.h"
+#include <QBoxLayout>
+#include <QFrame>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidgetItem>
+#include "../core/HotkeyManager.h"
+#include "../modules/EverythingSearch.h"
+#include "../modules/IModule.h"
+#include "../modules/LauncherCommands.h"
+#include "../widgets/ResultItemDelegate.h"
 
 Launcher::Launcher(QWidget* parent)
 {
@@ -88,9 +99,11 @@ void Launcher::setupUi()
  */
 void Launcher::setupModules()
 {
-    const auto launcherCommandsModule = new LauncherCommands(this);
-    m_modules.append(launcherCommandsModule);
-    connect(launcherCommandsModule, &LauncherCommands::resultsReady, this, &Launcher::onResultsReady);
+    m_modules = {new LauncherCommands(this), new EverythingSearch(this)};
+
+    // Connect all modules to results ready signal.
+    for (const IModule* module : m_modules)
+        connect(module, &LauncherCommands::resultsReady, this, &Launcher::onResultsReady);
 }
 
 /**
@@ -108,9 +121,7 @@ void Launcher::onResultsReady(const QVector<ResultItem>& results) const
     }
 
     if (m_resultsList->count() > 0)
-    {
         m_resultsList->setCurrentRow(0);
-    }
 }
 
 /**
@@ -123,9 +134,7 @@ void Launcher::onInputTextChanged(const QString& text)
     m_resultsList->clear();
 
     for (IModule* module : m_modules)
-    {
         module->query(text);
-    }
 }
 
 /**
