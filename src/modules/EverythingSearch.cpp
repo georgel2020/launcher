@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QProcess>
+#include "../../third-party/everything-sdk/include/Everything.h"
 #include "../core/ConfigLoader.h"
 
 EverythingSearch::EverythingSearch(QObject* parent) : IModule(parent)
