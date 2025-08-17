@@ -10,13 +10,11 @@
  *
  * Members:
  *
- * - name: The name of the action.
  * - iconGlyph: A single character representing an icon in glyph form.
  * - handler: The action handler to be called when triggered.
  */
 struct Action
 {
-    QString name;
     QChar iconGlyph;
     std::function<void()> handler;
 };

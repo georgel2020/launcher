@@ -1,4 +1,5 @@
 #include "EverythingSearch.h"
+#include <QProcess>
 #include "../core/ConfigLoader.h"
 
 EverythingSearch::EverythingSearch(QObject* parent) : IModule(parent)
@@ -33,10 +34,18 @@ void EverythingSearch::query(const QString& text)
         const DWORD numResults = Everything_GetNumResults();
         for (DWORD resultIndex = 0; resultIndex < numResults; ++resultIndex)
         {
-            ResultItem item;
-            item.title = QString::fromWCharArray(Everything_GetResultFileNameW(resultIndex));
-            item.subtitle = item.iconPath  = QString::fromWCharArray(Everything_GetResultPathW(resultIndex)) + "\\" + QString::fromWCharArray(Everything_GetResultFileNameW(resultIndex));
+            const QString fileName = QString::fromWCharArray(Everything_GetResultFileNameW(resultIndex));
+            const QString filePath = QString::fromWCharArray(Everything_GetResultPathW(resultIndex));
 
+            ResultItem item;
+            item.title = fileName;
+            item.subtitle = item.iconPath = filePath + "\\" + fileName;
+            Action openAction;
+            openAction.handler = [fileName, filePath]() { QProcess::startDetached("explorer", {filePath + "\\" + fileName}); };
+            Action openPathAction;
+            openPathAction.iconGlyph = QChar(0xe2c8); // Folder open.
+            openPathAction.handler = [filePath]() { QProcess::startDetached("explorer", {filePath}); };
+            item.actions = {openAction, openPathAction};
             results.append(item);
         }
     }
