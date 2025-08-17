@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../third-party/everything-sdk/include/Everything.h"
 #include "IModule.h"
 
 class EverythingSearch : public IModule
