@@ -112,7 +112,7 @@ QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMo
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
-    return {-1, RESULT_PADDING + BUTTON_SIZE + RESULT_PADDING};
+    return {-1, PADDING + BUTTON_SIZE + PADDING};
 }
 
 /**
@@ -198,8 +198,8 @@ void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOption
 
     for (int actionIndex = actionCount - 1; actionIndex >= 1; actionIndex--) // The first action is the primary action.
     {
-        const int buttonX = rect.right() - (actionCount - actionIndex) * (BUTTON_SIZE + RESULT_PADDING);
-        const QRect buttonRect(buttonX, rect.top() + RESULT_PADDING, BUTTON_SIZE, BUTTON_SIZE);
+        const int buttonX = rect.right() - (actionCount - actionIndex) * (BUTTON_SIZE + PADDING);
+        const QRect buttonRect(buttonX, rect.top() + PADDING, BUTTON_SIZE, BUTTON_SIZE);
 
         painter->setPen(Qt::NoPen);
         painter->setBrush(currentActionIndex == actionIndex ? option.palette.highlight() : option.palette.base());
@@ -218,7 +218,7 @@ void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOption
  */
 QRect ResultItemDelegate::getIconRect(const QRect& itemRect)
 {
-    return {itemRect.left() + RESULT_PADDING + (BUTTON_SIZE - ICON_SIZE) / 2, itemRect.center().y() - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE};
+    return {itemRect.left() + PADDING + (BUTTON_SIZE - ICON_SIZE) / 2, itemRect.center().y() - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE};
 }
 
 /**
@@ -230,8 +230,8 @@ QRect ResultItemDelegate::getIconRect(const QRect& itemRect)
  */
 QRect ResultItemDelegate::getTitleRect(const QRect& itemRect, const int& actionsCount)
 {
-    constexpr int leftMargin = RESULT_PADDING + BUTTON_SIZE + RESULT_PADDING;
-    constexpr int topMargin = RESULT_PADDING;
+    constexpr int leftMargin = PADDING + BUTTON_SIZE + PADDING;
+    constexpr int topMargin = PADDING;
     return {itemRect.left() + leftMargin, itemRect.top() + topMargin, itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
             itemRect.height() / 2 - topMargin};
 }
@@ -245,10 +245,10 @@ QRect ResultItemDelegate::getTitleRect(const QRect& itemRect, const int& actions
  */
 QRect ResultItemDelegate::getSubtitleRect(const QRect& itemRect, const int& actionsCount)
 {
-    constexpr int leftMargin = RESULT_PADDING + BUTTON_SIZE + RESULT_PADDING;
+    constexpr int leftMargin = PADDING + BUTTON_SIZE + PADDING;
     const int topPosition = itemRect.top() + itemRect.height() / 2;
     return {itemRect.left() + leftMargin, topPosition, itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
-            itemRect.height() / 2 - RESULT_PADDING};
+            itemRect.height() / 2 - PADDING};
 }
 
 /**
@@ -260,7 +260,7 @@ QRect ResultItemDelegate::getSubtitleRect(const QRect& itemRect, const int& acti
  */
 QRect ResultItemDelegate::getActionsRect(const QRect& itemRect, const int& actionsCount)
 {
-    const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + RESULT_PADDING) + RESULT_PADDING; // The primary action is not displayed as a button.
+    const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + PADDING) + PADDING; // The primary action is not displayed as a button.
 
     return {itemRect.right() - actionsWidth + 2, // For perfect button alignment.
             itemRect.top(), actionsWidth, itemRect.height()};

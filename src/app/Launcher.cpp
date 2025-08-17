@@ -52,7 +52,7 @@ void Launcher::showWindow(const bool visibility)
 void Launcher::setupUi()
 {
     // Main layout.
-    resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN, WINDOW_MARGIN + SEARCH_HEIGHT + WINDOW_SPACING + RESULT_LIST_HEIGHT + WINDOW_MARGIN);
+    resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN, WINDOW_MARGIN + PADDING + BUTTON_SIZE + PADDING + WINDOW_SPACING + RESULT_LIST_HEIGHT + WINDOW_MARGIN);
     m_centralWidget = new QWidget(this);
     setCentralWidget(m_centralWidget);
     m_mainLayout = new QVBoxLayout(m_centralWidget);
@@ -63,17 +63,24 @@ void Launcher::setupUi()
     QFont iconFont;
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
-    m_searchFrame = new QFrame(this); // TODO: Improve search area UI.
-    m_searchFrame->setFixedHeight(SEARCH_HEIGHT);
+    m_searchFrame = new QFrame(this);
+    m_searchFrame->setFixedHeight(PADDING + BUTTON_SIZE + PADDING);
+    m_searchFrame->setFixedWidth(WINDOW_WIDTH);
+    m_searchFrame->setStyleSheet(QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
     m_searchLayout = new QHBoxLayout(m_searchFrame);
+    m_searchLayout->setContentsMargins(PADDING, PADDING, PADDING, PADDING);
+    m_searchLayout->setSpacing(PADDING);
     m_searchIcon = new QLabel(this);
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
     m_searchIcon->setFont(iconFont);
-    m_searchIcon->setFixedWidth(ICON_SIZE);
-    m_searchIcon->setFixedHeight(ICON_SIZE);
+    m_searchIcon->setFixedWidth(BUTTON_SIZE);
+    m_searchIcon->setFixedHeight(BUTTON_SIZE);
+    m_searchIcon->setStyleSheet("QLabel { border: 1px solid transparent; background: transparent; }");
     m_searchEdit = new QLineEdit(this);
     m_searchEdit->setPlaceholderText("Start typing...");
+    m_searchEdit->setFixedHeight(BUTTON_SIZE);
     m_searchEdit->setFocus();
+    m_searchEdit->setStyleSheet(QString("QLineEdit { border: none; background: transparent; font-size: %1px; padding: 0px; }").arg(TITLE_FONT_SIZE));
     connect(m_searchEdit, &QLineEdit::textChanged, this, &Launcher::onInputTextChanged);
     m_searchLayout->addWidget(m_searchIcon);
     m_searchLayout->addWidget(m_searchEdit);
@@ -85,6 +92,7 @@ void Launcher::setupUi()
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(this);
     m_resultsList->setItemDelegate(m_resultItemDelegate);
+    m_resultsList->setStyleSheet(QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
 
     // Install event filter to handle keyboard navigation.
     m_resultsList->installEventFilter(this);
