@@ -41,6 +41,7 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     auto [title, subtitle, iconGlyph, iconPath, actions] = data.value<ResultItem>();
 
     painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
 
     bool isSelected = option.state & QStyle::State_Selected;
 
