@@ -1,4 +1,6 @@
 #include "EverythingSearch.h"
+#include <QApplication>
+#include <QClipboard>
 #include <QProcess>
 #include "../core/ConfigLoader.h"
 
@@ -41,11 +43,17 @@ void EverythingSearch::query(const QString& text)
             item.title = fileName;
             item.subtitle = item.iconPath = filePath + "\\" + fileName;
             Action openAction;
-            openAction.handler = [fileName, filePath]() { QProcess::startDetached("explorer", {filePath + "\\" + fileName}); };
+            openAction.handler = [filePath, fileName]() { QProcess::startDetached("explorer", {filePath + "\\" + fileName}); };
             Action openPathAction;
             openPathAction.iconGlyph = QChar(0xe2c8); // Folder open.
             openPathAction.handler = [filePath]() { QProcess::startDetached("explorer", {filePath}); };
-            item.actions = {openAction, openPathAction};
+            Action copyAction;
+            copyAction.iconGlyph = QChar(0xe173); // File copy.
+            copyAction.handler = [filePath, fileName]() { QApplication::clipboard()->setText(filePath + "\\" + fileName); };
+            Action copyPathAction;
+            copyPathAction.iconGlyph = QChar(0xebbd); // Folder copy.
+            copyPathAction.handler = [filePath]() { QApplication::clipboard()->setText(filePath); };
+            item.actions = {openAction, openPathAction, copyAction, copyPathAction};
             results.append(item);
         }
     }
