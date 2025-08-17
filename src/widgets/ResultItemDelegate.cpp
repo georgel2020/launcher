@@ -70,7 +70,7 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     }
     else if (iconPath != QString())
     {
-        // Draw icon from the given executable file.
+        // Draw icon from the given file.
         QFileIconProvider iconProvider;
         QFileInfo iconInfo(iconPath);
         QIcon fileIcon = iconProvider.icon(iconInfo);
