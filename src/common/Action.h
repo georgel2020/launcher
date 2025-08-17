@@ -12,6 +12,8 @@
  *
  * - iconGlyph: A single character representing an icon in glyph form.
  * - handler: The action handler to be called when triggered.
+ *
+ * An iconGlyph must be provided unless the action is the primary action.
  */
 struct Action
 {

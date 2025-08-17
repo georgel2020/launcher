@@ -261,8 +261,11 @@ void Launcher::executeCurrentAction()
 
     const QVariant data = currentItem->data(Qt::UserRole);
     const auto item = data.value<ResultItem>();
-    if (item.actions.isEmpty())
+    if (item.actions.isEmpty()) // Empty action list is accepted.
+    {
+        setWindowVisibility(false);
         return;
+    }
 
     setWindowVisibility(false);
 

@@ -17,6 +17,7 @@
  * - actions: A collection of actions that the user can perform on this item.
  *
  * An icon must be provided, either as a font icon or a path.
+ * The action list can be empty.
  */
 struct ResultItem
 {
