@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidgetItem>
+#include "../core/ConfigLoader.h"
 #include "../core/HotkeyManager.h"
 #include "../modules/EverythingSearch.h"
 #include "../modules/IModule.h"
@@ -22,6 +23,11 @@ Launcher::Launcher(QWidget* parent)
                     setWindowVisibility(!isWindowShown);
             });
 
+    // Read configuration.
+    const QJsonDocument doc = ConfigLoader::loadConfig(this);
+    const QJsonObject rootObject = doc.object();
+    // TODO: Add configurations.
+
     // Set window attributes.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -29,6 +35,12 @@ Launcher::Launcher(QWidget* parent)
 
     setupUi();
     setupModules();
+}
+
+QJsonDocument Launcher::defaultConfig() const
+{
+    QJsonObject rootObject;
+    return QJsonDocument(rootObject);
 }
 
 /**
