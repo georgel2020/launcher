@@ -23,6 +23,8 @@ class Launcher final : public QMainWindow
 public:
     explicit Launcher(QWidget* parent = nullptr);
 
+    [[nodiscard]] QJsonDocument defaultConfig() const;
+
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
 
