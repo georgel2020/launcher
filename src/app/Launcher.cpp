@@ -66,7 +66,8 @@ void Launcher::setupUi()
     m_searchFrame = new QFrame(this);
     m_searchFrame->setFixedHeight(PADDING + BUTTON_SIZE + PADDING);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
-    m_searchFrame->setStyleSheet(QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
+    m_searchFrame->setStyleSheet(
+        QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
     m_searchLayout = new QHBoxLayout(m_searchFrame);
     m_searchLayout->setContentsMargins(PADDING, PADDING, PADDING, PADDING);
     m_searchLayout->setSpacing(PADDING);
@@ -92,7 +93,8 @@ void Launcher::setupUi()
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(this);
     m_resultsList->setItemDelegate(m_resultItemDelegate);
-    m_resultsList->setStyleSheet(QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
+    m_resultsList->setStyleSheet(
+        QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
 
     // Install event filter to handle keyboard navigation.
     m_resultsList->installEventFilter(this);
@@ -157,16 +159,40 @@ bool Launcher::eventFilter(QObject* obj, QEvent* event)
     if (event->type() == QEvent::KeyPress)
     {
         auto keyEvent = dynamic_cast<QKeyEvent*>(event);
-        if (keyEvent->key() == Qt::Key_Tab || keyEvent->key() == Qt::Key_Right) // TODO: Improve arrow key behavior.
+
+        // Navigate between actions.
+        if (keyEvent->key() == Qt::Key_Tab)
         {
-            handleTabNavigation();
+            handleActionsNavigation(true);
             return true;
         }
+        if (keyEvent->key() == Qt::Key_Right)
+        {
+            if (m_searchEdit->cursorPosition() < m_searchEdit->text().length())
+            {
+                return QMainWindow::eventFilter(obj, event);
+            }
+            handleActionsNavigation(true);
+            return true;
+        }
+        if (keyEvent->key() == Qt::Key_Left)
+        {
+            if (m_searchEdit->cursorPosition() > 0)
+            {
+                return QMainWindow::eventFilter(obj, event);
+            }
+            handleActionsNavigation(false);
+            return true;
+        }
+
+        // Launch current action.
         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)
         {
             executeCurrentAction();
             return true;
         }
+
+        // Navigate between results.
         if (keyEvent->key() == Qt::Key_Down)
         {
             if (m_resultsList->currentRow() + 1 < m_resultsList->count())
@@ -186,13 +212,16 @@ bool Launcher::eventFilter(QObject* obj, QEvent* event)
             }
         }
     }
+
     return QMainWindow::eventFilter(obj, event);
 }
 
 /**
  * Handle tab navigation to go through actions of current result.
+ *
+ * @param right Whether to navigate right (true for right; false for left).
  */
-void Launcher::handleTabNavigation() const
+void Launcher::handleActionsNavigation(bool right) const
 {
     const QListWidgetItem* currentItem = m_resultsList->currentItem();
     if (!currentItem)
@@ -206,7 +235,7 @@ void Launcher::handleTabNavigation() const
     // Get current action index from delegate.
     const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();
     const int actionCount = static_cast<int>(item.actions.size());
-    const int newIndex = (currentIndex + 1) % actionCount;
+    const int newIndex = (currentIndex + (right ? 1 : -1) + actionCount) % actionCount; // Add an additional actionCount to ensure newIndex > 0.
 
     m_resultItemDelegate->setCurrentActionIndex(newIndex);
 
