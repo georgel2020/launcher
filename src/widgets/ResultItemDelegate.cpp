@@ -174,9 +174,11 @@ void ResultItemDelegate::drawIconGlyph(QPainter* painter, const QRect& rect, con
  */
 void ResultItemDelegate::drawText(QPainter* painter, const QRect& rect, const QString& text, const QFont& font, const QColor& color)
 {
+    const QFontMetrics metrics(font);
+    const QString elidedText = metrics.elidedText(text, Qt::ElideRight, rect.width());
     painter->setFont(font);
     painter->setPen(color);
-    painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, text);
+    painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, elidedText);
 }
 
 /**
