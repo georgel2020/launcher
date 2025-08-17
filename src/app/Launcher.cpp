@@ -19,7 +19,7 @@ Launcher::Launcher(QWidget* parent)
             [&](const long long id)
             {
                 if (id == 0)
-                    showWindow(!isWindowShown);
+                    setWindowVisibility(!isWindowShown);
             });
 
     // Set window attributes.
@@ -31,13 +31,19 @@ Launcher::Launcher(QWidget* parent)
     setupModules();
 }
 
-void Launcher::showWindow(const bool visibility)
+/**
+ * Show or hide the main window.
+ *
+ * @param visibility The new window visibility (true to show; false to hide).
+ */
+void Launcher::setWindowVisibility(const bool visibility)
 {
     isWindowShown = visibility;
     if (!visibility)
     {
         m_resultsList->clear();
-        hide();
+        m_searchEdit->clear();
+        hide(); // TODO: Fix flash on startup.
     }
     else
     {
@@ -143,8 +149,9 @@ void Launcher::onInputTextChanged(const QString& text)
 {
     m_resultsList->clear();
 
-    for (IModule* module : m_modules)
-        module->query(text);
+    if (!text.isEmpty())
+        for (IModule* module : m_modules)
+            module->query(text);
 }
 
 /**
@@ -257,7 +264,7 @@ void Launcher::executeCurrentAction()
     if (item.actions.isEmpty())
         return;
 
-    showWindow(false);
+    setWindowVisibility(false);
 
     // Get current action index from delegate.
     const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();

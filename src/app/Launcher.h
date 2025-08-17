@@ -31,7 +31,7 @@ private slots:
     void onResultsReady(const QVector<ResultItem>& results) const;
 
 private:
-    void showWindow(bool visibility);
+    void setWindowVisibility(bool visibility);
     void setupUi();
     void setupModules();
     void handleActionsNavigation(bool right) const;
