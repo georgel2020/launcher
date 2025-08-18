@@ -107,7 +107,9 @@ void Launcher::setupUi()
 
     // Results list.
     m_resultsList = new QListWidget(this);
+    m_resultsList->setFixedWidth(WINDOW_WIDTH);
     m_resultsList->setFixedHeight(RESULT_LIST_HEIGHT);
+    m_resultsList->setFocusPolicy(Qt::NoFocus);
 
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(this);
