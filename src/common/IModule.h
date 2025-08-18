@@ -3,7 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QObject>
-#include "../common/ResultItem.h"
+#include "ResultItem.h"
 
 class IModule : public QObject
 {

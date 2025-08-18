@@ -5,11 +5,11 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidgetItem>
+#include "../common/IModule.h"
 #include "../core/ConfigLoader.h"
 #include "../core/HotkeyManager.h"
 #include "../modules/Calculator.h"
 #include "../modules/EverythingSearch.h"
-#include "../modules/IModule.h"
 #include "../modules/LauncherCommands.h"
 #include "../widgets/ResultItemDelegate.h"
 
