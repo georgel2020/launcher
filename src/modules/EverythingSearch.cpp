@@ -17,7 +17,7 @@ QString EverythingSearch::name() const { return "Everything Search"; }
 QJsonDocument EverythingSearch::defaultConfig() const
 {
     QJsonObject rootObject;
-    rootObject["maxResults"] = 50;
+    rootObject["maxResults"] = m_maxResults;
     return QJsonDocument(rootObject);
 }
 
