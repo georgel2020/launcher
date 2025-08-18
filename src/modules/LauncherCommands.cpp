@@ -9,9 +9,10 @@ void LauncherCommands::query(const QString& text)
     if (text == "version")
     {
         ResultItem item;
-        item.title = "Version: ";
+        item.title = "Version";
         item.subtitle = QString::fromStdString(__DATE__) + " " + QString::fromStdString(__TIME__);
         item.iconGlyph = QChar(0xe88e); // Info.
+        item.key = "version";
         results.append(item);
     }
 

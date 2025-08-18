@@ -7,6 +7,7 @@
 #include <QListWidgetItem>
 #include "../common/IModule.h"
 #include "../core/ConfigLoader.h"
+#include "../core/HistoryManager.h"
 #include "../core/HotkeyManager.h"
 #include "../modules/Calculator.h"
 #include "../modules/EverythingSearch.h"
@@ -36,9 +37,10 @@ Launcher::Launcher(QWidget* parent)
     // Read configuration.
     const QJsonDocument doc = ConfigLoader::loadConfig(this);
     const QJsonObject rootObject = doc.object();
+    const QJsonObject modulesObject = rootObject["modules"].toObject();
     for (ModuleConfig& config : m_moduleConfigs)
     {
-        const QJsonObject moduleObject = rootObject[ConfigLoader::toCamelCase(config.name)].toObject();
+        const QJsonObject moduleObject = modulesObject[ConfigLoader::toCamelCase(config.name)].toObject();
         config.enabled = moduleObject["enabled"].toBool();
         config.global = moduleObject["global"].toBool();
         config.priority = moduleObject["priority"].toInt();
@@ -50,11 +52,21 @@ Launcher::Launcher(QWidget* parent)
             m_moduleConfigs.removeOne(config);
         }
     }
+    const QJsonObject historyObject = rootObject["history"].toObject();
+    m_decay = historyObject["decay"].toDouble();
+    m_minScore = historyObject["minScore"].toDouble();
+    m_increment = historyObject["increment"].toDouble();
+    m_historyScoreWeight = historyObject["historyScoreWeight"].toDouble();
+
+    // Configure history.
+    HistoryManager::initHistory(m_decay, m_minScore);
+    HistoryManager::setHistoryScoreWeight(m_historyScoreWeight);
 }
 
 QJsonDocument Launcher::defaultConfig() const
 {
     QJsonObject rootObject;
+    QJsonObject modulesObject;
     for (ModuleConfig config : m_moduleConfigs)
     {
         QJsonObject moduleObject;
@@ -62,8 +74,15 @@ QJsonDocument Launcher::defaultConfig() const
         moduleObject["global"] = config.global;
         moduleObject["priority"] = config.priority;
         moduleObject["prefix"] = QString(config.prefix);
-        rootObject[ConfigLoader::toCamelCase(config.name)] = moduleObject;
+        modulesObject[ConfigLoader::toCamelCase(config.name)] = moduleObject;
     }
+    rootObject["modules"] = modulesObject;
+    QJsonObject historyObject;
+    historyObject["decay"] = m_decay;
+    historyObject["minScore"] = m_minScore;
+    historyObject["increment"] = m_increment;
+    historyObject["historyScoreWeight"] = m_historyScoreWeight;
+    rootObject["history"] = historyObject;
     return QJsonDocument(rootObject);
 }
 
@@ -156,11 +175,8 @@ void Launcher::setupUi()
  */
 void Launcher::setupModules()
 {
-    m_moduleConfigs = {
-        ModuleConfig(new LauncherCommands(this), true, true, 5, ':'),
-        ModuleConfig(new EverythingSearch(this), true, true, 1, '@'),
-        ModuleConfig(new Calculator(this), true, true, 5, '=')
-    };
+    m_moduleConfigs = {ModuleConfig(new LauncherCommands(this), true, true, 5, ':'), ModuleConfig(new EverythingSearch(this), true, true, 1, '@'),
+                       ModuleConfig(new Calculator(this), true, true, 5, '=')};
 
     // Connect all modules to results ready signal.
     for (ModuleConfig& config : m_moduleConfigs)
@@ -353,8 +369,8 @@ void Launcher::executeCurrentAction()
     if (currentIndex >= 0 && currentIndex < item.actions.size())
     {
         if (item.actions[currentIndex].handler)
-        {
             item.actions[currentIndex].handler();
-        }
+        if (!item.key.isEmpty())
+            HistoryManager::addHistory(item.key, m_increment);
     }
 }

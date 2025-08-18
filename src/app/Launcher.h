@@ -78,4 +78,8 @@ private:
         }
     };
     QVector<ModuleConfig> m_moduleConfigs;
+    double m_decay = 0.95;
+    double m_minScore = 0.01;
+    double m_increment = 1.0;
+    double m_historyScoreWeight = 1.0;
 };

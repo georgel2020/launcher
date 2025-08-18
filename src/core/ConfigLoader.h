@@ -1,14 +1,12 @@
 #pragma once
 
-#include <QObject>
-
 class Launcher;
 class IModule;
+class QJsonDocument;
+class QString;
 
-class ConfigLoader final : public QObject
+class ConfigLoader final
 {
-    Q_OBJECT
-
 public:
     ConfigLoader() = delete;
 

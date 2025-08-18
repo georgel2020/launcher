@@ -1,4 +1,3 @@
-
 #include "ConfigLoader.h"
 #include <QDir>
 #include <QJsonDocument>
@@ -32,6 +31,7 @@ QJsonDocument ConfigLoader::loadConfig(const Launcher* launcher)
 
         return doc;
     }
+
     const QJsonDocument doc = launcher->defaultConfig();
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     file.write(doc.toJson(QJsonDocument::Indented));

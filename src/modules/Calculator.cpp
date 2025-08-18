@@ -21,6 +21,7 @@ void Calculator::query(const QString& text)
         Action copyAction;
         copyAction.handler = [value]() { QApplication::clipboard()->setText(QString::number(value)); };
         item.actions = {copyAction};
+        item.key = "calculator";
         results.append(item);
 
         emit resultsReady(results, this);
