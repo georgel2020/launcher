@@ -45,7 +45,10 @@ Launcher::Launcher(QWidget* parent)
         config.prefix = moduleObject["prefix"].toString()[0];
 
         if (!config.enabled)
+        {
             disconnect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
+            m_moduleConfigs.removeOne(config);
+        }
     }
 }
 

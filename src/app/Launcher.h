@@ -59,6 +59,11 @@ private:
         bool global;
         int priority;
         QChar prefix;
+
+        bool operator==(const ModuleConfig& other) const
+        {
+            return module == other.module;
+        }
     };
     QVector<ModuleConfig> m_moduleConfigs;
 };
