@@ -5,11 +5,12 @@
 /**
  * Register a global hotkey in Windows.
  *
+ * @param parent The parent QObject.
  * @param fsModifiers The modifiers.
  * @param vk The virtual key.
  * @param id The unique id of the hotkey.
  */
-HotkeyManager::HotkeyManager(const UINT fsModifiers, const UINT vk, const int id)
+HotkeyManager::HotkeyManager(const UINT fsModifiers, const UINT vk, const int id, QObject* parent) : QObject(parent)
 {
     RegisterHotKey(nullptr, id, MOD_NOREPEAT | fsModifiers, vk);
     lastHotkeyTime = QDateTime::currentDateTime();

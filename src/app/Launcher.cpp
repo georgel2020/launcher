@@ -17,7 +17,7 @@
 Launcher::Launcher(QWidget* parent)
 {
     // Register hotkey.
-    m_hotkeyManager = new HotkeyManager(MOD_ALT, VK_SPACE, 0);
+    m_hotkeyManager = new HotkeyManager(MOD_ALT, VK_SPACE, 0, this);
     connect(m_hotkeyManager, &HotkeyManager::hotkeyPressed, this,
             [&](const long long id)
             {
