@@ -43,6 +43,9 @@ Launcher::Launcher(QWidget* parent)
         config.global = moduleObject["global"].toBool();
         config.priority = moduleObject["priority"].toInt();
         config.prefix = moduleObject["prefix"].toString()[0];
+
+        if (!config.enabled)
+            disconnect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
     }
 }
 
@@ -200,8 +203,9 @@ void Launcher::onInputTextChanged(const QString& text)
     m_resultsList->clear();
 
     if (!text.isEmpty())
-        for (const ModuleConfig config : m_moduleConfigs)
-            config.module->query(text);
+        for (const ModuleConfig& config : m_moduleConfigs)
+            if (config.enabled)
+                config.module->query(text);
 }
 
 /**
