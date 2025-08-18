@@ -14,6 +14,7 @@ EverythingSearch::EverythingSearch(QObject* parent) : IModule(parent)
 }
 
 QString EverythingSearch::name() const { return "Everything Search"; }
+QChar EverythingSearch::iconGlyph() const { return QChar(0xf385); } // Document search.
 
 QJsonDocument EverythingSearch::defaultConfig() const
 {

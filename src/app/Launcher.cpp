@@ -157,15 +157,16 @@ void Launcher::setupUi()
 void Launcher::setupModules()
 {
     m_moduleConfigs = {
-        ModuleConfig(new LauncherCommands(this), "", true, true, 5, ':'),
-        ModuleConfig(new EverythingSearch(this), "", true, true, 1, '@'),
-        ModuleConfig(new Calculator(this), "", true, true, 5, '=')
+        ModuleConfig(new LauncherCommands(this), QString(), QChar(), true, true, 5, ':'),
+        ModuleConfig(new EverythingSearch(this), QString(), QChar(), true, true, 1, '@'),
+        ModuleConfig(new Calculator(this), QString(), QChar(), true, true, 5, '=')
     };
 
     // Connect all modules to results ready signal.
     for (ModuleConfig& config : m_moduleConfigs)
     {
         config.name = config.module->name();
+        config.iconGlyph = config.module->iconGlyph();
         connect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
     }
 }
@@ -204,11 +205,30 @@ void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* modul
 void Launcher::onInputTextChanged(const QString& text)
 {
     m_resultsList->clear();
+    m_searchIcon->setText(QChar(0xe8b6)); // Search.
 
     if (!text.isEmpty())
+    {
+        const QChar prefix = text.at(0);
+
         for (const ModuleConfig& config : m_moduleConfigs)
-            if (config.enabled)
-                config.module->query(text);
+        {
+            if (config.prefix == prefix)
+            {
+                m_searchIcon->setText(config.iconGlyph);
+                config.module->query(text.mid(1).trimmed());
+                return;
+            }
+        }
+
+        for (const ModuleConfig& config : m_moduleConfigs)
+        {
+            if (config.global)
+            {
+                config.module->query(text.trimmed());
+            }
+        }
+    }
 }
 
 /**
