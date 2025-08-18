@@ -147,84 +147,39 @@ QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMo
  * meaning the event will fall back to the base implementation.
  */
 bool ResultItemDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)
-{ // TODO: Reuse code.
+{
+    if (event->type() != QEvent::MouseMove && event->type() != QEvent::MouseButtonPress && event->type() != QEvent::MouseButtonDblClick)
+        return QStyledItemDelegate::editorEvent(event, model, option, index);
+
+    const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+    if (event->type() != QEvent::MouseMove && mouseEvent->button() != Qt::LeftButton)
+        return QStyledItemDelegate::editorEvent(event, model, option, index);
+
+    // Get the ResultItem data.
+    const QVariant data = index.data(Qt::UserRole);
+    auto item = data.value<ResultItem>();
+
+    const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
+    const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
+
     if (event->type() == QEvent::MouseMove)
     {
-        const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
-
-        // Get the ResultItem data.
-        const QVariant data = index.data(Qt::UserRole);
-        auto item = data.value<ResultItem>();
-
-        const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
-
-        if (const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
-            buttonIndex >= 1 && buttonIndex < item.actions.size()) // The first action is the primary action.
-        {
-            m_hoveredActionIndex = buttonIndex;
-        }
-        else
-        {
-            m_hoveredActionIndex = 0;
-        }
-        // Force repaint to update hover effects.
+        m_hoveredActionIndex = buttonIndex;
         m_view->viewport()->update();
+        return QStyledItemDelegate::editorEvent(event, model, option, index);
     }
 
-    if (event->type() == QEvent::MouseButtonPress)
+    if ((buttonIndex >= 1 && buttonIndex < item.actions.size() && event->type() == QEvent::MouseButtonPress) ||
+        (buttonIndex == 0 && event->type() == QEvent::MouseButtonDblClick))
     {
-        const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
-
-        // Get the ResultItem data.
-        const QVariant data = index.data(Qt::UserRole);
-        auto item = data.value<ResultItem>();
-
-        if (mouseEvent->button() == Qt::LeftButton)
+        if (item.actions[buttonIndex].handler)
         {
-            const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
-
-            if (const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
-                buttonIndex >= 1 && buttonIndex < item.actions.size()) // The first action is the primary action.
-            {
-                // Execute the action handler for action buttons on single click.
-                if (item.actions[buttonIndex].handler)
-                {
-                    item.actions[buttonIndex].handler();
-                    emit hideWindow();
-                    return true;
-                }
-
-                emit hideWindow();
-            }
+            item.actions[buttonIndex].handler();
+            emit hideWindow();
+            return true;
         }
-    }
 
-    if (event->type() == QEvent::MouseButtonDblClick)
-    {
-        const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
-
-        // Get the ResultItem data.
-        const QVariant data = index.data(Qt::UserRole);
-        auto item = data.value<ResultItem>();
-
-        if (mouseEvent->button() == Qt::LeftButton)
-        {
-            const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
-
-            if (const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
-                buttonIndex == 0) // The first action is the primary action.
-            {
-                // Execute the action handler for the primary action on double click.
-                if (item.actions[0].handler)
-                {
-                    item.actions[0].handler();
-                    emit hideWindow();
-                    return true;
-                }
-
-                emit hideWindow();
-            }
-        }
+        emit hideWindow();
     }
 
     return QStyledItemDelegate::editorEvent(event, model, option, index);
