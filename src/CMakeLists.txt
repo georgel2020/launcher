@@ -17,6 +17,7 @@ qt_add_executable(launcher
         modules/IModule.h
         modules/LauncherCommands.cpp modules/LauncherCommands.h
         modules/EverythingSearch.cpp modules/EverythingSearch.h
+        modules/Calculator.cpp modules/Calculator.h
         # Widgets.
         widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
         ${RESOURCES}
@@ -34,6 +35,11 @@ add_custom_command(
         --dir "$<TARGET_FILE_DIR:launcher>"
         "$<TARGET_FILE:launcher>"
         COMMENT "Running windeployqt to deploy Qt libraries. "
+)
+
+# Link muparser library.
+target_link_libraries(launcher PRIVATE
+        muparser
 )
 
 # Link Everything SDK.

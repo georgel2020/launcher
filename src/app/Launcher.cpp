@@ -7,6 +7,7 @@
 #include <QListWidgetItem>
 #include "../core/ConfigLoader.h"
 #include "../core/HotkeyManager.h"
+#include "../modules/Calculator.h"
 #include "../modules/EverythingSearch.h"
 #include "../modules/IModule.h"
 #include "../modules/LauncherCommands.h"
@@ -127,7 +128,7 @@ void Launcher::setupUi()
  */
 void Launcher::setupModules()
 {
-    m_modules = {new LauncherCommands(this), new EverythingSearch(this)};
+    m_modules = {new LauncherCommands(this), new EverythingSearch(this), new Calculator(this)};
 
     // Connect all modules to results ready signal.
     for (const IModule* module : m_modules)
