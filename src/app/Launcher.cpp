@@ -100,6 +100,7 @@ void Launcher::setupUi()
     m_searchEdit->setPlaceholderText("Start typing...");
     m_searchEdit->setFixedHeight(BUTTON_SIZE);
     m_searchEdit->setFocus();
+    m_searchEdit->setContextMenuPolicy(Qt::NoContextMenu);
     m_searchEdit->setStyleSheet(QString("QLineEdit { border: none; background: transparent; font-size: %1px; padding: 0px; }").arg(TITLE_FONT_SIZE));
     connect(m_searchEdit, &QLineEdit::textChanged, this, &Launcher::onInputTextChanged);
     m_searchLayout->addWidget(m_searchIcon);
