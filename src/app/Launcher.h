@@ -55,6 +55,7 @@ private:
     {
         IModule* module;
         QString name;
+        QChar iconGlyph;
         bool enabled;
         bool global;
         int priority;
