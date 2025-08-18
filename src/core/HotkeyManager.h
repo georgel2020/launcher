@@ -10,7 +10,7 @@ class HotkeyManager final : public QObject, public QAbstractNativeEventFilter
     Q_OBJECT
 
 public:
-    HotkeyManager(UINT fsModifiers, UINT vk, int id);
+    explicit HotkeyManager(UINT fsModifiers, UINT vk, int id, QObject* parent = nullptr);
 
 private:
     QDateTime lastHotkeyTime;
