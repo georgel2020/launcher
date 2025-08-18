@@ -9,8 +9,8 @@ class EverythingSearch : public IModule
 public:
     explicit EverythingSearch(QObject* parent = nullptr);
 
-    [[nodiscard]] QString name() const override;
-    [[nodiscard]] QChar iconGlyph() const override;
+    [[nodiscard]] QString name() const override { return "Everything Search"; }
+    [[nodiscard]] QChar iconGlyph() const override { return QChar(0xf385); } // Document search.
     [[nodiscard]] QJsonDocument defaultConfig() const override;
     void query(const QString& text) override;
 

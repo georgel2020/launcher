@@ -5,9 +5,6 @@
 
 Calculator::Calculator(QObject* parent) : IModule(parent) {}
 
-QString Calculator::name() const { return "Calculator"; }
-QChar Calculator::iconGlyph() const { return QChar(0xea5f); } // Calculate.
-
 void Calculator::query(const QString& text)
 {
     try
