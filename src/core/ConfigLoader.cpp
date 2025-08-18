@@ -75,6 +75,22 @@ QJsonDocument ConfigLoader::loadModuleConfig(const IModule* module)
 }
 
 /**
+ * Convert a space-separated string to camel case.
+ * @param text The original string.
+ * @return The new string in camel case.
+ */
+QString ConfigLoader::toCamelCase(const QString& text)
+{
+    const QStringList parts = text.split(' ', Qt::SkipEmptyParts);
+    QString result = parts.at(0).toLower();
+    for (int index = 1; index < parts.size(); ++index) {
+        QString word = parts.at(index);
+        result.append(word.at(0).toUpper() + word.mid(1).toLower());
+    }
+    return result;
+}
+
+/**
  * Get the configuration file path for Launcher.
  *
  * If the path does not exist, create the folders automatically.
