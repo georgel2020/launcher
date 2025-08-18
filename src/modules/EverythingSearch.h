@@ -14,5 +14,5 @@ public:
     void query(const QString& text) override;
 
 private:
-    int m_maxResults;
+    int m_maxResults = 50;
 };
