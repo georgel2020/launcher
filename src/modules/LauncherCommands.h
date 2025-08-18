@@ -9,7 +9,7 @@ class LauncherCommands : public IModule
 public:
     explicit LauncherCommands(QObject* parent = nullptr);
 
-    [[nodiscard]] QString name() const override;
-    [[nodiscard]] QChar iconGlyph() const override;
+    [[nodiscard]] QString name() const override { return "Launcher Commands"; }
+    [[nodiscard]] QChar iconGlyph() const override { return QChar(0xeb9b); } // Rocket launch.
     void query(const QString& text) override;
 };

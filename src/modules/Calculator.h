@@ -9,7 +9,7 @@ class Calculator : public IModule
 public:
     explicit Calculator(QObject* parent = nullptr);
 
-    [[nodiscard]] QString name() const override;
-    [[nodiscard]] QChar iconGlyph() const override;
+    [[nodiscard]] QString name() const override { return "Calculator"; }
+    [[nodiscard]] QChar iconGlyph() const override { return QChar(0xea5f); } // Calculate.
     void query(const QString& text) override;
 };

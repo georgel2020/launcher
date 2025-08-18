@@ -2,9 +2,6 @@
 
 LauncherCommands::LauncherCommands(QObject* parent) : IModule(parent) {}
 
-QString LauncherCommands::name() const { return "Launcher Commands"; }
-QChar LauncherCommands::iconGlyph() const { return QChar(0xeb9b); } // Rocket launch.
-
 void LauncherCommands::query(const QString& text)
 {
     QVector<ResultItem> results;
