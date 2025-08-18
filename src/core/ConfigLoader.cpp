@@ -5,7 +5,7 @@
 #include <QJsonObject>
 #include <QStandardPaths>
 #include "../app/Launcher.h"
-#include "../modules/IModule.h"
+#include "../common/IModule.h"
 
 /**
  * Load configuration file for Launcher.

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IModule.h"
+#include "../common/IModule.h"
 
 class EverythingSearch : public IModule
 {
