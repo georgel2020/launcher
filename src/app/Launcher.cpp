@@ -38,7 +38,7 @@ Launcher::Launcher(QWidget* parent)
     const QJsonObject rootObject = doc.object();
     for (ModuleConfig& config : m_moduleConfigs)
     {
-        const QJsonObject moduleObject = rootObject[config.name].toObject();
+        const QJsonObject moduleObject = rootObject[ConfigLoader::toCamelCase(config.name)].toObject();
         config.enabled = moduleObject["enabled"].toBool();
         config.global = moduleObject["global"].toBool();
         config.priority = moduleObject["priority"].toInt();
@@ -56,7 +56,7 @@ QJsonDocument Launcher::defaultConfig() const
         moduleObject["global"] = config.global;
         moduleObject["priority"] = config.priority;
         moduleObject["prefix"] = QString(config.prefix);
-        rootObject[config.name] = moduleObject;
+        rootObject[ConfigLoader::toCamelCase(config.name)] = moduleObject;
     }
     return QJsonDocument(rootObject);
 }
