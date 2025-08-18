@@ -15,6 +15,8 @@
  * - iconGlyph: A single character representing an icon in glyph form.
  * - iconPath: The file path to an external icon source, such as an executable file.
  * - actions: A collection of actions that the user can perform on this item.
+ * - priority: The module priority; should not be assigned by the module.
+ * - score: The score of the result (1.0 by default).
  *
  * An icon must be provided, either as a font icon or a path.
  * The action list can be empty.
@@ -26,6 +28,8 @@ struct ResultItem
     QChar iconGlyph;
     QString iconPath;
     QVector<Action> actions;
+    int priority;
+    double score = 1.0;
 };
 
 Q_DECLARE_METATYPE(ResultItem)

@@ -17,5 +17,5 @@ public:
     virtual void query(const QString& text) = 0;
 
 signals:
-    void resultsReady(QVector<ResultItem>& results);
+    void resultsReady(QVector<ResultItem>& results, IModule* module);
 };

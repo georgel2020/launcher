@@ -30,7 +30,7 @@ protected:
 
 private slots:
     void onInputTextChanged(const QString& text);
-    void onResultsReady(const QVector<ResultItem>& results) const;
+    void onResultsReady(QVector<ResultItem>& results, const IModule* module);
 
 private:
     void setWindowVisibility(bool visibility);
@@ -50,5 +50,15 @@ private:
     ResultItemDelegate* m_resultItemDelegate = nullptr;
 
     HotkeyManager* m_hotkeyManager;
-    QVector<IModule*> m_modules;
+
+    struct ModuleConfig
+    {
+        IModule* module;
+        QString name;
+        bool enabled;
+        bool global;
+        int priority;
+        QChar prefix;
+    };
+    QVector<ModuleConfig> m_moduleConfigs;
 };

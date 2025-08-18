@@ -12,6 +12,7 @@
 #include "../modules/EverythingSearch.h"
 #include "../modules/LauncherCommands.h"
 #include "../widgets/ResultItemDelegate.h"
+#include "../widgets/ResultItemWidget.h"
 
 Launcher::Launcher(QWidget* parent)
 {
@@ -24,11 +25,6 @@ Launcher::Launcher(QWidget* parent)
                     setWindowVisibility(!isWindowShown);
             });
 
-    // Read configuration.
-    const QJsonDocument doc = ConfigLoader::loadConfig(this);
-    const QJsonObject rootObject = doc.object();
-    // TODO: Add configurations.
-
     // Set window attributes.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -36,11 +32,32 @@ Launcher::Launcher(QWidget* parent)
 
     setupUi();
     setupModules();
+
+    // Read configuration.
+    const QJsonDocument doc = ConfigLoader::loadConfig(this);
+    const QJsonObject rootObject = doc.object();
+    for (ModuleConfig& config : m_moduleConfigs)
+    {
+        const QJsonObject moduleObject = rootObject[config.name].toObject();
+        config.enabled = moduleObject["enabled"].toBool();
+        config.global = moduleObject["global"].toBool();
+        config.priority = moduleObject["priority"].toInt();
+        config.prefix = moduleObject["prefix"].toString()[0];
+    }
 }
 
 QJsonDocument Launcher::defaultConfig() const
 {
     QJsonObject rootObject;
+    for (ModuleConfig config : m_moduleConfigs)
+    {
+        QJsonObject moduleObject;
+        moduleObject["enabled"] = config.enabled;
+        moduleObject["global"] = config.global;
+        moduleObject["priority"] = config.priority;
+        moduleObject["prefix"] = QString(config.prefix);
+        rootObject[config.name] = moduleObject;
+    }
     return QJsonDocument(rootObject);
 }
 
@@ -111,13 +128,13 @@ void Launcher::setupUi()
     m_resultsList->setFixedWidth(WINDOW_WIDTH);
     m_resultsList->setFixedHeight(RESULT_LIST_HEIGHT);
     m_resultsList->setFocusPolicy(Qt::NoFocus);
-    m_resultsList->setMouseTracking(true); // Enable mouse tracking for hover effects
+    m_resultsList->setMouseTracking(true);
+    m_resultsList->setStyleSheet(
+        QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
 
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(m_resultsList, this);
     m_resultsList->setItemDelegate(m_resultItemDelegate);
-    m_resultsList->setStyleSheet(
-        QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
     connect(m_resultItemDelegate, &ResultItemDelegate::hideWindow, this, [&]() { setWindowVisibility(false); });
 
     // Install event filter to handle keyboard navigation.
@@ -133,27 +150,42 @@ void Launcher::setupUi()
  */
 void Launcher::setupModules()
 {
-    m_modules = {new LauncherCommands(this), new EverythingSearch(this), new Calculator(this)};
+    m_moduleConfigs = {
+        ModuleConfig(new LauncherCommands(this), "", true, true, 5, ':'),
+        ModuleConfig(new EverythingSearch(this), "", true, true, 1, '@'),
+        ModuleConfig(new Calculator(this), "", true, true, 5, '=')
+    };
 
     // Connect all modules to results ready signal.
-    for (const IModule* module : m_modules)
-        connect(module, &LauncherCommands::resultsReady, this, &Launcher::onResultsReady);
+    for (ModuleConfig& config : m_moduleConfigs)
+    {
+        config.name = config.module->name();
+        connect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
+    }
 }
 
 /**
  * Handle results ready signal from modules.
  *
  * @param results The list of results to be displayed.
+ * @param module The module providing the results.
  */
-void Launcher::onResultsReady(const QVector<ResultItem>& results) const
+void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* module)
 {
-    for (const auto& item : results)
+    int priority = 0;
+    for (const ModuleConfig& config : m_moduleConfigs)
+        if (config.module == module)
+            priority = config.priority;
+
+    for (auto& item : results)
     {
-        const auto listItem = new QListWidgetItem(m_resultsList);
+        item.priority = priority;
+        const auto listItem = new ResultItemWidget(m_resultsList);
         listItem->setData(Qt::UserRole, QVariant::fromValue(item));
         m_resultsList->addItem(listItem);
     }
 
+    m_resultsList->sortItems(Qt::DescendingOrder);
     if (m_resultsList->count() > 0)
         m_resultsList->setCurrentRow(0);
 }
@@ -168,8 +200,8 @@ void Launcher::onInputTextChanged(const QString& text)
     m_resultsList->clear();
 
     if (!text.isEmpty())
-        for (IModule* module : m_modules)
-            module->query(text);
+        for (const ModuleConfig config : m_moduleConfigs)
+            config.module->query(text);
 }
 
 /**
