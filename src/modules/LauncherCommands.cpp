@@ -17,5 +17,5 @@ void LauncherCommands::query(const QString& text)
         results.append(item);
     }
 
-    emit resultsReady(results);
+    emit resultsReady(results, this);
 }

@@ -16,16 +16,16 @@ void Calculator::query(const QString& text)
         double value = parser.Eval();
 
         QVector<ResultItem> results;
-        ResultItem result;
-        result.title = QString::number(value);
-        result.subtitle = "Calculator";
-        result.iconGlyph = QChar(0xea5f); // Calculate.
+        ResultItem item;
+        item.title = QString::number(value);
+        item.subtitle = "Calculator";
+        item.iconGlyph = QChar(0xea5f); // Calculate.
         Action copyAction;
         copyAction.handler = [value]() { QApplication::clipboard()->setText(QString::number(value)); };
-        result.actions = {copyAction};
-        results.append(result);
+        item.actions = {copyAction};
+        results.append(item);
 
-        emit resultsReady(results);
+        emit resultsReady(results, this);
     }
     catch (mu::Parser::exception_type& e)
     {

@@ -43,7 +43,7 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     // Get the ResultItem data.
     QVariant data = index.data(Qt::UserRole);
 
-    auto [title, subtitle, iconGlyph, iconPath, actions] = data.value<ResultItem>();
+    auto item = data.value<ResultItem>();
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
@@ -70,24 +70,25 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     }
 
     // Calculate rects for different components.
-    const int visibleActionCount = (isSelected || isHovered) ? static_cast<int>(actions.size()) : 1; // Including the primary action.
-                                                                                                     // Without action buttons, the space is left to the text.
+    const int visibleActionCount =
+        (isSelected || isHovered) ? static_cast<int>(item.actions.size()) : 1; // Including the primary action.
+                                                                               // Without action buttons, the space is left to the text.
     QRect iconRect = getIconRect(option.rect);
     QRect titleRect = getTitleRect(option.rect, visibleActionCount);
     QRect subtitleRect = getSubtitleRect(option.rect, visibleActionCount);
     QRect actionsRect = getActionsRect(option.rect, visibleActionCount);
 
     // Draw icon.
-    if (iconGlyph != QChar())
+    if (item.iconGlyph != QChar())
     {
         // Draw font icon.
-        drawIconGlyph(painter, iconRect, iconGlyph, option.palette.text().color());
+        drawIconGlyph(painter, iconRect, item.iconGlyph, option.palette.text().color());
     }
-    else if (iconPath != QString())
+    else if (item.iconPath != QString())
     {
         // Draw icon from the given file.
         QFileIconProvider iconProvider;
-        QFileInfo iconInfo(iconPath);
+        QFileInfo iconInfo(item.iconPath);
         QIcon fileIcon = iconProvider.icon(iconInfo);
         drawIcon(painter, iconRect, fileIcon);
     }
@@ -97,17 +98,17 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     titleFont.setBold(true);
     titleFont.setPixelSize(TITLE_FONT_SIZE);
     QColor titleColor = (option.state & QStyle::State_Selected) ? option.palette.highlightedText().color() : option.palette.text().color();
-    drawText(painter, titleRect, title, titleFont, titleColor);
+    drawText(painter, titleRect, item.title, titleFont, titleColor);
 
     // Draw subtitle.
     QFont subtitleFont = option.font;
     subtitleFont.setPixelSize(SUBTITLE_FONT_SIZE);
     QColor subtitleColor = (option.state & QStyle::State_Selected) ? option.palette.highlightedText().color() : option.palette.text().color();
-    drawText(painter, subtitleRect, subtitle, subtitleFont, subtitleColor);
+    drawText(painter, subtitleRect, item.subtitle, subtitleFont, subtitleColor);
 
     // Draw action buttons.
     if (isSelected || isHovered) // Action buttons are hidden by default.
-        drawActionButtons(painter, option, actionsRect, actions, option.palette.text().color(), m_currentActionIndex, m_hoveredActionIndex, isSelected,
+        drawActionButtons(painter, option, actionsRect, item.actions, option.palette.text().color(), m_currentActionIndex, m_hoveredActionIndex, isSelected,
                           isHovered);
 
     painter->restore();

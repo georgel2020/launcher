@@ -10,6 +10,7 @@ EverythingSearch::EverythingSearch(QObject* parent) : IModule(parent)
     const QJsonDocument doc = ConfigLoader::loadModuleConfig(this);
     const QJsonObject rootObject = doc.object();
     m_maxResults = rootObject["maxResults"].toInt();
+    m_runCountWeight = rootObject["runCountWeight"].toDouble();
 }
 
 QString EverythingSearch::name() const { return "Everything Search"; }
@@ -18,6 +19,7 @@ QJsonDocument EverythingSearch::defaultConfig() const
 {
     QJsonObject rootObject;
     rootObject["maxResults"] = m_maxResults;
+    rootObject["runCountWeight"] = m_runCountWeight;
     return QJsonDocument(rootObject);
 }
 
@@ -28,6 +30,7 @@ void EverythingSearch::query(const QString& text)
     Everything_SetSearchW(text.toStdWString().c_str());
     Everything_SetMax(m_maxResults);
     Everything_SetSort(EVERYTHING_SORT_RUN_COUNT_DESCENDING);
+    Everything_SetRequestFlags(EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_PATH | EVERYTHING_REQUEST_RUN_COUNT);
     Everything_QueryW(true);
     if (const DWORD lastError = Everything_GetLastError(); lastError == EVERYTHING_ERROR_IPC)
     {
@@ -44,6 +47,7 @@ void EverythingSearch::query(const QString& text)
         {
             const QString fileName = QString::fromWCharArray(Everything_GetResultFileNameW(resultIndex));
             const QString filePath = QString::fromWCharArray(Everything_GetResultPathW(resultIndex));
+            const int runCount = Everything_GetResultRunCount(resultIndex);
 
             ResultItem item;
             item.title = fileName;
@@ -68,9 +72,10 @@ void EverythingSearch::query(const QString& text)
             copyPathAction.iconGlyph = QChar(0xebbd); // Folder copy.
             copyPathAction.handler = [filePath]() { QApplication::clipboard()->setText(filePath); };
             item.actions = {openAction, openPathAction, copyAction, copyPathAction};
+            item.score = 1 + log(runCount + 1) * m_runCountWeight;
             results.append(item);
         }
     }
 
-    emit resultsReady(results);
+    emit resultsReady(results, this);
 }
