@@ -1,4 +1,5 @@
 #include "ResultItemDelegate.h"
+#include <QAbstractItemView>
 #include <QApplication>
 #include <QFileIconProvider>
 #include <QFileInfo>
@@ -13,7 +14,11 @@
 #include <QStyleOptionViewItem>
 #include <QVariant>
 
-ResultItemDelegate::ResultItemDelegate(QObject* parent) : QStyledItemDelegate(parent) {}
+ResultItemDelegate::ResultItemDelegate(QAbstractItemView* view, QObject* parent) : QStyledItemDelegate(parent)
+{
+    // Store the abstract item view to trigger repaint.
+    m_view = view;
+}
 
 /**
  * Paint a custom delegate item in a list widget.
@@ -43,7 +48,8 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    bool isSelected = option.state & QStyle::State_Selected;
+    const bool isHovered = option.state & QStyle::State_MouseOver;
+    const bool isSelected = option.state & QStyle::State_Selected;
 
     // Draw selection background if hovered or selected.
     if (isSelected)
@@ -54,9 +60,18 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         painter->fillPath(path, m_currentActionIndex == 0 ? option.palette.highlight() : option.palette.alternateBase());
         painter->drawPath(path);
     }
+    if (isHovered && !isSelected && m_currentActionIndex == 0)
+    {
+        QPainterPath path;
+        path.addRoundedRect(option.rect, CORNER_RADIUS, CORNER_RADIUS);
+        painter->setPen(Qt::NoPen);
+        painter->fillPath(path, option.palette.alternateBase());
+        painter->drawPath(path);
+    }
 
     // Calculate rects for different components.
-    const int visibleActionCount = isSelected ? static_cast<int>(actions.size()) : 1; // Including the primary action.
+    const int visibleActionCount = (isSelected || isHovered) ? static_cast<int>(actions.size()) : 1; // Including the primary action.
+                                                                                                     // Without action buttons, the space is left to the text.
     QRect iconRect = getIconRect(option.rect);
     QRect titleRect = getTitleRect(option.rect, visibleActionCount);
     QRect subtitleRect = getSubtitleRect(option.rect, visibleActionCount);
@@ -91,8 +106,9 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     drawText(painter, subtitleRect, subtitle, subtitleFont, subtitleColor);
 
     // Draw action buttons.
-    if (isSelected) // Action buttons are hidden by default.
-        drawActionButtons(painter, option, actionsRect, actions, option.palette.text().color(), m_currentActionIndex);
+    if (isSelected || isHovered) // Action buttons are hidden by default.
+        drawActionButtons(painter, option, actionsRect, actions, option.palette.text().color(), m_currentActionIndex, m_hoveredActionIndex, isSelected,
+                          isHovered);
 
     painter->restore();
 }
@@ -117,6 +133,104 @@ QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMo
 }
 
 /**
+ * Handle editor events for the delegate, allowing for interaction with custom action buttons.
+ *
+ * Process mouse events, particularly mouse button press and release events.
+ * Dynamically detect whether a click occurs on one of the action buttons within the
+ * delegate, and if so, execute the corresponding action handler.
+ *
+ * @param event The event object representing the user interaction.
+ * @param model The model associated with the view.
+ * @param option The style options for the item.
+ * @param index The QModelIndex of the item that the event corresponds to.
+ * @return True if the action was successfully processed; otherwise, false,
+ * meaning the event will fall back to the base implementation.
+ */
+bool ResultItemDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)
+{ // TODO: Reuse code.
+    if (event->type() == QEvent::MouseMove)
+    {
+        const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+
+        // Get the ResultItem data.
+        const QVariant data = index.data(Qt::UserRole);
+        auto item = data.value<ResultItem>();
+
+        const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
+
+        if (const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
+            buttonIndex >= 1 && buttonIndex < item.actions.size()) // The first action is the primary action.
+        {
+            m_hoveredActionIndex = buttonIndex;
+        }
+        else
+        {
+            m_hoveredActionIndex = 0;
+        }
+        // Force repaint to update hover effects.
+        m_view->viewport()->update();
+    }
+
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+
+        // Get the ResultItem data.
+        const QVariant data = index.data(Qt::UserRole);
+        auto item = data.value<ResultItem>();
+
+        if (mouseEvent->button() == Qt::LeftButton)
+        {
+            const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
+
+            if (const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
+                buttonIndex >= 1 && buttonIndex < item.actions.size()) // The first action is the primary action.
+            {
+                // Execute the action handler for action buttons on single click.
+                if (item.actions[buttonIndex].handler)
+                {
+                    item.actions[buttonIndex].handler();
+                    emit hideWindow();
+                    return true;
+                }
+
+                emit hideWindow();
+            }
+        }
+    }
+
+    if (event->type() == QEvent::MouseButtonDblClick)
+    {
+        const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+
+        // Get the ResultItem data.
+        const QVariant data = index.data(Qt::UserRole);
+        auto item = data.value<ResultItem>();
+
+        if (mouseEvent->button() == Qt::LeftButton)
+        {
+            const QRect actionsRect = getActionsRect(option.rect, static_cast<int>(item.actions.size()));
+
+            if (const int buttonIndex = getActionButtonIndex(mouseEvent->pos(), actionsRect, static_cast<int>(item.actions.size()));
+                buttonIndex == 0) // The first action is the primary action.
+            {
+                // Execute the action handler for the primary action on double click.
+                if (item.actions[0].handler)
+                {
+                    item.actions[0].handler();
+                    emit hideWindow();
+                    return true;
+                }
+
+                emit hideWindow();
+            }
+        }
+    }
+
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+/**
  * Get the focused action index.
  *
  * @return An integer representing the action index.
@@ -128,7 +242,7 @@ int ResultItemDelegate::getCurrentActionIndex() const { return m_currentActionIn
  *
  * @param index An integer representing the action index
  */
-void ResultItemDelegate::setCurrentActionIndex(const int index) { m_currentActionIndex = index; }
+void ResultItemDelegate::setCurrentActionIndex(const int index) const { m_currentActionIndex = index; }
 
 /**
  * Draw a QIcon at the given location.
@@ -189,10 +303,14 @@ void ResultItemDelegate::drawText(QPainter* painter, const QRect& rect, const QS
  * @param rect The QRect specifying where to paint the action buttons.
  * @param actions The action button structures.
  * @param color The icon foreground color.
- * @param currentActionIndex The currently focused action index.
+ * @param currentActionIndex The current action index.
+ * @param hoveredActionIndex The hovered action index.
+ * @param isSelected Whether the current result item is selected.
+ * @param isHovered Whether the current result item is hovered.
  */
 void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOptionViewItem& option, const QRect& rect, const QVector<Action>& actions,
-                                           const QColor& color, const int currentActionIndex)
+                                           const QColor& color, const int& currentActionIndex, const int& hoveredActionIndex, const bool& isSelected,
+                                           const bool& isHovered)
 {
     if (actions.size() == 1) // Only one primary action.
         return;
@@ -205,7 +323,17 @@ void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOption
         const QRect buttonRect(buttonX, rect.top() + PADDING, BUTTON_SIZE, BUTTON_SIZE);
 
         painter->setPen(Qt::NoPen);
-        painter->setBrush(currentActionIndex == actionIndex ? option.palette.highlight() : option.palette.base());
+
+        // Determine background color based on state
+        QColor backgroundColor;
+        if (currentActionIndex == actionIndex && isSelected)
+            backgroundColor = option.palette.highlight().color();
+        else if (hoveredActionIndex == actionIndex && isHovered)
+            backgroundColor = option.palette.alternateBase().color();
+        else
+            backgroundColor = option.palette.base().color();
+
+        painter->setBrush(backgroundColor);
         painter->drawRoundedRect(buttonRect, CORNER_RADIUS, CORNER_RADIUS);
 
         // Paint the icon separately to control the size.
@@ -267,4 +395,43 @@ QRect ResultItemDelegate::getActionsRect(const QRect& itemRect, const int& actio
 
     return {itemRect.right() - actionsWidth + 2, // For perfect button alignment.
             itemRect.top(), actionsWidth, itemRect.height()};
+}
+
+/**
+ * Determine the index of an action button based on the provided position.
+ *
+ * Calculates the index of an action button within a specified rectangle
+ * containing multiple buttons.
+ *
+ * @param pos The QPoint representing the position to check, in item rectangle coordinates.
+ * @param actionsRect The QRect representing the bounding rectangle of the action buttons.
+ * @param actionCount The total number of action buttons within the rectangle.
+ * @return The zero-based index of the button if found, or 0 if no valid button is found
+ * (the mouse is on the primary action area).
+ */
+int ResultItemDelegate::getActionButtonIndex(const QPoint& pos, const QRect& actionsRect, const int& actionCount)
+{
+    if (!actionsRect.contains(pos) || actionCount == 0)
+    {
+        return 0;
+    }
+
+    const int startX = actionsRect.left() + PADDING;
+    const int relativeX = pos.x() - startX;
+    const int relativeY = pos.y() - actionsRect.top();
+
+    if (relativeX < 0)
+        return 0;
+    if (relativeY < PADDING || relativeY > PADDING + BUTTON_SIZE)
+        return 0;
+
+    const int buttonIndex = relativeX / (BUTTON_SIZE + PADDING);
+    const int buttonOffset = relativeX % (BUTTON_SIZE + PADDING);
+
+    if (buttonOffset < BUTTON_SIZE && buttonIndex < actionCount)
+    {
+        return buttonIndex + 1; // The first action is not a button.
+    }
+
+    return 0;
 }

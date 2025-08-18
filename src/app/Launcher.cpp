@@ -110,16 +110,18 @@ void Launcher::setupUi()
     m_resultsList->setFixedWidth(WINDOW_WIDTH);
     m_resultsList->setFixedHeight(RESULT_LIST_HEIGHT);
     m_resultsList->setFocusPolicy(Qt::NoFocus);
+    m_resultsList->setMouseTracking(true); // Enable mouse tracking for hover effects
 
     // Set custom delegate for results list.
-    m_resultItemDelegate = new ResultItemDelegate(this);
+    m_resultItemDelegate = new ResultItemDelegate(m_resultsList, this);
     m_resultsList->setItemDelegate(m_resultItemDelegate);
     m_resultsList->setStyleSheet(
         QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
+    connect(m_resultItemDelegate, &ResultItemDelegate::hideWindow, this, [&]() { setWindowVisibility(false); });
 
     // Install event filter to handle keyboard navigation.
-    m_resultsList->installEventFilter(this);
     m_searchEdit->installEventFilter(this);
+    m_resultsList->installEventFilter(this);
 
     m_mainLayout->addWidget(m_searchFrame);
     m_mainLayout->addWidget(m_resultsList);
