@@ -70,6 +70,7 @@ void EverythingSearch::query(const QString& text)
             copyPathAction.iconGlyph = QChar(0xebbd); // Folder copy.
             copyPathAction.handler = [filePath]() { QApplication::clipboard()->setText(filePath); };
             item.actions = {openAction, openPathAction, copyAction, copyPathAction};
+            item.key = "everything_" + filePath + "\\" + fileName;
             item.score = 1 + log(runCount + 1) * m_runCountWeight;
             results.append(item);
         }
