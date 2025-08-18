@@ -27,6 +27,7 @@ void EverythingSearch::query(const QString& text)
 
     Everything_SetSearchW(text.toStdWString().c_str());
     Everything_SetMax(m_maxResults);
+    Everything_SetSort(EVERYTHING_SORT_RUN_COUNT_DESCENDING);
     Everything_QueryW(true);
     if (const DWORD lastError = Everything_GetLastError(); lastError == EVERYTHING_ERROR_IPC)
     {
@@ -48,10 +49,18 @@ void EverythingSearch::query(const QString& text)
             item.title = fileName;
             item.subtitle = item.iconPath = filePath + "\\" + fileName;
             Action openAction;
-            openAction.handler = [filePath, fileName]() { QProcess::startDetached("explorer", {filePath + "\\" + fileName}); };
+            openAction.handler = [filePath, fileName]()
+            {
+                QProcess::startDetached("explorer", {filePath + "\\" + fileName});
+                Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
+            };
             Action openPathAction;
             openPathAction.iconGlyph = QChar(0xe2c8); // Folder open.
-            openPathAction.handler = [filePath]() { QProcess::startDetached("explorer", {filePath}); };
+            openPathAction.handler = [filePath, fileName]()
+            {
+                QProcess::startDetached("explorer", {filePath});
+                Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
+            };
             Action copyAction;
             copyAction.iconGlyph = QChar(0xe173); // File copy.
             copyAction.handler = [filePath, fileName]() { QApplication::clipboard()->setText(filePath + "\\" + fileName); };
