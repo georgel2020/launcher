@@ -61,6 +61,17 @@ private:
         int priority;
         QChar prefix;
 
+        ModuleConfig(IModule* module, const bool& enabled, const bool& global, const int& priority, const QChar& prefix)
+        {
+            this->module = module;
+            this->name = QString();
+            this->iconGlyph = QChar();
+            this->enabled = enabled;
+            this->global = global;
+            this->priority = priority;
+            this->prefix = prefix;
+        }
+
         bool operator==(const ModuleConfig& other) const
         {
             return module == other.module;

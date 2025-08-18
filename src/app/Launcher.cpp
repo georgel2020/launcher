@@ -157,9 +157,9 @@ void Launcher::setupUi()
 void Launcher::setupModules()
 {
     m_moduleConfigs = {
-        ModuleConfig(new LauncherCommands(this), QString(), QChar(), true, true, 5, ':'),
-        ModuleConfig(new EverythingSearch(this), QString(), QChar(), true, true, 1, '@'),
-        ModuleConfig(new Calculator(this), QString(), QChar(), true, true, 5, '=')
+        ModuleConfig(new LauncherCommands(this), true, true, 5, ':'),
+        ModuleConfig(new EverythingSearch(this), true, true, 1, '@'),
+        ModuleConfig(new Calculator(this), true, true, 5, '=')
     };
 
     // Connect all modules to results ready signal.
