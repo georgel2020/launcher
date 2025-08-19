@@ -26,6 +26,8 @@ qt_add_executable(launcher
         ${RESOURCES}
 )
 
+set_target_properties(launcher PROPERTIES WIN32_EXECUTABLE TRUE)
+
 # Link Qt libraries.
 target_link_libraries(launcher PRIVATE
         Qt::Core
