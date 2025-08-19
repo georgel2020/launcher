@@ -224,6 +224,7 @@ void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* modul
 void Launcher::onInputTextChanged(const QString& text)
 {
     m_resultsList->clear();
+    m_resultItemDelegate->setCurrentActionIndex(0);
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
 
     if (!text.isEmpty())
