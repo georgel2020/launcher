@@ -4,9 +4,6 @@
 #include <QJsonObject>
 #include <QStandardPaths>
 
-double HistoryManager::m_historyScoreWeight = 1.0;
-QJsonDocument HistoryManager::m_doc;
-
 /**
  * Initialize history manager.
  *
@@ -19,8 +16,11 @@ QJsonDocument HistoryManager::m_doc;
  * @param minScore The lowest score to keep in history; if a score is lower,
  * the key is removed.
  */
-void HistoryManager::initHistory(const double& decay, const double& minScore)
+void HistoryManager::initHistory(const double& decay, const double& minScore, const double& increment, const double& historyScoreWeight)
 {
+    m_increment = increment;
+    m_historyScoreWeight = historyScoreWeight;
+
     QFile file(getHistoryPath());
 
     if (file.exists())
@@ -29,12 +29,12 @@ void HistoryManager::initHistory(const double& decay, const double& minScore)
         const QByteArray data = file.readAll();
         file.close();
         QJsonParseError error;
-        m_doc = QJsonDocument::fromJson(data, &error);
+        QJsonDocument doc = QJsonDocument::fromJson(data, &error);
 
         if (error.error != QJsonParseError::NoError)
             return;
 
-        const QJsonObject rootObject = m_doc.object();
+        const QJsonObject rootObject = doc.object();
 
         // Read history and apply popularity decay.
         QJsonObject scoresObject = rootObject["scores"].toObject();
@@ -48,15 +48,16 @@ void HistoryManager::initHistory(const double& decay, const double& minScore)
             scoresObject[key] = newScore;
             if (newScore < minScore)
                 scoresObject.remove(key);
+            m_scores[key] = newScore;
         }
-        QJsonObject newRootObject = rootObject;
+        QJsonObject newRootObject;
         newRootObject["scores"] = scoresObject;
         newRootObject["lastUpdate"] = now.toString("yyyy-MM-dd hh:mm:ss");
-        m_doc = QJsonDocument(newRootObject);
+        doc = QJsonDocument(newRootObject);
 
         // Write into file.
         file.open(QIODevice::WriteOnly | QIODevice::Text);
-        file.write(m_doc.toJson(QJsonDocument::Indented));
+        file.write(doc.toJson(QJsonDocument::Indented));
         file.close();
         return;
     }
@@ -66,17 +67,10 @@ void HistoryManager::initHistory(const double& decay, const double& minScore)
     QJsonObject rootObject;
     rootObject["lastUpdate"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     rootObject["scores"] = QJsonObject();
-    m_doc = QJsonDocument(rootObject);
-    file.write(m_doc.toJson(QJsonDocument::Indented));
+    const auto doc = QJsonDocument(rootObject);
+    file.write(doc.toJson(QJsonDocument::Indented));
     file.close();
 }
-
-/**
- * Configure the history score weight.
- *
- * @param weight History score weight.
- */
-void HistoryManager::setHistoryScoreWeight(const double& weight) { m_historyScoreWeight = weight; }
 
 /**
  * Add a history item.
@@ -84,18 +78,27 @@ void HistoryManager::setHistoryScoreWeight(const double& weight) { m_historyScor
  * @param key The unique key of the result.
  * @param increment The increment to add to the score.
  */
-void HistoryManager::addHistory(const QString& key, const double& increment)
+void HistoryManager::addHistory(const QString& key)
 {
-    QJsonObject rootObject = m_doc.object();
-    QJsonObject scoresObject = rootObject["scores"].toObject();
-    scoresObject[key] = scoresObject[key].toDouble() + increment;
-    rootObject["scores"] = scoresObject;
-    m_doc = QJsonDocument(rootObject);
+    if (m_scores.contains(key))
+        m_scores[key] += m_increment;
+    else
+        m_scores[key] = m_increment;
 
     // Write into file.
+    QJsonObject rootObject;
+    const QDateTime now = QDateTime::currentDateTime();
+    rootObject["lastUpdate"] = now.toString("yyyy-MM-dd hh:mm:ss");
+    QJsonObject scoresObject;
+    for (auto iterator = m_scores.constBegin(); iterator != m_scores.constEnd(); ++iterator)
+    {
+        scoresObject[iterator.key()] = iterator.value();
+    }
+    rootObject["scores"] = scoresObject;
+    const auto doc = QJsonDocument(rootObject);
     QFile file(getHistoryPath());
     file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write(m_doc.toJson(QJsonDocument::Indented));
+    file.write(doc.toJson(QJsonDocument::Indented));
     file.close();
 }
 
@@ -107,10 +110,9 @@ void HistoryManager::addHistory(const QString& key, const double& increment)
  */
 double HistoryManager::getHistoryScore(const QString& key)
 {
-    if (const QJsonObject scoreObject = m_doc.object()["scores"].toObject(); scoreObject.contains(key))
+    if (m_scores.contains(key))
     {
-        const double score = scoreObject[key].toDouble();
-        return 1 + log(score + 1) * m_historyScoreWeight;
+        return 1 + log(m_scores[key] + 1) * m_historyScoreWeight;
     }
     return 1;
 }

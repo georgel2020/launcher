@@ -1,20 +1,21 @@
 #pragma once
 
 #include <QObject>
+#include <QMap>
 
 class HistoryManager final
 {
 public:
     HistoryManager() = delete;
 
-    static void initHistory(const double& decay, const double& minScore);
-    static void setHistoryScoreWeight(const double& weight);
-    static void addHistory(const QString& key, const double& increment);
+    static void initHistory(const double& decay, const double& minScore, const double& increment, const double& historyScoreWeight);
+    static void addHistory(const QString& key);
     static double getHistoryScore(const QString& key);
 
 private:
     static QString getHistoryPath();
 
-    static double m_historyScoreWeight;
-    static QJsonDocument m_doc;
+    static inline double m_increment;
+    static inline double m_historyScoreWeight;
+    static inline QMap<QString, double> m_scores;
 };
