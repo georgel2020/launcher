@@ -13,6 +13,7 @@
 #include <QStyle>
 #include <QStyleOptionViewItem>
 #include <QVariant>
+#include "../common/Constants.h"
 
 ResultItemDelegate::ResultItemDelegate(QAbstractItemView* view, QObject* parent) : QStyledItemDelegate(parent)
 {

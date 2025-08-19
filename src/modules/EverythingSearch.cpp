@@ -45,30 +45,30 @@ void EverythingSearch::query(const QString& text)
         {
             const QString fileName = QString::fromWCharArray(Everything_GetResultFileNameW(resultIndex));
             const QString filePath = QString::fromWCharArray(Everything_GetResultPathW(resultIndex));
-            const int runCount = Everything_GetResultRunCount(resultIndex);
+            const int runCount = static_cast<int>(Everything_GetResultRunCount(resultIndex));
 
             ResultItem item;
             item.title = fileName;
             item.subtitle = item.iconPath = filePath + "\\" + fileName;
             Action openAction;
-            openAction.handler = [filePath, fileName]()
+            openAction.handler = [filePath, fileName]
             {
                 QProcess::startDetached("explorer", {filePath + "\\" + fileName});
                 Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
             };
             Action openPathAction;
             openPathAction.iconGlyph = QChar(0xe2c8); // Folder open.
-            openPathAction.handler = [filePath, fileName]()
+            openPathAction.handler = [filePath, fileName]
             {
                 QProcess::startDetached("explorer", {filePath});
                 Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
             };
             Action copyAction;
             copyAction.iconGlyph = QChar(0xe173); // File copy.
-            copyAction.handler = [filePath, fileName]() { QApplication::clipboard()->setText(filePath + "\\" + fileName); };
+            copyAction.handler = [filePath, fileName] { QApplication::clipboard()->setText(filePath + "\\" + fileName); };
             Action copyPathAction;
             copyPathAction.iconGlyph = QChar(0xebbd); // Folder copy.
-            copyPathAction.handler = [filePath]() { QApplication::clipboard()->setText(filePath); };
+            copyPathAction.handler = [filePath] { QApplication::clipboard()->setText(filePath); };
             item.actions = {openAction, openPathAction, copyAction, copyPathAction};
             item.key = "everything_" + filePath + "\\" + fileName;
             item.score = 1 + log(runCount + 1) * m_runCountWeight;

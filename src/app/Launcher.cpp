@@ -1,10 +1,9 @@
 #include "Launcher.h"
 #include <QBoxLayout>
-#include <QFrame>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
-#include <QListWidgetItem>
+#include "../common/Constants.h"
 #include "../common/IModule.h"
 #include "../core/ConfigLoader.h"
 #include "../core/HistoryManager.h"
@@ -15,7 +14,7 @@
 #include "../widgets/ResultItemDelegate.h"
 #include "../widgets/ResultItemWidget.h"
 
-Launcher::Launcher(QWidget* parent)
+Launcher::Launcher(QWidget* parent) : QMainWindow(parent)
 {
     // Register hotkey.
     m_hotkeyManager = new HotkeyManager(MOD_ALT, VK_SPACE, 0, this);
@@ -67,7 +66,7 @@ QJsonDocument Launcher::defaultConfig() const
 {
     QJsonObject rootObject;
     QJsonObject modulesObject;
-    for (ModuleConfig config : m_moduleConfigs)
+    for (const ModuleConfig& config : m_moduleConfigs)
     {
         QJsonObject moduleObject;
         moduleObject["enabled"] = config.enabled;
@@ -91,7 +90,7 @@ QJsonDocument Launcher::defaultConfig() const
  *
  * @param visibility The new window visibility (true to show; false to hide).
  */
-void Launcher::setWindowVisibility(const bool visibility)
+void Launcher::setWindowVisibility(const bool& visibility)
 {
     isWindowShown = visibility;
     if (!visibility)
@@ -160,7 +159,7 @@ void Launcher::setupUi()
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(m_resultsList, this);
     m_resultsList->setItemDelegate(m_resultItemDelegate);
-    connect(m_resultItemDelegate, &ResultItemDelegate::hideWindow, this, [&]() { setWindowVisibility(false); });
+    connect(m_resultItemDelegate, &ResultItemDelegate::hideWindow, this, [&] { setWindowVisibility(false); });
 
     // Install event filter to handle keyboard navigation.
     m_searchEdit->installEventFilter(this);
@@ -258,7 +257,7 @@ bool Launcher::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::KeyPress)
     {
-        auto keyEvent = dynamic_cast<QKeyEvent*>(event);
+        const auto keyEvent = dynamic_cast<QKeyEvent*>(event);
 
         // Navigate between actions.
         if (keyEvent->key() == Qt::Key_Tab)
@@ -321,7 +320,7 @@ bool Launcher::eventFilter(QObject* obj, QEvent* event)
  *
  * @param right Whether to navigate right (true for right; false for left).
  */
-void Launcher::handleActionsNavigation(bool right) const
+void Launcher::handleActionsNavigation(const bool& right) const
 {
     const QListWidgetItem* currentItem = m_resultsList->currentItem();
     if (!currentItem)
@@ -362,11 +361,8 @@ void Launcher::executeCurrentAction()
 
     setWindowVisibility(false);
 
-    // Get current action index from delegate.
-    const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();
-
     // Execute the action at the current index.
-    if (currentIndex >= 0 && currentIndex < item.actions.size())
+    if (const int currentIndex = m_resultItemDelegate->getCurrentActionIndex(); currentIndex >= 0 && currentIndex < item.actions.size())
     {
         if (item.actions[currentIndex].handler)
             item.actions[currentIndex].handler();

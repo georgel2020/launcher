@@ -2,7 +2,7 @@
 
 #include "../common/IModule.h"
 
-class Calculator : public IModule
+class Calculator final : public IModule
 {
     Q_OBJECT
 

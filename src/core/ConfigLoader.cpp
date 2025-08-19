@@ -1,7 +1,5 @@
 #include "ConfigLoader.h"
 #include <QDir>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QStandardPaths>
 #include "../app/Launcher.h"
 #include "../common/IModule.h"
@@ -24,7 +22,7 @@ QJsonDocument ConfigLoader::loadConfig(const Launcher* launcher)
         const QByteArray data = file.readAll();
         file.close();
         QJsonParseError error;
-        const QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+        QJsonDocument doc = QJsonDocument::fromJson(data, &error);
 
         if (error.error != QJsonParseError::NoError)
             return {};
@@ -60,7 +58,7 @@ QJsonDocument ConfigLoader::loadModuleConfig(const IModule* module)
         const QByteArray data = file.readAll();
         file.close();
         QJsonParseError error;
-        const QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+        QJsonDocument doc = QJsonDocument::fromJson(data, &error);
 
         if (error.error != QJsonParseError::NoError)
             return {};
@@ -83,8 +81,9 @@ QString ConfigLoader::toCamelCase(const QString& text)
 {
     const QStringList parts = text.split(' ', Qt::SkipEmptyParts);
     QString result = parts.at(0).toLower();
-    for (int index = 1; index < parts.size(); ++index) {
-        QString word = parts.at(index);
+    for (int index = 1; index < parts.size(); ++index)
+    {
+        const QString& word = parts.at(index);
         result.append(word.at(0).toUpper() + word.mid(1).toLower());
     }
     return result;
@@ -105,8 +104,8 @@ QString ConfigLoader::getConfigPath()
 
     const QDir dir(configDir);
     if (!dir.exists())
-        dir.mkpath(".");
-
+        if (!dir.mkpath("."))
+            return {};
     return dir.filePath("Launcher.json");
 }
 
@@ -126,9 +125,10 @@ QString ConfigLoader::getModuleConfigPath(const QString& moduleName)
 
     const QDir dir(configDir);
     if (!dir.exists())
-        dir.mkpath(".");
+        if (!dir.mkpath("."))
+            return {};
     if (!dir.exists("Modules"))
-        dir.mkdir("Modules");
-
+        if (!dir.mkdir("Modules"))
+            return {};
     return dir.filePath("Modules/" + moduleName + ".json");
 }

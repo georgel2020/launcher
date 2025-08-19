@@ -19,14 +19,16 @@ void Calculator::query(const QString& text)
         item.subtitle = "Calculator";
         item.iconGlyph = QChar(0xea5f); // Calculate.
         Action copyAction;
-        copyAction.handler = [value]() { QApplication::clipboard()->setText(QString::number(value)); };
+        copyAction.handler = [value] { QApplication::clipboard()->setText(QString::number(value)); };
         item.actions = {copyAction};
         item.key = "calculator";
         results.append(item);
 
         emit resultsReady(results, this);
     }
-    catch (mu::Parser::exception_type& e)
+    catch (mu::Parser::exception_type&)
     {
+        // Intentionally left blank.
+        // An invalid math expression is not en error to handle.
     }
 }

@@ -2,8 +2,6 @@
 
 #include <QListWidgetItem>
 
-#include "ResultItemDelegate.h"
-
 class ResultItemWidget final : public QListWidgetItem
 {
 public:
