@@ -14,7 +14,7 @@ public:
 
     [[nodiscard]] virtual QString name() const = 0;
     [[nodiscard]] virtual QChar iconGlyph() const = 0;
-    [[nodiscard]] virtual QJsonDocument defaultConfig() const { return QJsonDocument(); };
+    [[nodiscard]] virtual QJsonDocument defaultConfig() const { return {}; }
     virtual void query(const QString& text) = 0;
 
 signals:

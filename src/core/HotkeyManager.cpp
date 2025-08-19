@@ -26,7 +26,7 @@ bool HotkeyManager::nativeEventFilter(const QByteArray& eventType, void* message
         {
             lastHotkeyTime = QDateTime::currentDateTime();
 
-            emit hotkeyPressed(pMsg->wParam);
+            emit hotkeyPressed(static_cast<long long>(pMsg->wParam));
         }
     }
     return false;

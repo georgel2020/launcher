@@ -2,7 +2,7 @@
 
 #include "../common/IModule.h"
 
-class LauncherCommands : public IModule
+class LauncherCommands final : public IModule
 {
     Q_OBJECT
 

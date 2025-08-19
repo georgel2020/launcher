@@ -40,7 +40,7 @@ void HistoryManager::initHistory(const double& decay, const double& minScore)
         QJsonObject scoresObject = rootObject["scores"].toObject();
         const QDateTime now = QDateTime::currentDateTime();
         const QDateTime lastUpdate = QDateTime::fromString(rootObject["lastUpdate"].toString(), "yyyy-MM-dd hh:mm:ss");
-        const int days = lastUpdate.date().daysTo(now.date());
+        const int days = static_cast<int>(lastUpdate.date().daysTo(now.date()));
         const double factor = pow(decay, days);
         for (const QString& key : scoresObject.keys())
         {
@@ -130,7 +130,7 @@ QString HistoryManager::getHistoryPath()
 
     const QDir dir(configDir);
     if (!dir.exists())
-        dir.mkpath(".");
-
+        if (!dir.mkpath("."))
+            return {};
     return dir.filePath("History.json");
 }

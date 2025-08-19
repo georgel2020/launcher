@@ -33,10 +33,10 @@ private slots:
     void onResultsReady(QVector<ResultItem>& results, const IModule* module);
 
 private:
-    void setWindowVisibility(bool visibility);
+    void setWindowVisibility(const bool& visibility);
     void setupUi();
     void setupModules();
-    void handleActionsNavigation(bool right) const;
+    void handleActionsNavigation(const bool& right) const;
     void executeCurrentAction();
 
     bool isWindowShown = false;

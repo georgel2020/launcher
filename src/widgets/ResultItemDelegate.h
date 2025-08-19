@@ -2,7 +2,6 @@
 
 #include <QStyledItemDelegate>
 #include "../common/Action.h"
-#include "../common/Constants.h"
 #include "../common/ResultItem.h"
 
 class ResultItemDelegate final : public QStyledItemDelegate
