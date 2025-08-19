@@ -1,4 +1,8 @@
 #include "LauncherCommands.h"
+#include <QApplication>
+#include <QDesktopServices>
+#include <QProcess>
+#include <QStandardPaths>
 
 LauncherCommands::LauncherCommands(QObject* parent) : IModule(parent) {}
 
@@ -6,13 +10,58 @@ void LauncherCommands::query(const QString& text)
 {
     QVector<ResultItem> results;
 
-    if (text == "version")
+    if (QString("version").contains(text.toLower()))
     {
         ResultItem item;
         item.title = "Version";
         item.subtitle = QString::fromStdString(__DATE__) + " " + QString::fromStdString(__TIME__);
         item.iconGlyph = QChar(0xe88e); // Info.
-        item.key = "version";
+        item.key = "launcher_version";
+        results.append(item);
+    }
+    if (QString("about").contains(text.toLower()))
+    {
+        ResultItem item;
+        item.title = "About Launcher";
+        item.subtitle = "GitHub - georgel2020/launcher";
+        item.iconGlyph = QChar(0xe88e); // Info.
+        item.key = "launcher_about";
+        Action aboutAction;
+        aboutAction.handler = [] { QDesktopServices::openUrl(QUrl("https://github.com/georgel2020/launcher")); };
+        item.actions = {aboutAction};
+        results.append(item);
+    }
+    if (QString("exit").contains(text.toLower()) || QString("quit").contains(text.toLower()) || QString("reload").contains(text.toLower()))
+    {
+        ResultItem item;
+        item.title = "Exit";
+        item.subtitle = "Exit Launcher";
+        item.iconGlyph = QChar(0xe879); // Exit to app.
+        item.key = "launcher_exit";
+        Action exitAction;
+        exitAction.handler = [] { QApplication::quit(); };
+        Action reloadAction;
+        reloadAction.iconGlyph = QChar(0xe5d5); // Refresh.
+        reloadAction.handler = []
+        {
+            QProcess::startDetached(QCoreApplication::applicationDirPath() + "\\Launcher.exe");
+            QApplication::quit();
+        };
+        item.actions = {exitAction, reloadAction};
+        results.append(item);
+    }
+    if (QString("configure").contains(text.toLower()))
+    {
+        ResultItem item;
+        item.title = "Configure";
+        item.subtitle = "Open Launcher configuration path";
+        item.iconGlyph = QChar(0xe8b8); // Settings.
+        item.key = "launcher_configure";
+        Action configureAction;
+        QString temp = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+        configureAction.handler = []
+        { QProcess::startDetached("explorer", {QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).replace("/", "\\")}); };
+        item.actions = {configureAction};
         results.append(item);
     }
 
