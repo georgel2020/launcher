@@ -112,7 +112,8 @@ void Launcher::setWindowVisibility(const bool& visibility)
 void Launcher::setupUi()
 {
     // Main layout.
-    resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN, WINDOW_MARGIN + PADDING + BUTTON_SIZE + PADDING + WINDOW_SPACING + RESULT_LIST_HEIGHT + WINDOW_MARGIN);
+    resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN,
+           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + WINDOW_SPACING + RESULT_LIST_HEIGHT + WINDOW_MARGIN);
     m_centralWidget = new QWidget(this);
     setCentralWidget(m_centralWidget);
     m_mainLayout = new QVBoxLayout(m_centralWidget);
@@ -124,13 +125,13 @@ void Launcher::setupUi()
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
     m_searchFrame = new QFrame(this);
-    m_searchFrame->setFixedHeight(PADDING + BUTTON_SIZE + PADDING);
+    m_searchFrame->setFixedHeight(PADDING_L + BUTTON_SIZE + PADDING_L);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
     m_searchFrame->setStyleSheet(
-        QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
+        QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS_L));
     m_searchLayout = new QHBoxLayout(m_searchFrame);
-    m_searchLayout->setContentsMargins(PADDING, PADDING, PADDING, PADDING);
-    m_searchLayout->setSpacing(PADDING);
+    m_searchLayout->setContentsMargins(PADDING_L, PADDING_L, PADDING_L, PADDING_L);
+    m_searchLayout->setSpacing(PADDING_L);
     m_searchIcon = new QLabel(this);
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
     m_searchIcon->setFont(iconFont);
@@ -153,8 +154,11 @@ void Launcher::setupUi()
     m_resultsList->setFixedHeight(RESULT_LIST_HEIGHT);
     m_resultsList->setFocusPolicy(Qt::NoFocus);
     m_resultsList->setMouseTracking(true);
+    m_resultsList->setSpacing(PADDING_S / 2); // Set spacing and padding separately to keep the spacing between items and the list widget padding the same.
     m_resultsList->setStyleSheet(
-        QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS));
+        QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; padding: %2px; }")
+            .arg(CORNER_RADIUS_L)
+            .arg(PADDING_S / 2));
 
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(m_resultsList, this);
