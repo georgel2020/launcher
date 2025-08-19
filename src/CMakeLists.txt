@@ -19,6 +19,7 @@ qt_add_executable(launcher
         modules/LauncherCommands.cpp modules/LauncherCommands.h
         modules/EverythingSearch.cpp modules/EverythingSearch.h
         modules/Calculator.cpp modules/Calculator.h
+        modules/AppsSearch.cpp modules/AppsSearch.h
         # Widgets.
         widgets/ResultItemWidget.cpp widgets/ResultItemWidget.h
         widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
