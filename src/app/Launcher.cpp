@@ -58,8 +58,7 @@ Launcher::Launcher(QWidget* parent) : QMainWindow(parent)
     m_historyScoreWeight = historyObject["historyScoreWeight"].toDouble();
 
     // Configure history.
-    HistoryManager::initHistory(m_decay, m_minScore);
-    HistoryManager::setHistoryScoreWeight(m_historyScoreWeight);
+    HistoryManager::initHistory(m_decay, m_minScore, m_increment, m_historyScoreWeight);
 }
 
 QJsonDocument Launcher::defaultConfig() const
@@ -367,6 +366,6 @@ void Launcher::executeCurrentAction()
         if (item.actions[currentIndex].handler)
             item.actions[currentIndex].handler();
         if (!item.key.isEmpty())
-            HistoryManager::addHistory(item.key, m_increment);
+            HistoryManager::addHistory(item.key);
     }
 }
