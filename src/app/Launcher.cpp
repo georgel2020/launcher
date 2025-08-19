@@ -8,6 +8,7 @@
 #include "../core/ConfigLoader.h"
 #include "../core/HistoryManager.h"
 #include "../core/HotkeyManager.h"
+#include "../modules/AppsSearch.h"
 #include "../modules/Calculator.h"
 #include "../modules/EverythingSearch.h"
 #include "../modules/LauncherCommands.h"
@@ -173,8 +174,12 @@ void Launcher::setupUi()
  */
 void Launcher::setupModules()
 {
-    m_moduleConfigs = {ModuleConfig(new LauncherCommands(this), true, true, 5, ':'), ModuleConfig(new EverythingSearch(this), true, true, 1, '@'),
-                       ModuleConfig(new Calculator(this), true, true, 5, '=')};
+    m_moduleConfigs = {
+        ModuleConfig(new LauncherCommands(this), true, true, 5, ':'), //
+        ModuleConfig(new EverythingSearch(this), true, false, 1, '@'), //
+        ModuleConfig(new Calculator(this), true, true, 5, '='), //
+        ModuleConfig(new AppsSearch(this), true, true, 4, ' ') //
+    };
 
     // Connect all modules to results ready signal.
     for (ModuleConfig& config : m_moduleConfigs)
@@ -227,7 +232,7 @@ void Launcher::onInputTextChanged(const QString& text)
 
         for (const ModuleConfig& config : m_moduleConfigs)
         {
-            if (config.prefix == prefix)
+            if (config.prefix == prefix && prefix != ' ')
             {
                 m_searchIcon->setText(config.iconGlyph);
                 config.module->query(text.mid(1).trimmed());
