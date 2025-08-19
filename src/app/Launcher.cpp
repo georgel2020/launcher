@@ -213,7 +213,10 @@ void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* modul
 
     m_resultsList->sortItems(Qt::DescendingOrder);
     if (m_resultsList->count() > 0)
+    {
         m_resultsList->setCurrentRow(0);
+        m_resultItemDelegate->setCurrentActionIndex(0);
+    }
 }
 
 /**
@@ -224,7 +227,6 @@ void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* modul
 void Launcher::onInputTextChanged(const QString& text)
 {
     m_resultsList->clear();
-    m_resultItemDelegate->setCurrentActionIndex(0);
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
 
     if (!text.isEmpty())
