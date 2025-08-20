@@ -10,14 +10,19 @@ class HotkeyManager final : public QObject, public QAbstractNativeEventFilter
     Q_OBJECT
 
 public:
-    explicit HotkeyManager(UINT fsModifiers, UINT vk, int id, QObject *parent = nullptr);
+    static HotkeyManager *instance();
 
-private:
-    QDateTime lastHotkeyTime;
+    static bool registerHotkey(UINT fsModifiers, UINT vk, int id);
+
+    HotkeyManager(const HotkeyManager &) = delete;
+    HotkeyManager &operator=(const HotkeyManager &) = delete;
+
+signals:
+    void hotkeyPressed(long long id);
 
 protected:
     bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) override;
 
-signals:
-    void hotkeyPressed(long long id);
+private:
+    explicit HotkeyManager(QObject *parent = nullptr);
 };
