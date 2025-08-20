@@ -12,6 +12,7 @@
 #include "../modules/Calculator.h"
 #include "../modules/EverythingSearch.h"
 #include "../modules/LauncherCommands.h"
+#include "../modules/SystemCommands.h"
 #include "../widgets/ResultItemDelegate.h"
 #include "../widgets/ResultItemWidget.h"
 
@@ -182,7 +183,8 @@ void Launcher::setupModules()
         ModuleConfig(new LauncherCommands(this), true, true, 5, ':'), //
         ModuleConfig(new EverythingSearch(this), true, false, 1, '@'), //
         ModuleConfig(new Calculator(this), true, true, 5, '='), //
-        ModuleConfig(new AppsSearch(this), true, true, 4, ' ') //
+        ModuleConfig(new AppsSearch(this), true, true, 4, ' '), //
+        ModuleConfig(new SystemCommands(this), true, true, 5, ' ') //
     };
 
     // Connect all modules to results ready signal.
