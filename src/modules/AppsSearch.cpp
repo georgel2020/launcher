@@ -5,11 +5,11 @@
 #include <QStandardPaths>
 #include <shlobj.h>
 #include <windows.h>
-#include "../core/ConfigLoader.h"
+#include "../core/ConfigManager.h"
 
 AppsSearch::AppsSearch(QObject *parent) : IModule(parent)
 {
-    const QJsonDocument doc = ConfigLoader::loadModuleConfig(this);
+    const QJsonDocument doc = ConfigManager::loadModuleConfig(this);
     const QJsonObject rootObject = doc.object();
     const QJsonArray appsArray = rootObject["apps"].toArray();
     for (const QJsonValue app : appsArray)

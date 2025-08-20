@@ -5,10 +5,10 @@ class IModule;
 class QJsonDocument;
 class QString;
 
-class ConfigLoader final
+class ConfigManager final
 {
 public:
-    ConfigLoader() = delete;
+    ConfigManager() = delete;
 
     static QJsonDocument loadConfig(const Launcher *launcher);
     static QJsonDocument loadModuleConfig(const IModule *module);

@@ -3,11 +3,11 @@
 #include <QClipboard>
 #include <QProcess>
 #include "../../third-party/everything-sdk/include/Everything.h"
-#include "../core/ConfigLoader.h"
+#include "../core/ConfigManager.h"
 
 EverythingSearch::EverythingSearch(QObject *parent) : IModule(parent)
 {
-    const QJsonDocument doc = ConfigLoader::loadModuleConfig(this);
+    const QJsonDocument doc = ConfigManager::loadModuleConfig(this);
     const QJsonObject rootObject = doc.object();
     m_maxResults = rootObject["maxResults"].toInt();
     m_runCountWeight = rootObject["runCountWeight"].toDouble();
