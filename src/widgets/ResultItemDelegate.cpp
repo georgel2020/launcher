@@ -9,11 +9,11 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
-#include <QPalette>
 #include <QStyle>
 #include <QStyleOptionViewItem>
 #include <QVariant>
 #include "../common/Constants.h"
+#include "../core/ThemeManager.h"
 
 ResultItemDelegate::ResultItemDelegate(QAbstractItemView *view, QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -42,9 +42,9 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     }
 
     // Get the ResultItem data.
-    QVariant data = index.data(Qt::UserRole);
+    const QVariant data = index.data(Qt::UserRole);
 
-    auto item = data.value<ResultItem>();
+    const auto item = data.value<ResultItem>();
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
@@ -52,45 +52,35 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     const bool isHovered = option.state & QStyle::State_MouseOver;
     const bool isSelected = option.state & QStyle::State_Selected;
 
-    // Draw selection background if hovered or selected.
-    if (isSelected)
-    {
-        QPainterPath path;
-        path.addRoundedRect(option.rect, CORNER_RADIUS_S, CORNER_RADIUS_S);
-        painter->setPen(Qt::NoPen);
-        painter->fillPath(path, m_currentActionIndex == 0 ? option.palette.highlight() : option.palette.alternateBase());
-        painter->drawPath(path);
-    }
-    if (isHovered && !isSelected && m_currentActionIndex == 0)
-    {
-        QPainterPath path;
-        path.addRoundedRect(option.rect, CORNER_RADIUS_S, CORNER_RADIUS_S);
-        painter->setPen(Qt::NoPen);
-        painter->fillPath(path, option.palette.alternateBase());
-        painter->drawPath(path);
-    }
-
     // Calculate rects for different components.
-    const int visibleActionCount =
-        (isSelected || isHovered) ? static_cast<int>(item.actions.size()) : 1; // Including the primary action.
-                                                                               // Without action buttons, the space is left to the text.
-    QRect iconRect = getIconRect(option.rect);
-    QRect titleRect = getTitleRect(option.rect, visibleActionCount);
-    QRect subtitleRect = getSubtitleRect(option.rect, visibleActionCount);
-    QRect actionsRect = getActionsRect(option.rect, visibleActionCount);
+    const int visibleActionCount = (isSelected || isHovered) ? static_cast<int>(item.actions.size()) : 1; // Including the primary action.
+    const QRect iconRect = getIconRect(option.rect);
+    const QRect titleRect = getTitleRect(option.rect, visibleActionCount);
+    const QRect subtitleRect = getSubtitleRect(option.rect, visibleActionCount);
+    const QRect actionsRect = getActionsRect(option.rect, visibleActionCount);
+
+    // Draw selection background if hovered or selected.
+    if ((isSelected && m_currentActionIndex == 0) || (isHovered && m_hoveredActionIndex == 0))
+    {
+        QPainterPath path;
+        path.addRoundedRect(option.rect, CORNER_RADIUS_S, CORNER_RADIUS_S);
+        painter->setPen(Qt::NoPen);
+        painter->fillPath(path, ThemeManager::secondaryBackColor());
+        painter->drawPath(path);
+    }
 
     // Draw icon.
     if (item.iconGlyph != QChar())
     {
         // Draw font icon.
-        drawIconGlyph(painter, iconRect, item.iconGlyph, option.palette.text().color());
+        drawIconGlyph(painter, iconRect, item.iconGlyph);
     }
     else if (item.iconPath != QString())
     {
         // Draw icon from the given file.
-        QFileIconProvider iconProvider;
-        QFileInfo iconInfo(item.iconPath);
-        QIcon fileIcon = iconProvider.icon(iconInfo);
+        const QFileIconProvider iconProvider;
+        const QFileInfo iconInfo(item.iconPath);
+        const QIcon fileIcon = iconProvider.icon(iconInfo);
         drawIcon(painter, iconRect, fileIcon);
     }
 
@@ -98,19 +88,16 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     QFont titleFont = option.font;
     titleFont.setBold(true);
     titleFont.setPixelSize(TITLE_FONT_SIZE);
-    QColor titleColor = (option.state & QStyle::State_Selected) ? option.palette.highlightedText().color() : option.palette.text().color();
-    drawText(painter, titleRect, item.title, titleFont, titleColor);
+    drawText(painter, titleRect, item.title, titleFont);
 
     // Draw subtitle.
     QFont subtitleFont = option.font;
     subtitleFont.setPixelSize(SUBTITLE_FONT_SIZE);
-    QColor subtitleColor = (option.state & QStyle::State_Selected) ? option.palette.highlightedText().color() : option.palette.text().color();
-    drawText(painter, subtitleRect, item.subtitle, subtitleFont, subtitleColor);
+    drawText(painter, subtitleRect, item.subtitle, subtitleFont);
 
     // Draw action buttons.
     if (isSelected || isHovered) // Action buttons are hidden by default.
-        drawActionButtons(painter, option, actionsRect, item.actions, option.palette.text().color(), m_currentActionIndex, m_hoveredActionIndex, isSelected,
-                          isHovered);
+        drawActionButtons(painter, actionsRect, item.actions, m_currentActionIndex, m_hoveredActionIndex, isSelected, isHovered);
 
     painter->restore();
 }
@@ -222,15 +209,14 @@ void ResultItemDelegate::drawIcon(QPainter *painter, const QRect &rect, const QI
  * @param painter The QPainter object used for rendering the item.
  * @param rect The QRect specifying where to paint the icon.
  * @param icon The QIcon to be rendered.
- * @param color The icon foreground color.
  */
-void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon, const QColor &color)
+void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon)
 {
     QFont iconFont;
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
     painter->setFont(iconFont);
-    painter->setPen(color);
+    painter->setPen(ThemeManager::primaryTextColor());
     painter->drawText(rect, Qt::AlignCenter, QString(icon));
 }
 
@@ -241,14 +227,13 @@ void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, con
  * @param rect The QRect specifying where to paint the text.
  * @param text The text to be rendered.
  * @param font The font of the text.
- * @param color The icon foreground color.
  */
-void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font, const QColor &color)
+void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font)
 {
     const QFontMetrics metrics(font);
     const QString elidedText = metrics.elidedText(text, Qt::ElideRight, rect.width());
     painter->setFont(font);
-    painter->setPen(color);
+    painter->setPen(ThemeManager::primaryTextColor());
     painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, elidedText);
 }
 
@@ -256,18 +241,15 @@ void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QS
  * Draw action buttons at the given location.
  *
  * @param painter The QPainter object used for rendering the item.
- * @param option The style options for the item.
  * @param rect The QRect specifying where to paint the action buttons.
  * @param actions The action button structures.
- * @param color The icon foreground color.
  * @param currentActionIndex The current action index.
  * @param hoveredActionIndex The hovered action index.
  * @param isSelected Whether the current result item is selected.
  * @param isHovered Whether the current result item is hovered.
  */
-void ResultItemDelegate::drawActionButtons(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, const QVector<Action> &actions,
-                                           const QColor &color, const int &currentActionIndex, const int &hoveredActionIndex, const bool &isSelected,
-                                           const bool &isHovered)
+void ResultItemDelegate::drawActionButtons(QPainter *painter, const QRect &rect, const QVector<Action> &actions, const int &currentActionIndex,
+                                           const int &hoveredActionIndex, const bool &isSelected, const bool &isHovered)
 {
     if (actions.size() == 1) // Only one primary action.
         return;
@@ -283,18 +265,16 @@ void ResultItemDelegate::drawActionButtons(QPainter *painter, const QStyleOption
 
         // Determine background color based on state
         QColor backgroundColor;
-        if (currentActionIndex == actionIndex && isSelected)
-            backgroundColor = option.palette.highlight().color();
-        else if (hoveredActionIndex == actionIndex && isHovered)
-            backgroundColor = option.palette.alternateBase().color();
+        if ((isSelected && currentActionIndex == actionIndex) || (isHovered && hoveredActionIndex == actionIndex))
+            backgroundColor = ThemeManager::secondaryBackColor();
         else
-            backgroundColor = option.palette.base().color();
+            backgroundColor = ThemeManager::primaryBackColor();
 
         painter->setBrush(backgroundColor);
         painter->drawRoundedRect(buttonRect, CORNER_RADIUS_S, CORNER_RADIUS_S);
 
         // Paint the icon separately to control the size.
-        drawIconGlyph(painter, buttonRect, actions[actionIndex].iconGlyph, color);
+        drawIconGlyph(painter, buttonRect, actions[actionIndex].iconGlyph);
     }
 }
 
@@ -306,7 +286,12 @@ void ResultItemDelegate::drawActionButtons(QPainter *painter, const QStyleOption
  */
 QRect ResultItemDelegate::getIconRect(const QRect &itemRect)
 {
-    return {itemRect.left() + PADDING_L + (BUTTON_SIZE - ICON_SIZE) / 2, itemRect.center().y() - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE};
+    return {
+        itemRect.left() + PADDING_L + (BUTTON_SIZE - ICON_SIZE) / 2, //
+        itemRect.center().y() - ICON_SIZE / 2, //
+        ICON_SIZE, //
+        ICON_SIZE //
+    };
 }
 
 /**
@@ -320,8 +305,12 @@ QRect ResultItemDelegate::getTitleRect(const QRect &itemRect, const int &actions
 {
     constexpr int leftMargin = PADDING_L + BUTTON_SIZE + PADDING_L;
     constexpr int topMargin = PADDING_L;
-    return {itemRect.left() + leftMargin, itemRect.top() + topMargin, itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
-            itemRect.height() / 2 - topMargin};
+    return {
+        itemRect.left() + leftMargin, //
+        itemRect.top() + topMargin, //
+        itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(), //
+        itemRect.height() / 2 - topMargin //
+    };
 }
 
 /**
@@ -335,8 +324,12 @@ QRect ResultItemDelegate::getSubtitleRect(const QRect &itemRect, const int &acti
 {
     constexpr int leftMargin = PADDING_L + BUTTON_SIZE + PADDING_L;
     const int topPosition = itemRect.top() + itemRect.height() / 2;
-    return {itemRect.left() + leftMargin, topPosition, itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(),
-            itemRect.height() / 2 - PADDING_L};
+    return {
+        itemRect.left() + leftMargin, //
+        topPosition, //
+        itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(), //
+        itemRect.height() / 2 - PADDING_L //
+    };
 }
 
 /**
@@ -350,8 +343,12 @@ QRect ResultItemDelegate::getActionsRect(const QRect &itemRect, const int &actio
 {
     const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + PADDING_L) + PADDING_L; // The primary action is not displayed as a button.
 
-    return {itemRect.right() - actionsWidth + 2, // For perfect button alignment.
-            itemRect.top(), actionsWidth, itemRect.height()};
+    return {
+        itemRect.right() - actionsWidth + 2, // For perfect button alignment.
+        itemRect.top(), //
+        actionsWidth, //
+        itemRect.height() //
+    };
 }
 
 /**
@@ -386,9 +383,7 @@ int ResultItemDelegate::getActionButtonIndex(const QPoint &pos, const QRect &act
     const int buttonOffset = relativeX % (BUTTON_SIZE + PADDING_L);
 
     if (buttonOffset < BUTTON_SIZE && buttonIndex < actionCount)
-    {
         return buttonIndex + 1; // The first action is not a button.
-    }
 
     return 0;
 }

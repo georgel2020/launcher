@@ -20,9 +20,9 @@ public:
 
 private:
     static void drawIcon(QPainter *painter, const QRect &rect, const QIcon &icon);
-    static void drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon, const QColor &color);
-    static void drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font, const QColor &color);
-    static void drawActionButtons(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, const QVector<Action> &actions, const QColor &color,
+    static void drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon);
+    static void drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font);
+    static void drawActionButtons(QPainter *painter, const QRect &rect, const QVector<Action> &actions,
                                   const int &currentActionIndex = 0, const int &hoveredActionIndex = 0, const bool &isSelected = false,
                                   const bool &isHovered = false);
 
