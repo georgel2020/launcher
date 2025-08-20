@@ -103,9 +103,12 @@ void Launcher::setWindowVisibility(const bool &visibility)
     isWindowShown = visibility;
     if (!visibility)
     {
-        m_resultsList->clear();
         m_searchEdit->clear();
-        hide(); // TODO: Fix flash on startup.
+        m_resultsList->clear();
+        m_resultsList->hide();
+        QApplication::processEvents(); // Force the event loop to process the above changes.
+                                       // The stale bitmap cached by the window manager should be updated before hiding the window.
+        hide();
     }
     else
     {
