@@ -2,7 +2,7 @@
 
 #include "../common/IModule.h"
 
-class AppsSearch : public IModule
+class AppsSearch final : public IModule
 {
     Q_OBJECT
 
