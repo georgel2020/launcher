@@ -51,8 +51,6 @@ private:
     QListWidget *m_resultsList = nullptr;
     ResultItemDelegate *m_resultItemDelegate = nullptr;
 
-    HotkeyManager *m_hotkeyManager;
-
     struct ModuleConfig
     {
         IModule *module;
