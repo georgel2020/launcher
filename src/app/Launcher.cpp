@@ -22,13 +22,8 @@
 Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
 {
     // Register hotkey.
-    m_hotkeyManager = new HotkeyManager(MOD_ALT, VK_SPACE, 0, this);
-    connect(m_hotkeyManager, &HotkeyManager::hotkeyPressed, this,
-            [&](const long long id)
-            {
-                if (id == 0)
-                    setWindowVisibility(!isWindowShown);
-            });
+    connect(HotkeyManager::instance(), &HotkeyManager::hotkeyPressed, this, &Launcher::onHotkeyPressed);
+    HotkeyManager::registerHotkey(MOD_ALT, VK_SPACE, 0);
 
     // Set window attributes.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
@@ -227,6 +222,17 @@ void Launcher::setupModules()
         config.iconGlyph = config.module->iconGlyph();
         connect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
     }
+}
+
+/**
+ * Handle hotkey pressed signal from HotkeyManager.
+ *
+ * @param id The hotkey id.
+ */
+void Launcher::onHotkeyPressed(long long id)
+{
+    if (id == 0)
+        setWindowVisibility(!isWindowShown);
 }
 
 /**

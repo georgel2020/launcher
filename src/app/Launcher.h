@@ -30,6 +30,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
+    void onHotkeyPressed(long long id);
     void onInputTextChanged(const QString &text);
     void onResultsReady(QVector<ResultItem> &results, const IModule *module);
 
