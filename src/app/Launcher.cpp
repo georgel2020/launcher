@@ -135,11 +135,12 @@ void Launcher::setupUi()
     // Main layout.
     const int maxResultsListHeight = m_maxVisibleResults * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S + 2;
     resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN,
-           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + WINDOW_SPACING + maxResultsListHeight + PADDING_S + 2 + WINDOW_MARGIN);
+           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_L + maxResultsListHeight + PADDING_S + 2 + WINDOW_MARGIN);
     m_centralWidget = new QWidget(this);
     setCentralWidget(m_centralWidget);
     m_mainLayout = new QVBoxLayout(m_centralWidget);
     m_mainLayout->setContentsMargins(WINDOW_MARGIN, WINDOW_MARGIN, WINDOW_MARGIN, WINDOW_MARGIN);
+    m_mainLayout->setSpacing(PADDING_L);
     m_centralWidget->setLayout(m_mainLayout);
 
     // Search area.
@@ -147,20 +148,21 @@ void Launcher::setupUi()
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
     m_searchFrame = new QFrame(this);
-    m_searchFrame->setFixedHeight(PADDING_L + BUTTON_SIZE + PADDING_L);
+    m_searchFrame->setFixedHeight(PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_S);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
     m_searchFrame->setStyleSheet(
         QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS_L));
     m_searchFrame->setGraphicsEffect(searchFrameShadowEffect);
     m_searchLayout = new QHBoxLayout(m_searchFrame);
-    m_searchLayout->setContentsMargins(PADDING_L, PADDING_L, PADDING_L, PADDING_L);
+    m_searchLayout->setContentsMargins(PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L);
     m_searchLayout->setSpacing(PADDING_L);
     m_searchIcon = new QLabel(this);
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
     m_searchIcon->setFont(iconFont);
     m_searchIcon->setFixedWidth(BUTTON_SIZE);
     m_searchIcon->setFixedHeight(BUTTON_SIZE);
-    m_searchIcon->setStyleSheet("QLabel { border: 1px solid transparent; background: transparent; }");
+    m_searchIcon->setAlignment(Qt::AlignCenter);
+    m_searchIcon->setStyleSheet("QLabel { border: none; background: transparent; }");
     m_searchEdit = new QLineEdit(this);
     m_searchEdit->setPlaceholderText("Start typing...");
     m_searchEdit->setFixedHeight(BUTTON_SIZE);

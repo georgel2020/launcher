@@ -7,7 +7,6 @@ constexpr auto PADDING_L = 8;
 constexpr auto PADDING_S = 4;
 constexpr auto CORNER_RADIUS_L = 8;
 constexpr auto CORNER_RADIUS_S = 4;
-constexpr auto WINDOW_SPACING = 10;
 constexpr auto RESULTS_SPACING = 2;
 constexpr auto MIN_HOTKEY_TIME_INTERVAL = 300;
 constexpr auto SHADOW_BLUR_RADIUS = 64;
