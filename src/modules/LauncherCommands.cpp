@@ -3,10 +3,12 @@
 #include <QDesktopServices>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QTimer>
+#include "../common/Constants.h"
 
-LauncherCommands::LauncherCommands(QObject* parent) : IModule(parent) {}
+LauncherCommands::LauncherCommands(QObject *parent) : IModule(parent) {}
 
-void LauncherCommands::query(const QString& text)
+void LauncherCommands::query(const QString &text)
 {
     QVector<ResultItem> results;
 
@@ -60,7 +62,10 @@ void LauncherCommands::query(const QString& text)
         Action configureAction;
         QString temp = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
         configureAction.handler = []
-        { QProcess::startDetached("explorer", {QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).replace("/", "\\")}); };
+        {
+            const QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).replace("/", "\\");
+            QProcess::startDetached("explorer", {configPath});
+        };
         item.actions = {configureAction};
         results.append(item);
     }

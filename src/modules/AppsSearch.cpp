@@ -7,7 +7,8 @@
 #include <windows.h>
 #include "../core/ConfigLoader.h"
 
-AppsSearch::AppsSearch(QObject* parent) : IModule(parent) {
+AppsSearch::AppsSearch(QObject *parent) : IModule(parent)
+{
     const QJsonDocument doc = ConfigLoader::loadModuleConfig(this);
     const QJsonObject rootObject = doc.object();
     const QJsonArray appsArray = rootObject["apps"].toArray();
@@ -31,12 +32,12 @@ QJsonDocument AppsSearch::defaultConfig() const
 
     const QVector<QString> startMenuPaths = {QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation), // User start menu.
                                              R"(C:\ProgramData\Microsoft\Windows\Start Menu\Programs)"}; // System start menu.
-    for (const QString& path : startMenuPaths)
+    for (const QString &path : startMenuPaths)
     {
         QDirIterator it(path, QStringList() << "*.lnk", QDir::Files, QDirIterator::Subdirectories);
         while (it.hasNext())
         {
-            const QString& shortcutPath = it.next();
+            const QString &shortcutPath = it.next();
             QString targetPath;
             if (!getShortcutPath(shortcutPath, targetPath))
                 continue;
@@ -54,14 +55,14 @@ QJsonDocument AppsSearch::defaultConfig() const
     return QJsonDocument(rootObject);
 }
 
-void AppsSearch::query(const QString& text)
+void AppsSearch::query(const QString &text)
 {
     QVector<ResultItem> results;
 
-    for (const AppInfo& app : m_apps)
+    for (const AppInfo &app : m_apps)
     {
         bool isMatch = false;
-        for (const QString& keyword : app.keywords)
+        for (const QString &keyword : app.keywords)
             if (keyword.contains(text.toLower()))
                 isMatch = true;
 
@@ -94,11 +95,11 @@ void AppsSearch::query(const QString& text)
  * @return Return true if the shortcut was successfully resolved and the target
  * path was retrieved; false otherwise.
  */
-bool AppsSearch::getShortcutPath(const QString& shortcutPath, QString& targetPath)
+bool AppsSearch::getShortcutPath(const QString &shortcutPath, QString &targetPath)
 {
     HRESULT hr;
-    IShellLinkW* pShellLink;
-    IPersistFile* pPersistFile;
+    IShellLinkW *pShellLink;
+    IPersistFile *pPersistFile;
 
     // Initialize COM.
     hr = CoInitialize(nullptr);
@@ -108,7 +109,7 @@ bool AppsSearch::getShortcutPath(const QString& shortcutPath, QString& targetPat
     }
 
     // Create an IShellLink object.
-    hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (void**)&pShellLink);
+    hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (void **)&pShellLink);
     if (FAILED(hr))
     {
         CoUninitialize();
@@ -116,7 +117,7 @@ bool AppsSearch::getShortcutPath(const QString& shortcutPath, QString& targetPat
     }
 
     // Query for IPersistFile.
-    hr = pShellLink->QueryInterface(IID_IPersistFile, (void**)&pPersistFile);
+    hr = pShellLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile);
     if (FAILED(hr))
     {
         pShellLink->Release();

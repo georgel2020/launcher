@@ -1,10 +1,10 @@
 #include "ResultItemWidget.h"
-#include "../core/HistoryManager.h"
 #include "../common/ResultItem.h"
+#include "../core/HistoryManager.h"
 
-ResultItemWidget::ResultItemWidget(QListWidget* parent) : QListWidgetItem(parent) {}
+ResultItemWidget::ResultItemWidget(QListWidget *parent) : QListWidgetItem(parent) {}
 
-bool ResultItemWidget::operator<(const QListWidgetItem& other) const
+bool ResultItemWidget::operator<(const QListWidgetItem &other) const
 {
     const int thisPriority = this->data(Qt::UserRole).value<ResultItem>().priority;
     const int otherPriority = other.data(Qt::UserRole).value<ResultItem>().priority;

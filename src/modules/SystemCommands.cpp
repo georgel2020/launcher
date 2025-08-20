@@ -2,9 +2,9 @@
 #include <QProcess>
 #include <windows.h>
 
-SystemCommands::SystemCommands(QObject* parent) : IModule(parent) {}
+SystemCommands::SystemCommands(QObject *parent) : IModule(parent) {}
 
-void SystemCommands::query(const QString& text)
+void SystemCommands::query(const QString &text)
 {
     QVector<ResultItem> results;
 

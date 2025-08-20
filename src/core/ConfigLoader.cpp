@@ -12,7 +12,7 @@
  * @param launcher A pointer to Launcher main window.
  * @return The QJsonDocument representing the configuration.
  */
-QJsonDocument ConfigLoader::loadConfig(const Launcher* launcher)
+QJsonDocument ConfigLoader::loadConfig(const Launcher *launcher)
 {
     QFile file(getConfigPath());
 
@@ -45,7 +45,7 @@ QJsonDocument ConfigLoader::loadConfig(const Launcher* launcher)
  * @param module A pointer to the module.
  * @return The QJsonDocument representing the configuration.
  */
-QJsonDocument ConfigLoader::loadModuleConfig(const IModule* module)
+QJsonDocument ConfigLoader::loadModuleConfig(const IModule *module)
 {
     if (!module)
         return {};
@@ -77,13 +77,13 @@ QJsonDocument ConfigLoader::loadModuleConfig(const IModule* module)
  * @param text The original string.
  * @return The new string in camel case.
  */
-QString ConfigLoader::toCamelCase(const QString& text)
+QString ConfigLoader::toCamelCase(const QString &text)
 {
     const QStringList parts = text.split(' ', Qt::SkipEmptyParts);
     QString result = parts.at(0).toLower();
     for (int index = 1; index < parts.size(); ++index)
     {
-        const QString& word = parts.at(index);
+        const QString &word = parts.at(index);
         result.append(word.at(0).toUpper() + word.mid(1).toLower());
     }
     return result;
@@ -117,7 +117,7 @@ QString ConfigLoader::getConfigPath()
  * @param moduleName Name of the module.
  * @return The file path string.
  */
-QString ConfigLoader::getModuleConfigPath(const QString& moduleName)
+QString ConfigLoader::getModuleConfigPath(const QString &moduleName)
 {
     const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (configDir.isEmpty())

@@ -1,5 +1,7 @@
 #include "Launcher.h"
+#include <QApplication>
 #include <QBoxLayout>
+#include <QGraphicsDropShadowEffect>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
@@ -16,7 +18,7 @@
 #include "../widgets/ResultItemDelegate.h"
 #include "../widgets/ResultItemWidget.h"
 
-Launcher::Launcher(QWidget* parent) : QMainWindow(parent)
+Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
 {
     // Register hotkey.
     m_hotkeyManager = new HotkeyManager(MOD_ALT, VK_SPACE, 0, this);
@@ -39,7 +41,7 @@ Launcher::Launcher(QWidget* parent) : QMainWindow(parent)
     const QJsonDocument doc = ConfigLoader::loadConfig(this);
     const QJsonObject rootObject = doc.object();
     const QJsonObject modulesObject = rootObject["modules"].toObject();
-    for (ModuleConfig& config : m_moduleConfigs)
+    for (ModuleConfig &config : m_moduleConfigs)
     {
         const QJsonObject moduleObject = modulesObject[ConfigLoader::toCamelCase(config.name)].toObject();
         config.enabled = moduleObject["enabled"].toBool();
@@ -58,6 +60,8 @@ Launcher::Launcher(QWidget* parent) : QMainWindow(parent)
     m_minScore = historyObject["minScore"].toDouble();
     m_increment = historyObject["increment"].toDouble();
     m_historyScoreWeight = historyObject["historyScoreWeight"].toDouble();
+    const QJsonObject uiObject = rootObject["ui"].toObject();
+    m_maxVisibleResults = uiObject["maxVisibleResults"].toInt();
 
     // Configure history.
     HistoryManager::initHistory(m_decay, m_minScore, m_increment, m_historyScoreWeight);
@@ -67,7 +71,7 @@ QJsonDocument Launcher::defaultConfig() const
 {
     QJsonObject rootObject;
     QJsonObject modulesObject;
-    for (const ModuleConfig& config : m_moduleConfigs)
+    for (const ModuleConfig &config : m_moduleConfigs)
     {
         QJsonObject moduleObject;
         moduleObject["enabled"] = config.enabled;
@@ -83,6 +87,9 @@ QJsonDocument Launcher::defaultConfig() const
     historyObject["increment"] = m_increment;
     historyObject["historyScoreWeight"] = m_historyScoreWeight;
     rootObject["history"] = historyObject;
+    QJsonObject uiObject;
+    uiObject["maxVisibleResults"] = m_maxVisibleResults;
+    rootObject["ui"] = uiObject;
     return QJsonDocument(rootObject);
 }
 
@@ -91,7 +98,7 @@ QJsonDocument Launcher::defaultConfig() const
  *
  * @param visibility The new window visibility (true to show; false to hide).
  */
-void Launcher::setWindowVisibility(const bool& visibility)
+void Launcher::setWindowVisibility(const bool &visibility)
 {
     isWindowShown = visibility;
     if (!visibility)
@@ -112,9 +119,20 @@ void Launcher::setWindowVisibility(const bool& visibility)
  */
 void Launcher::setupUi()
 {
+    // Shadow effects.
+    auto *searchFrameShadowEffect = new QGraphicsDropShadowEffect(this);
+    searchFrameShadowEffect->setBlurRadius(SHADOW_BLUR_RADIUS);
+    searchFrameShadowEffect->setColor(QColor::fromRgbF(0, 0, 0, SHADOW_OPACITY));
+    searchFrameShadowEffect->setOffset(0, SHADOW_OFFSET_V);
+    auto *resultsListShadowEffect = new QGraphicsDropShadowEffect(this);
+    resultsListShadowEffect->setBlurRadius(SHADOW_BLUR_RADIUS);
+    resultsListShadowEffect->setColor(QColor::fromRgbF(0, 0, 0, SHADOW_OPACITY));
+    resultsListShadowEffect->setOffset(0, SHADOW_OFFSET_V);
+
     // Main layout.
+    const int maxResultsListHeight = m_maxVisibleResults * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S + 2;
     resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN,
-           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + WINDOW_SPACING + RESULT_LIST_HEIGHT + WINDOW_MARGIN);
+           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + WINDOW_SPACING + maxResultsListHeight + PADDING_S + 2 + WINDOW_MARGIN);
     m_centralWidget = new QWidget(this);
     setCentralWidget(m_centralWidget);
     m_mainLayout = new QVBoxLayout(m_centralWidget);
@@ -130,6 +148,7 @@ void Launcher::setupUi()
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
     m_searchFrame->setStyleSheet(
         QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS_L));
+    m_searchFrame->setGraphicsEffect(searchFrameShadowEffect);
     m_searchLayout = new QHBoxLayout(m_searchFrame);
     m_searchLayout->setContentsMargins(PADDING_L, PADDING_L, PADDING_L, PADDING_L);
     m_searchLayout->setSpacing(PADDING_L);
@@ -152,7 +171,7 @@ void Launcher::setupUi()
     // Results list.
     m_resultsList = new QListWidget(this);
     m_resultsList->setFixedWidth(WINDOW_WIDTH);
-    m_resultsList->setFixedHeight(RESULT_LIST_HEIGHT);
+    m_resultsList->setFixedHeight(maxResultsListHeight);
     m_resultsList->setFocusPolicy(Qt::NoFocus);
     m_resultsList->setMouseTracking(true);
     m_resultsList->setSpacing(PADDING_S / 2); // Set spacing and padding separately to keep the spacing between items and the list widget padding the same.
@@ -160,6 +179,8 @@ void Launcher::setupUi()
         QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; padding: %2px; }")
             .arg(CORNER_RADIUS_L)
             .arg(PADDING_S / 2));
+    m_resultsList->setGraphicsEffect(resultsListShadowEffect);
+    m_resultsList->hide();
 
     // Set custom delegate for results list.
     m_resultItemDelegate = new ResultItemDelegate(m_resultsList, this);
@@ -172,6 +193,13 @@ void Launcher::setupUi()
 
     m_mainLayout->addWidget(m_searchFrame);
     m_mainLayout->addWidget(m_resultsList);
+    m_mainLayout->addStretch(1);
+
+    // Move to the center of screen.
+    const QScreen *screen = QApplication::primaryScreen();
+    const int screenWidth = screen->geometry().right() + 1;
+    const int screenHeight = screen->geometry().bottom() + 1;
+    move(screenWidth / 2 - width() / 2, screenHeight / 2 - height() / 2);
 }
 
 /**
@@ -188,7 +216,7 @@ void Launcher::setupModules()
     };
 
     // Connect all modules to results ready signal.
-    for (ModuleConfig& config : m_moduleConfigs)
+    for (ModuleConfig &config : m_moduleConfigs)
     {
         config.name = config.module->name();
         config.iconGlyph = config.module->iconGlyph();
@@ -202,14 +230,14 @@ void Launcher::setupModules()
  * @param results The list of results to be displayed.
  * @param module The module providing the results.
  */
-void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* module)
+void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *module)
 {
     int priority = 0;
-    for (const ModuleConfig& config : m_moduleConfigs)
+    for (const ModuleConfig &config : m_moduleConfigs)
         if (config.module == module)
             priority = config.priority;
 
-    for (auto& item : results)
+    for (auto &item : results)
     {
         item.priority = priority;
         const auto listItem = new ResultItemWidget(m_resultsList);
@@ -218,8 +246,16 @@ void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* modul
     }
 
     m_resultsList->sortItems(Qt::DescendingOrder);
+
+    if (m_resultsList->count() == 0)
+    {
+        m_resultsList->hide();
+    }
     if (m_resultsList->count() > 0)
     {
+        m_resultsList->show();
+        m_resultsList->setFixedHeight(std::min(m_resultsList->count(), m_maxVisibleResults) * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S +
+                                      2);
         m_resultsList->setCurrentRow(0);
         m_resultItemDelegate->setCurrentActionIndex(0);
     }
@@ -230,7 +266,7 @@ void Launcher::onResultsReady(QVector<ResultItem>& results, const IModule* modul
  *
  * @param text The search text.
  */
-void Launcher::onInputTextChanged(const QString& text)
+void Launcher::onInputTextChanged(const QString &text)
 {
     m_resultsList->clear();
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
@@ -239,7 +275,7 @@ void Launcher::onInputTextChanged(const QString& text)
     {
         const QChar prefix = text.at(0);
 
-        for (const ModuleConfig& config : m_moduleConfigs)
+        for (const ModuleConfig &config : m_moduleConfigs)
         {
             if (config.prefix == prefix && prefix != ' ')
             {
@@ -249,13 +285,17 @@ void Launcher::onInputTextChanged(const QString& text)
             }
         }
 
-        for (const ModuleConfig& config : m_moduleConfigs)
+        for (const ModuleConfig &config : m_moduleConfigs)
         {
             if (config.global)
             {
                 config.module->query(text.trimmed());
             }
         }
+    }
+    else
+    {
+        m_resultsList->hide();
     }
 }
 
@@ -266,11 +306,11 @@ void Launcher::onInputTextChanged(const QString& text)
  * @param event The event to be filtered.
  * @return True if the event is handled, otherwise the default event filter behavior is applied.
  */
-bool Launcher::eventFilter(QObject* obj, QEvent* event)
+bool Launcher::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)
     {
-        const auto keyEvent = dynamic_cast<QKeyEvent*>(event);
+        const auto keyEvent = dynamic_cast<QKeyEvent *>(event);
 
         // Navigate between actions.
         if (keyEvent->key() == Qt::Key_Tab)
@@ -333,9 +373,9 @@ bool Launcher::eventFilter(QObject* obj, QEvent* event)
  *
  * @param right Whether to navigate right (true for right; false for left).
  */
-void Launcher::handleActionsNavigation(const bool& right) const
+void Launcher::handleActionsNavigation(const bool &right) const
 {
-    const QListWidgetItem* currentItem = m_resultsList->currentItem();
+    const QListWidgetItem *currentItem = m_resultsList->currentItem();
     if (!currentItem)
         return;
 
@@ -360,7 +400,7 @@ void Launcher::handleActionsNavigation(const bool& right) const
  */
 void Launcher::executeCurrentAction()
 {
-    const QListWidgetItem* currentItem = m_resultsList->currentItem();
+    const QListWidgetItem *currentItem = m_resultsList->currentItem();
     if (!currentItem)
         return;
 
