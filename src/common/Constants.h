@@ -1,19 +1,21 @@
 #pragma once
 
 // Window.
-constexpr int WINDOW_MARGIN = 50;
-constexpr int WINDOW_WIDTH = 600;
-constexpr int RESULT_LIST_HEIGHT = 398;
-constexpr int PADDING_L = 8;
-constexpr int PADDING_S = 4;
-constexpr int CORNER_RADIUS_L = 8;
-constexpr int CORNER_RADIUS_S = 4;
-constexpr int WINDOW_SPACING = 10;
-constexpr int RESULTS_SPACING = 2;
-constexpr int MIN_HOTKEY_TIME_INTERVAL = 300;
+constexpr auto WINDOW_MARGIN = 50;
+constexpr auto WINDOW_WIDTH = 600;
+constexpr auto PADDING_L = 8;
+constexpr auto PADDING_S = 4;
+constexpr auto CORNER_RADIUS_L = 8;
+constexpr auto CORNER_RADIUS_S = 4;
+constexpr auto WINDOW_SPACING = 10;
+constexpr auto RESULTS_SPACING = 2;
+constexpr auto MIN_HOTKEY_TIME_INTERVAL = 300;
+constexpr auto SHADOW_BLUR_RADIUS = 64;
+constexpr auto SHADOW_OPACITY = 0.6f;
+constexpr auto SHADOW_OFFSET_V = 8;
 
 // Result item.
-constexpr int TITLE_FONT_SIZE = 14;
-constexpr int SUBTITLE_FONT_SIZE = 12;
-constexpr int ICON_SIZE = 24;
-constexpr int BUTTON_SIZE = 36;
+constexpr auto TITLE_FONT_SIZE = 14;
+constexpr auto SUBTITLE_FONT_SIZE = 12;
+constexpr auto ICON_SIZE = 24;
+constexpr auto BUTTON_SIZE = 36;

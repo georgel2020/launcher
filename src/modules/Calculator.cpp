@@ -3,9 +3,9 @@
 #include <QClipboard>
 #include "../../third-party/muparser/include/muParser.h"
 
-Calculator::Calculator(QObject* parent) : IModule(parent) {}
+Calculator::Calculator(QObject *parent) : IModule(parent) {}
 
-void Calculator::query(const QString& text)
+void Calculator::query(const QString &text)
 {
     try
     {
@@ -26,7 +26,7 @@ void Calculator::query(const QString& text)
 
         emit resultsReady(results, this);
     }
-    catch (mu::Parser::exception_type&)
+    catch (mu::Parser::exception_type &)
     {
         // Intentionally left blank.
         // An invalid math expression is not en error to handle.

@@ -10,13 +10,13 @@ class IModule : public QObject
     Q_OBJECT
 
 public:
-    explicit IModule(QObject* parent = nullptr) : QObject(parent) {}
+    explicit IModule(QObject *parent = nullptr) : QObject(parent) {}
 
     [[nodiscard]] virtual QString name() const = 0;
     [[nodiscard]] virtual QChar iconGlyph() const = 0;
     [[nodiscard]] virtual QJsonDocument defaultConfig() const { return {}; }
-    virtual void query(const QString& text) = 0;
+    virtual void query(const QString &text) = 0;
 
 signals:
-    void resultsReady(QVector<ResultItem>& results, IModule* module);
+    void resultsReady(QVector<ResultItem> &results, IModule *module);
 };

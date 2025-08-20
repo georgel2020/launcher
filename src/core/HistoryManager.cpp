@@ -16,7 +16,7 @@
  * @param minScore The lowest score to keep in history; if a score is lower,
  * the key is removed.
  */
-void HistoryManager::initHistory(const double& decay, const double& minScore, const double& increment, const double& historyScoreWeight)
+void HistoryManager::initHistory(const double &decay, const double &minScore, const double &increment, const double &historyScoreWeight)
 {
     m_increment = increment;
     m_historyScoreWeight = historyScoreWeight;
@@ -42,7 +42,7 @@ void HistoryManager::initHistory(const double& decay, const double& minScore, co
         const QDateTime lastUpdate = QDateTime::fromString(rootObject["lastUpdate"].toString(), "yyyy-MM-dd hh:mm:ss");
         const int days = static_cast<int>(lastUpdate.date().daysTo(now.date()));
         const double factor = pow(decay, days);
-        for (const QString& key : scoresObject.keys())
+        for (const QString &key : scoresObject.keys())
         {
             const double newScore = scoresObject[key].toDouble() * factor;
             scoresObject[key] = newScore;
@@ -78,7 +78,7 @@ void HistoryManager::initHistory(const double& decay, const double& minScore, co
  * @param key The unique key of the result.
  * @param increment The increment to add to the score.
  */
-void HistoryManager::addHistory(const QString& key)
+void HistoryManager::addHistory(const QString &key)
 {
     if (m_scores.contains(key))
         m_scores[key] += m_increment;
@@ -108,7 +108,7 @@ void HistoryManager::addHistory(const QString& key)
  * @param key The unique key of the result.
  * @return The final history score.
  */
-double HistoryManager::getHistoryScore(const QString& key)
+double HistoryManager::getHistoryScore(const QString &key)
 {
     if (m_scores.contains(key))
     {

@@ -15,7 +15,7 @@
 #include <QVariant>
 #include "../common/Constants.h"
 
-ResultItemDelegate::ResultItemDelegate(QAbstractItemView* view, QObject* parent) : QStyledItemDelegate(parent)
+ResultItemDelegate::ResultItemDelegate(QAbstractItemView *view, QObject *parent) : QStyledItemDelegate(parent)
 {
     // Store the abstract item view to trigger repaint.
     m_view = view;
@@ -33,7 +33,7 @@ ResultItemDelegate::ResultItemDelegate(QAbstractItemView* view, QObject* parent)
  * @param option The style options for the item.
  * @param index The QModelIndex representing the item being rendered.
  */
-void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -127,7 +127,7 @@ void ResultItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
  * @return The QSize object specifying the preferred dimensions
  * for the delegate item.
  */
-QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
@@ -148,12 +148,12 @@ QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMo
  * @return True if the action was successfully processed; otherwise, false,
  * meaning the event will fall back to the base implementation.
  */
-bool ResultItemDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)
+bool ResultItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     if (event->type() != QEvent::MouseMove && event->type() != QEvent::MouseButtonPress && event->type() != QEvent::MouseButtonDblClick)
         return QStyledItemDelegate::editorEvent(event, model, option, index);
 
-    const auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+    const auto mouseEvent = dynamic_cast<QMouseEvent *>(event);
     if (event->type() != QEvent::MouseMove && mouseEvent->button() != Qt::LeftButton)
         return QStyledItemDelegate::editorEvent(event, model, option, index);
 
@@ -208,7 +208,7 @@ void ResultItemDelegate::setCurrentActionIndex(const int index) const { m_curren
  * @param rect The QRect specifying where to paint the icon.
  * @param icon The QIcon to be rendered.
  */
-void ResultItemDelegate::drawIcon(QPainter* painter, const QRect& rect, const QIcon& icon)
+void ResultItemDelegate::drawIcon(QPainter *painter, const QRect &rect, const QIcon &icon)
 {
     if (!icon.isNull())
     {
@@ -224,7 +224,7 @@ void ResultItemDelegate::drawIcon(QPainter* painter, const QRect& rect, const QI
  * @param icon The QIcon to be rendered.
  * @param color The icon foreground color.
  */
-void ResultItemDelegate::drawIconGlyph(QPainter* painter, const QRect& rect, const QChar& icon, const QColor& color)
+void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon, const QColor &color)
 {
     QFont iconFont;
     iconFont.setFamily("Material Symbols Rounded");
@@ -243,7 +243,7 @@ void ResultItemDelegate::drawIconGlyph(QPainter* painter, const QRect& rect, con
  * @param font The font of the text.
  * @param color The icon foreground color.
  */
-void ResultItemDelegate::drawText(QPainter* painter, const QRect& rect, const QString& text, const QFont& font, const QColor& color)
+void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font, const QColor &color)
 {
     const QFontMetrics metrics(font);
     const QString elidedText = metrics.elidedText(text, Qt::ElideRight, rect.width());
@@ -265,9 +265,9 @@ void ResultItemDelegate::drawText(QPainter* painter, const QRect& rect, const QS
  * @param isSelected Whether the current result item is selected.
  * @param isHovered Whether the current result item is hovered.
  */
-void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOptionViewItem& option, const QRect& rect, const QVector<Action>& actions,
-                                           const QColor& color, const int& currentActionIndex, const int& hoveredActionIndex, const bool& isSelected,
-                                           const bool& isHovered)
+void ResultItemDelegate::drawActionButtons(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, const QVector<Action> &actions,
+                                           const QColor &color, const int &currentActionIndex, const int &hoveredActionIndex, const bool &isSelected,
+                                           const bool &isHovered)
 {
     if (actions.size() == 1) // Only one primary action.
         return;
@@ -304,7 +304,7 @@ void ResultItemDelegate::drawActionButtons(QPainter* painter, const QStyleOption
  * @param itemRect The bounding rectangle of the item in which the icon will be displayed.
  * @return A QRect object representing the calculated position and size of the icon.
  */
-QRect ResultItemDelegate::getIconRect(const QRect& itemRect)
+QRect ResultItemDelegate::getIconRect(const QRect &itemRect)
 {
     return {itemRect.left() + PADDING_L + (BUTTON_SIZE - ICON_SIZE) / 2, itemRect.center().y() - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE};
 }
@@ -316,7 +316,7 @@ QRect ResultItemDelegate::getIconRect(const QRect& itemRect)
  * @param actionsCount The count of actions, including the primary action.
  * @return A QRect object representing the calculated position and size of the title.
  */
-QRect ResultItemDelegate::getTitleRect(const QRect& itemRect, const int& actionsCount)
+QRect ResultItemDelegate::getTitleRect(const QRect &itemRect, const int &actionsCount)
 {
     constexpr int leftMargin = PADDING_L + BUTTON_SIZE + PADDING_L;
     constexpr int topMargin = PADDING_L;
@@ -331,7 +331,7 @@ QRect ResultItemDelegate::getTitleRect(const QRect& itemRect, const int& actions
  * @param actionsCount The count of actions, including the primary action.
  * @return A QRect object representing the calculated position and size of the subtitle.
  */
-QRect ResultItemDelegate::getSubtitleRect(const QRect& itemRect, const int& actionsCount)
+QRect ResultItemDelegate::getSubtitleRect(const QRect &itemRect, const int &actionsCount)
 {
     constexpr int leftMargin = PADDING_L + BUTTON_SIZE + PADDING_L;
     const int topPosition = itemRect.top() + itemRect.height() / 2;
@@ -346,7 +346,7 @@ QRect ResultItemDelegate::getSubtitleRect(const QRect& itemRect, const int& acti
  * @param actionsCount The count of actions, including the primary action.
  * @return A QRect object representing the calculated position and size of the action buttons.
  */
-QRect ResultItemDelegate::getActionsRect(const QRect& itemRect, const int& actionsCount)
+QRect ResultItemDelegate::getActionsRect(const QRect &itemRect, const int &actionsCount)
 {
     const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + PADDING_L) + PADDING_L; // The primary action is not displayed as a button.
 
@@ -366,7 +366,7 @@ QRect ResultItemDelegate::getActionsRect(const QRect& itemRect, const int& actio
  * @return The zero-based index of the button if found, or 0 if no valid button is found
  * (the mouse is on the primary action area).
  */
-int ResultItemDelegate::getActionButtonIndex(const QPoint& pos, const QRect& actionsRect, const int& actionCount)
+int ResultItemDelegate::getActionButtonIndex(const QPoint &pos, const QRect &actionsRect, const int &actionCount)
 {
     if (!actionsRect.contains(pos) || actionCount == 0)
     {

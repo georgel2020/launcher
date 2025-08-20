@@ -11,6 +11,7 @@ class QLabel;
 class QFrame;
 class QLineEdit;
 class QListWidget;
+class QPropertyAnimation;
 
 class ResultItemDelegate;
 class HotkeyManager;
@@ -21,39 +22,39 @@ class Launcher final : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Launcher(QWidget* parent = nullptr);
+    explicit Launcher(QWidget *parent = nullptr);
 
     [[nodiscard]] QJsonDocument defaultConfig() const;
 
 protected:
-    bool eventFilter(QObject* obj, QEvent* event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
-    void onInputTextChanged(const QString& text);
-    void onResultsReady(QVector<ResultItem>& results, const IModule* module);
+    void onInputTextChanged(const QString &text);
+    void onResultsReady(QVector<ResultItem> &results, const IModule *module);
 
 private:
-    void setWindowVisibility(const bool& visibility);
+    void setWindowVisibility(const bool &visibility);
     void setupUi();
     void setupModules();
-    void handleActionsNavigation(const bool& right) const;
+    void handleActionsNavigation(const bool &right) const;
     void executeCurrentAction();
 
     bool isWindowShown = false;
-    QWidget* m_centralWidget = nullptr;
-    QVBoxLayout* m_mainLayout = nullptr;
-    QFrame* m_searchFrame = nullptr;
-    QHBoxLayout* m_searchLayout = nullptr;
-    QLabel* m_searchIcon = nullptr;
-    QLineEdit* m_searchEdit = nullptr;
-    QListWidget* m_resultsList = nullptr;
-    ResultItemDelegate* m_resultItemDelegate = nullptr;
+    QWidget *m_centralWidget = nullptr;
+    QVBoxLayout *m_mainLayout = nullptr;
+    QFrame *m_searchFrame = nullptr;
+    QHBoxLayout *m_searchLayout = nullptr;
+    QLabel *m_searchIcon = nullptr;
+    QLineEdit *m_searchEdit = nullptr;
+    QListWidget *m_resultsList = nullptr;
+    ResultItemDelegate *m_resultItemDelegate = nullptr;
 
-    HotkeyManager* m_hotkeyManager;
+    HotkeyManager *m_hotkeyManager;
 
     struct ModuleConfig
     {
-        IModule* module;
+        IModule *module;
         QString name;
         QChar iconGlyph;
         bool enabled;
@@ -61,7 +62,7 @@ private:
         int priority;
         QChar prefix;
 
-        ModuleConfig(IModule* module, const bool& enabled, const bool& global, const int& priority, const QChar& prefix)
+        ModuleConfig(IModule *module, const bool &enabled, const bool &global, const int &priority, const QChar &prefix)
         {
             this->module = module;
             this->name = QString();
@@ -72,14 +73,13 @@ private:
             this->prefix = prefix;
         }
 
-        bool operator==(const ModuleConfig& other) const
-        {
-            return module == other.module;
-        }
+        bool operator==(const ModuleConfig &other) const { return module == other.module; }
     };
     QVector<ModuleConfig> m_moduleConfigs;
     double m_decay = 0.95;
     double m_minScore = 0.01;
     double m_increment = 1.0;
     double m_historyScoreWeight = 1.0;
+
+    int m_maxVisibleResults = 5;
 };

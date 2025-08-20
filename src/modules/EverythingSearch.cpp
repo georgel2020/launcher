@@ -5,7 +5,7 @@
 #include "../../third-party/everything-sdk/include/Everything.h"
 #include "../core/ConfigLoader.h"
 
-EverythingSearch::EverythingSearch(QObject* parent) : IModule(parent)
+EverythingSearch::EverythingSearch(QObject *parent) : IModule(parent)
 {
     const QJsonDocument doc = ConfigLoader::loadModuleConfig(this);
     const QJsonObject rootObject = doc.object();
@@ -21,7 +21,7 @@ QJsonDocument EverythingSearch::defaultConfig() const
     return QJsonDocument(rootObject);
 }
 
-void EverythingSearch::query(const QString& text)
+void EverythingSearch::query(const QString &text)
 {
     QVector<ResultItem> results;
 
