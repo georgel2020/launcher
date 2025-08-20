@@ -10,6 +10,7 @@
 #include "../core/ConfigLoader.h"
 #include "../core/HistoryManager.h"
 #include "../core/HotkeyManager.h"
+#include "../core/ThemeManager.h"
 #include "../modules/AppsSearch.h"
 #include "../modules/Calculator.h"
 #include "../modules/EverythingSearch.h"
@@ -122,6 +123,8 @@ void Launcher::setWindowVisibility(const bool &visibility)
  */
 void Launcher::setupUi()
 {
+    ThemeManager::initTheme();
+
     // Shadow effects.
     auto *searchFrameShadowEffect = new QGraphicsDropShadowEffect(this);
     searchFrameShadowEffect->setBlurRadius(SHADOW_BLUR_RADIUS);
@@ -133,9 +136,9 @@ void Launcher::setupUi()
     resultsListShadowEffect->setOffset(0, SHADOW_OFFSET_V);
 
     // Main layout.
-    const int maxResultsListHeight = m_maxVisibleResults * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S + 2;
+    const int maxResultsListHeight = m_maxVisibleResults * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S;
     resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN,
-           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_L + maxResultsListHeight + PADDING_S + 2 + WINDOW_MARGIN);
+           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_L + maxResultsListHeight + PADDING_S + WINDOW_MARGIN);
     m_centralWidget = new QWidget(this);
     setCentralWidget(m_centralWidget);
     m_mainLayout = new QVBoxLayout(m_centralWidget);
@@ -150,8 +153,7 @@ void Launcher::setupUi()
     m_searchFrame = new QFrame(this);
     m_searchFrame->setFixedHeight(PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_S);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
-    m_searchFrame->setStyleSheet(
-        QString("QFrame { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; }").arg(CORNER_RADIUS_L));
+    m_searchFrame->setStyleSheet(QString("QFrame { border: none; border-radius: %1px; background-color: %2 }").arg(CORNER_RADIUS_L).arg(ThemeManager::primaryBackColorHex()));
     m_searchFrame->setGraphicsEffect(searchFrameShadowEffect);
     m_searchLayout = new QHBoxLayout(m_searchFrame);
     m_searchLayout->setContentsMargins(PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L);
@@ -181,9 +183,7 @@ void Launcher::setupUi()
     m_resultsList->setMouseTracking(true);
     m_resultsList->setSpacing(PADDING_S / 2); // Set spacing and padding separately to keep the spacing between items and the list widget padding the same.
     m_resultsList->setStyleSheet(
-        QString("QListWidget { background-color: palette(base); border: 1px solid palette(alternate-base); border-radius: %1px; padding: %2px; }")
-            .arg(CORNER_RADIUS_L)
-            .arg(PADDING_S / 2));
+        QString("QListWidget { border: none; border-radius: %1px; background-color: %2; padding: %3px; }").arg(CORNER_RADIUS_L).arg(ThemeManager::primaryBackColorHex()).arg(PADDING_S / 2));
     m_resultsList->setGraphicsEffect(resultsListShadowEffect);
     m_resultsList->hide();
 
@@ -259,8 +259,7 @@ void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *modul
     if (m_resultsList->count() > 0)
     {
         m_resultsList->show();
-        m_resultsList->setFixedHeight(std::min(m_resultsList->count(), m_maxVisibleResults) * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S +
-                                      2);
+        m_resultsList->setFixedHeight(std::min(m_resultsList->count(), m_maxVisibleResults) * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S);
         m_resultsList->setCurrentRow(0);
         m_resultItemDelegate->setCurrentActionIndex(0);
     }
