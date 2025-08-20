@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include "../common/Constants.h"
 #include "../common/IModule.h"
-#include "../core/ConfigLoader.h"
+#include "../core/ConfigManager.h"
 #include "../core/HistoryManager.h"
 #include "../core/HotkeyManager.h"
 #include "../core/ThemeManager.h"
@@ -39,12 +39,12 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
     setupModules();
 
     // Read configuration.
-    const QJsonDocument doc = ConfigLoader::loadConfig(this);
+    const QJsonDocument doc = ConfigManager::loadConfig(this);
     const QJsonObject rootObject = doc.object();
     const QJsonObject modulesObject = rootObject["modules"].toObject();
     for (ModuleConfig &config : m_moduleConfigs)
     {
-        const QJsonObject moduleObject = modulesObject[ConfigLoader::toCamelCase(config.name)].toObject();
+        const QJsonObject moduleObject = modulesObject[ConfigManager::toCamelCase(config.name)].toObject();
         config.enabled = moduleObject["enabled"].toBool();
         config.global = moduleObject["global"].toBool();
         config.priority = moduleObject["priority"].toInt();
@@ -79,7 +79,7 @@ QJsonDocument Launcher::defaultConfig() const
         moduleObject["global"] = config.global;
         moduleObject["priority"] = config.priority;
         moduleObject["prefix"] = QString(config.prefix);
-        modulesObject[ConfigLoader::toCamelCase(config.name)] = moduleObject;
+        modulesObject[ConfigManager::toCamelCase(config.name)] = moduleObject;
     }
     rootObject["modules"] = modulesObject;
     QJsonObject historyObject;

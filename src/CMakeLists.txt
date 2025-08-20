@@ -7,7 +7,7 @@ qt_add_executable(launcher
         # App.
         app/Launcher.cpp app/Launcher.h
         # Core.
-        core/ConfigLoader.cpp core/ConfigLoader.h
+        core/ConfigManager.cpp core/ConfigManager.h
         core/HistoryManager.cpp core/HistoryManager.h
         core/ThemeManager.cpp core/ThemeManager.h
         core/HotkeyManager.cpp core/HotkeyManager.h
