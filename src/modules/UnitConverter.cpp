@@ -47,9 +47,9 @@ void UnitConverter::query(const QString &text)
         item.subtitle = "Unit Converter";
         item.iconGlyph = QChar(0xf6af); // Measuring tape.
         item.key = "unit";
-        Action coptAction;
-        coptAction.handler = [resultString] { QApplication::clipboard()->setText(resultString); };
-        item.actions = {coptAction};
+        Action copyAction;
+        copyAction.handler = [resultString] { QApplication::clipboard()->setText(resultString); };
+        item.actions = {copyAction};
         results.append(item);
     }
 
