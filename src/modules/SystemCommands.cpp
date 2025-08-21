@@ -8,7 +8,7 @@ void SystemCommands::query(const QString &text)
 {
     QVector<ResultItem> results;
 
-    if (QString("shutdown").contains(text.toLower()) || QString("restart").contains(text.toLower()))
+    if (QString("shutdown").contains(text, Qt::CaseInsensitive) || QString("restart").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "Shutdown";
@@ -23,7 +23,7 @@ void SystemCommands::query(const QString &text)
         item.actions = {shutdownAction, restartAction};
         results.append(item);
     }
-    if (QString("lock").contains(text.toLower()))
+    if (QString("lock").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "Lock";

@@ -63,7 +63,7 @@ void AppsSearch::query(const QString &text)
     {
         bool isMatch = false;
         for (const QString &keyword : app.keywords)
-            if (keyword.contains(text.toLower()))
+            if (keyword.contains(text, Qt::CaseInsensitive))
                 isMatch = true;
 
         if (isMatch)
