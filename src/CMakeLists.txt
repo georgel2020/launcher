@@ -23,6 +23,7 @@ qt_add_executable(launcher
         modules/AppsSearch.cpp modules/AppsSearch.h
         modules/SystemCommands.cpp modules/SystemCommands.h
         modules/WindowsTerminal.cpp modules/WindowsTerminal.h
+        modules/UnitConverter.cpp modules/UnitConverter.h
         # Widgets.
         widgets/ResultItemWidget.cpp widgets/ResultItemWidget.h
         widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
@@ -46,9 +47,10 @@ add_custom_command(
 )
 
 # Link muparser library.
-target_link_libraries(launcher PRIVATE
-        muparser
-)
+target_link_libraries(launcher PRIVATE muparser)
+
+# Link units library.
+target_link_libraries(launcher PRIVATE units)
 
 # Link Everything SDK.
 target_include_directories(launcher PRIVATE

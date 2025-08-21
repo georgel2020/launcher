@@ -16,6 +16,7 @@
 #include "../modules/EverythingSearch.h"
 #include "../modules/LauncherCommands.h"
 #include "../modules/SystemCommands.h"
+#include "../modules/UnitConverter.h"
 #include "../modules/WindowsTerminal.h"
 #include "../widgets/ResultItemDelegate.h"
 #include "../widgets/ResultItemWidget.h"
@@ -217,7 +218,8 @@ void Launcher::setupModules()
         ModuleConfig(new Calculator(this), true, true, 5, '='), //
         ModuleConfig(new AppsSearch(this), true, true, 4, ' '), //
         ModuleConfig(new SystemCommands(this), true, true, 5, ' '), //
-        ModuleConfig(new WindowsTerminal(this), true, true, 5, '>') //
+        ModuleConfig(new WindowsTerminal(this), true, true, 5, '>'), //
+        ModuleConfig(new UnitConverter(this), true, true, 5, ' ') //
     };
 
     // Connect all modules to results ready signal.

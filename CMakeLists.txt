@@ -20,3 +20,6 @@ add_subdirectory("src")
 
 # Add muparser source directory.
 add_subdirectory("third-party/muparser")
+
+# Add units source directory.
+add_subdirectory("third-party/units")
