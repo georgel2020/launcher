@@ -36,7 +36,6 @@ void UnitConverter::query(const QString &text)
         item.title = "Invalid unit conversion";
         item.subtitle = "Unit Converter";
         item.iconGlyph = QChar(0xf8b6); // Error.
-        item.key = "unit_error";
         results.append(item);
     }
     else
