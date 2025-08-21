@@ -12,11 +12,11 @@ qt_add_executable(launcher
         core/ThemeManager.cpp core/ThemeManager.h
         core/HotkeyManager.cpp core/HotkeyManager.h
         # Common.
+        common/IModule.h
         common/Action.h
         common/ResultItem.h
         common/Constants.h
         # Modules.
-        common/IModule.h
         modules/LauncherCommands.cpp modules/LauncherCommands.h
         modules/EverythingSearch.cpp modules/EverythingSearch.h
         modules/Calculator.cpp modules/Calculator.h
