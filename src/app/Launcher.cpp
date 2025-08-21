@@ -16,6 +16,7 @@
 #include "../modules/EverythingSearch.h"
 #include "../modules/LauncherCommands.h"
 #include "../modules/SystemCommands.h"
+#include "../modules/WindowsTerminal.h"
 #include "../widgets/ResultItemDelegate.h"
 #include "../widgets/ResultItemWidget.h"
 
@@ -148,7 +149,8 @@ void Launcher::setupUi()
     m_searchFrame = new QFrame(this);
     m_searchFrame->setFixedHeight(PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_S);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
-    m_searchFrame->setStyleSheet(QString("QFrame { border: none; border-radius: %1px; background-color: %2 }").arg(CORNER_RADIUS_L).arg(ThemeManager::primaryBackColorHex()));
+    m_searchFrame->setStyleSheet(
+        QString("QFrame { border: none; border-radius: %1px; background-color: %2 }").arg(CORNER_RADIUS_L).arg(ThemeManager::primaryBackColorHex()));
     m_searchFrame->setGraphicsEffect(searchFrameShadowEffect);
     m_searchLayout = new QHBoxLayout(m_searchFrame);
     m_searchLayout->setContentsMargins(PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L);
@@ -177,8 +179,10 @@ void Launcher::setupUi()
     m_resultsList->setFocusPolicy(Qt::NoFocus);
     m_resultsList->setMouseTracking(true);
     m_resultsList->setSpacing(PADDING_S / 2); // Set spacing and padding separately to keep the spacing between items and the list widget padding the same.
-    m_resultsList->setStyleSheet(
-        QString("QListWidget { border: none; border-radius: %1px; background-color: %2; padding: %3px; }").arg(CORNER_RADIUS_L).arg(ThemeManager::primaryBackColorHex()).arg(PADDING_S / 2));
+    m_resultsList->setStyleSheet(QString("QListWidget { border: none; border-radius: %1px; background-color: %2; padding: %3px; }")
+                                     .arg(CORNER_RADIUS_L)
+                                     .arg(ThemeManager::primaryBackColorHex())
+                                     .arg(PADDING_S / 2));
     m_resultsList->setGraphicsEffect(resultsListShadowEffect);
     m_resultsList->hide();
 
@@ -212,7 +216,8 @@ void Launcher::setupModules()
         ModuleConfig(new EverythingSearch(this), true, false, 1, '@'), //
         ModuleConfig(new Calculator(this), true, true, 5, '='), //
         ModuleConfig(new AppsSearch(this), true, true, 4, ' '), //
-        ModuleConfig(new SystemCommands(this), true, true, 5, ' ') //
+        ModuleConfig(new SystemCommands(this), true, true, 5, ' '), //
+        ModuleConfig(new WindowsTerminal(this), true, true, 5, '>') //
     };
 
     // Connect all modules to results ready signal.

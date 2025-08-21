@@ -22,6 +22,7 @@ qt_add_executable(launcher
         modules/Calculator.cpp modules/Calculator.h
         modules/AppsSearch.cpp modules/AppsSearch.h
         modules/SystemCommands.cpp modules/SystemCommands.h
+        modules/WindowsTerminal.cpp modules/WindowsTerminal.h
         # Widgets.
         widgets/ResultItemWidget.cpp widgets/ResultItemWidget.h
         widgets/ResultItemDelegate.cpp widgets/ResultItemDelegate.h
