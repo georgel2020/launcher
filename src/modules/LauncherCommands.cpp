@@ -12,7 +12,7 @@ void LauncherCommands::query(const QString &text)
 {
     QVector<ResultItem> results;
 
-    if (QString("version").contains(text.toLower()))
+    if (QString("version").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "Version";
@@ -21,7 +21,7 @@ void LauncherCommands::query(const QString &text)
         item.key = "launcher_version";
         results.append(item);
     }
-    if (QString("about").contains(text.toLower()))
+    if (QString("about").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "About Launcher";
@@ -33,7 +33,8 @@ void LauncherCommands::query(const QString &text)
         item.actions = {aboutAction};
         results.append(item);
     }
-    if (QString("exit").contains(text.toLower()) || QString("quit").contains(text.toLower()) || QString("reload").contains(text.toLower()))
+    if (QString("exit").contains(text, Qt::CaseInsensitive) || QString("quit").contains(text, Qt::CaseInsensitive) ||
+        QString("reload").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "Exit";
@@ -52,7 +53,7 @@ void LauncherCommands::query(const QString &text)
         item.actions = {exitAction, reloadAction};
         results.append(item);
     }
-    if (QString("configure").contains(text.toLower()))
+    if (QString("configure").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "Configure";
