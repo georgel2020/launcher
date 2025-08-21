@@ -30,7 +30,7 @@ QJsonDocument AppsSearch::defaultConfig() const
     QJsonObject rootObject;
     QJsonArray appsArray;
 
-    const QVector<QString> startMenuPaths = {QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation), // User start menu.
+    const QVector<QString> startMenuPaths = {QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation), // User start menu.
                                              R"(C:\ProgramData\Microsoft\Windows\Start Menu\Programs)"}; // System start menu.
     for (const QString &path : startMenuPaths)
     {
