@@ -33,7 +33,7 @@ void EverythingSearch::query(const QString &text)
     if (const DWORD lastError = Everything_GetLastError(); lastError == EVERYTHING_ERROR_IPC)
     {
         ResultItem item;
-        item.title = "Everything is not running. ";
+        item.title = "Everything is not running";
         item.subtitle = "Everything Search";
         item.iconGlyph = QChar(0xf8b6); // Error.
         results.append(item);
