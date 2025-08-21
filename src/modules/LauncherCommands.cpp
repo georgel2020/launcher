@@ -61,7 +61,6 @@ void LauncherCommands::query(const QString &text)
         item.iconGlyph = QChar(0xe8b8); // Settings.
         item.key = "launcher_configure";
         Action configureAction;
-        QString temp = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
         configureAction.handler = []
         {
             const QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).replace("/", "\\");
