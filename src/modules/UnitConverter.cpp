@@ -48,6 +48,7 @@ void UnitConverter::query(const QString &text)
         item.key = "unit";
         Action copyAction;
         copyAction.handler = [resultString] { QApplication::clipboard()->setText(resultString); };
+        copyAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_C);
         item.actions = {copyAction};
         results.append(item);
     }
