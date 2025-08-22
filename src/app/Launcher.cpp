@@ -151,7 +151,7 @@ void Launcher::setupUi()
     m_searchFrame->setFixedHeight(PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_S);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
     m_searchFrame->setStyleSheet(
-        QString("QFrame { border: none; border-radius: %1px; background-color: %2 }").arg(CORNER_RADIUS_L).arg(ThemeManager::primaryBackColorHex()));
+        QString("QFrame { border: none; border-radius: %1px; background-color: %2 }").arg(CORNER_RADIUS_L).arg(ThemeManager::defaultBackColorHex()));
     m_searchFrame->setGraphicsEffect(searchFrameShadowEffect);
     m_searchLayout = new QHBoxLayout(m_searchFrame);
     m_searchLayout->setContentsMargins(PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L);
@@ -162,13 +162,15 @@ void Launcher::setupUi()
     m_searchIcon->setFixedWidth(BUTTON_SIZE);
     m_searchIcon->setFixedHeight(BUTTON_SIZE);
     m_searchIcon->setAlignment(Qt::AlignCenter);
-    m_searchIcon->setStyleSheet("QLabel { border: none; background: transparent; }");
+    m_searchIcon->setStyleSheet(QString("QLabel { border: none; background: transparent; color: %1; }").arg(ThemeManager::defaultTextColorHex()));
     m_searchEdit = new QLineEdit(this);
     m_searchEdit->setPlaceholderText("Start typing...");
     m_searchEdit->setFixedHeight(BUTTON_SIZE);
     m_searchEdit->setFocus();
     m_searchEdit->setContextMenuPolicy(Qt::NoContextMenu);
-    m_searchEdit->setStyleSheet(QString("QLineEdit { border: none; background: transparent; font-size: %1px; padding: 0px; }").arg(TITLE_FONT_SIZE));
+    m_searchEdit->setStyleSheet(QString("QLineEdit { border: none; background: transparent; color: %1; font-size: %2px; padding: 0px; }")
+                                    .arg(ThemeManager::defaultTextColorHex())
+                                    .arg(TITLE_FONT_SIZE));
     connect(m_searchEdit, &QLineEdit::textChanged, this, &Launcher::onInputTextChanged);
     m_searchLayout->addWidget(m_searchIcon);
     m_searchLayout->addWidget(m_searchEdit);
@@ -182,7 +184,7 @@ void Launcher::setupUi()
     m_resultsList->setSpacing(PADDING_S / 2); // Set spacing and padding separately to keep the spacing between items and the list widget padding the same.
     m_resultsList->setStyleSheet(QString("QListWidget { border: none; border-radius: %1px; background-color: %2; padding: %3px; }")
                                      .arg(CORNER_RADIUS_L)
-                                     .arg(ThemeManager::primaryBackColorHex())
+                                     .arg(ThemeManager::defaultBackColorHex())
                                      .arg(PADDING_S / 2));
     m_resultsList->setGraphicsEffect(resultsListShadowEffect);
     m_resultsList->hide();

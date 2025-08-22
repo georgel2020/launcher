@@ -9,15 +9,15 @@ public:
 
     static void initTheme();
 
-    static QString primaryBackColorHex();
-    static QString secondaryBackColorHex();
-    static QString primaryTextColorHex();
-    static QString secondaryTextColorHex();
+    static QColor defaultBackColor();
+    static QColor activeBackColor();
+    static QColor accentBackColor();
+    static QColor defaultTextColor();
 
-    static QColor primaryBackColor();
-    static QColor secondaryBackColor();
-    static QColor primaryTextColor();
-    static QColor secondaryTextColor();
+    static QString defaultBackColorHex();
+    static QString activeBackColorHex();
+    static QString accentBackColorHex();
+    static QString defaultTextColorHex();
 
 private:
     static inline bool m_isDarkMode;

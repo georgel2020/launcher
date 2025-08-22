@@ -19,11 +19,11 @@ constexpr auto ICON_SIZE = 24;
 constexpr auto BUTTON_SIZE = 36;
 
 // Colors.
-constexpr auto PRIMARY_BACK_LIGHT = "#ece6f0";
-constexpr auto PRIMARY_BACK_DARK = "#302d38";
-constexpr auto SECONDARY_BACK_LIGHT = "#d2cdd7";
-constexpr auto SECONDARY_BACK_DARK = "#4a4651";
-constexpr auto PRIMARY_TEXT_LIGHT = "#1d1b20";
-constexpr auto PRIMARY_TEXT_DARK = "#e6e0e9";
-constexpr auto SECONDARY_TEXT_LIGHT = "#49454f";
-constexpr auto SECONDARY_TEXT_DARK = "#cac4d0";
+constexpr auto DEFAULT_BACK_LIGHT = "#e9efec";
+constexpr auto DEFAULT_BACK_DARK = "#1a211f";
+constexpr auto ACTIVE_BACK_LIGHT = "#e3eae7";
+constexpr auto ACTIVE_BACK_DARK = "#252b2a";
+constexpr auto ACCENT_BACK_LIGHT = "#cae6df";
+constexpr auto ACCENT_BACK_DARK = "#334b47";
+constexpr auto DEFAULT_TEXT_LIGHT = "#171d1b";
+constexpr auto DEFAULT_TEXT_DARK = "#dde4e1";
