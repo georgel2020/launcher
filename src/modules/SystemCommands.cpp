@@ -1,6 +1,6 @@
 #include "SystemCommands.h"
-#include <QProcess>
 #include <windows.h>
+#include "../utils/ProcessUtils.h"
 
 SystemCommands::SystemCommands(QObject *parent) : IModule(parent) {}
 
@@ -16,10 +16,10 @@ void SystemCommands::query(const QString &text)
         item.iconGlyph = QChar(0xe8ac); // Power settings new.
         item.key = "system_shutdown";
         Action shutdownAction;
-        shutdownAction.handler = [] { QProcess::startDetached("slidetoshutdown"); };
+        shutdownAction.handler = [] { ProcessUtils::startDetached("slidetoshutdown"); };
         Action restartAction;
         restartAction.iconGlyph = QChar(0xe5d5); // Refresh.
-        restartAction.handler = [] { QProcess::startDetached("shutdown", {"-r", "-t", "0"}); };
+        restartAction.handler = [] { ProcessUtils::startDetached("shutdown", {"-r", "-t", "0"}); };
         item.actions = {shutdownAction, restartAction};
         results.append(item);
     }

@@ -24,6 +24,5 @@ private:
 
     QVector<AppInfo> m_apps;
 
-    static void executeAdmin(const QString &executablePath, const QStringList &arguments);
     static bool getShortcutPath(const QString &shortcutPath, QString &targetPath);
 };

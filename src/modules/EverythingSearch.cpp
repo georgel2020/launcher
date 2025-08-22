@@ -1,9 +1,9 @@
 #include "EverythingSearch.h"
 #include <QApplication>
 #include <QClipboard>
-#include <QProcess>
 #include "../../third-party/everything-sdk/include/Everything.h"
 #include "../core/ConfigManager.h"
+#include "../utils/ProcessUtils.h"
 
 EverythingSearch::EverythingSearch(QObject *parent) : IModule(parent)
 {
@@ -53,14 +53,14 @@ void EverythingSearch::query(const QString &text)
             Action openAction;
             openAction.handler = [filePath, fileName]
             {
-                QProcess::startDetached("explorer", {filePath + "\\" + fileName});
+                ProcessUtils::startDetached("explorer", {filePath + "\\" + fileName});
                 Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
             };
             Action openPathAction;
             openPathAction.iconGlyph = QChar(0xe2c8); // Folder open.
             openPathAction.handler = [filePath, fileName]
             {
-                QProcess::startDetached("explorer", {filePath});
+                ProcessUtils::startDetached("explorer", {filePath});
                 Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
             };
             Action copyAction;
