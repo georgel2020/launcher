@@ -1,10 +1,9 @@
 #include "LauncherCommands.h"
 #include <QApplication>
 #include <QDesktopServices>
-#include <QProcess>
 #include <QStandardPaths>
 #include <QTimer>
-#include "../common/Constants.h"
+#include "../utils/ProcessUtils.h"
 
 LauncherCommands::LauncherCommands(QObject *parent) : IModule(parent) {}
 
@@ -47,7 +46,7 @@ void LauncherCommands::query(const QString &text)
         reloadAction.iconGlyph = QChar(0xe5d5); // Refresh.
         reloadAction.handler = []
         {
-            QProcess::startDetached(QCoreApplication::applicationDirPath() + "\\Launcher.exe");
+            ProcessUtils::startDetached(QCoreApplication::applicationDirPath() + "\\Launcher.exe");
             QApplication::quit();
         };
         item.actions = {exitAction, reloadAction};
@@ -64,7 +63,7 @@ void LauncherCommands::query(const QString &text)
         configureAction.handler = []
         {
             const QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).replace("/", "\\");
-            QProcess::startDetached("explorer", {configPath});
+            ProcessUtils::startDetached("explorer", {configPath});
         };
         item.actions = {configureAction};
         results.append(item);

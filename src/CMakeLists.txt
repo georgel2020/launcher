@@ -11,6 +11,8 @@ qt_add_executable(launcher
         core/HistoryManager.cpp core/HistoryManager.h
         core/ThemeManager.cpp core/ThemeManager.h
         core/HotkeyManager.cpp core/HotkeyManager.h
+        # Utilities.
+        utils/ProcessUtils.cpp utils/ProcessUtils.h
         # Common.
         common/IModule.h
         common/Action.h

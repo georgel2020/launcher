@@ -1,8 +1,8 @@
 #include "WindowsTerminal.h"
 #include <QFile>
 #include <QJsonArray>
-#include <QProcess>
 #include <QStandardPaths>
+#include "../utils/ProcessUtils.h"
 
 WindowsTerminal::WindowsTerminal(QObject *parent) : IModule(parent)
 {
@@ -43,8 +43,11 @@ void WindowsTerminal::query(const QString &text)
             item.iconGlyph = QChar(0xeb8e); // Terminal.
             item.key = "terminal_" + profileName;
             Action openAction;
-            openAction.handler = [profileName] { QProcess::startDetached("wt", {"-p", profileName}); };
-            item.actions = {openAction};
+            openAction.handler = [profileName] { ProcessUtils::startDetached("wt", {"-p", profileName}); };
+            Action openAdminAction;
+            openAdminAction.iconGlyph = QChar(0xe9e0); // Shield.
+            openAdminAction.handler = [profileName] { ProcessUtils::startDetached("wt", {"-p", profileName}, true); };
+            item.actions = {openAction, openAdminAction};
             results.append(item);
         }
     }

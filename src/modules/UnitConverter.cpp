@@ -1,7 +1,6 @@
 #include "UnitConverter.h"
 #include <QApplication>
 #include <QClipboard>
-#include <QProcess>
 #include "../../third-party/units/units/units.hpp"
 
 UnitConverter::UnitConverter(QObject *parent) : IModule(parent) {}

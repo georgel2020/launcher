@@ -1,11 +1,11 @@
 #include "AppsSearch.h"
 #include <QDirIterator>
 #include <QJsonArray>
-#include <QProcess>
 #include <QStandardPaths>
 #include <shlobj.h>
 #include <windows.h>
 #include "../core/ConfigManager.h"
+#include "../utils/ProcessUtils.h"
 
 AppsSearch::AppsSearch(QObject *parent) : IModule(parent)
 {
@@ -73,10 +73,10 @@ void AppsSearch::query(const QString &text)
             item.subtitle = app.path;
             item.iconPath = app.path;
             Action openAction;
-            openAction.handler = [app] { QProcess::startDetached(app.path); };
+            openAction.handler = [app] { ProcessUtils::startDetached(app.path); };
             Action openAdminAction;
             openAdminAction.iconGlyph = QChar(0xe9e0); // Shield.
-            openAdminAction.handler = [app] { executeAdmin(app.path, QStringList()); };
+            openAdminAction.handler = [app] { ProcessUtils::startDetached(app.path, QStringList(), true); };
             item.actions = {openAction, openAdminAction};
             item.key = "app_" + app.path;
             results.append(item);
@@ -84,24 +84,6 @@ void AppsSearch::query(const QString &text)
     }
 
     emit resultsReady(results, this);
-}
-
-/**
- * Execute an application with administrator privileges.
- *
- * @param executablePath The path to the executable.
- * @param arguments The command line arguments.
- */
-void AppsSearch::executeAdmin(const QString &executablePath, const QStringList &arguments)
-{
-    SHELLEXECUTEINFO sei = {sizeof(sei)};
-    sei.fMask = SEE_MASK_NOCLOSEPROCESS;
-    sei.nShow = SW_SHOWNORMAL;
-    sei.lpVerb = L"runas";
-    sei.lpFile = executablePath.toStdWString().c_str();
-    sei.lpParameters = arguments.join(' ').toStdWString().c_str();
-
-    ShellExecuteEx(&sei);
 }
 
 /**
