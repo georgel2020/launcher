@@ -49,6 +49,7 @@ void LauncherCommands::query(const QString &text)
             ProcessUtils::startDetached(QCoreApplication::applicationDirPath() + "\\Launcher.exe");
             QApplication::quit();
         };
+        reloadAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_R);
         item.actions = {exitAction, reloadAction};
         results.append(item);
     }

@@ -20,6 +20,7 @@ void Calculator::query(const QString &text)
         item.iconGlyph = QChar(0xea5f); // Calculate.
         Action copyAction;
         copyAction.handler = [value] { QApplication::clipboard()->setText(QString::number(value)); };
+        copyAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_C);
         item.actions = {copyAction};
         item.key = "calculator";
         results.append(item);

@@ -77,6 +77,7 @@ void AppsSearch::query(const QString &text)
             Action openAdminAction;
             openAdminAction.iconGlyph = QChar(0xe9e0); // Shield.
             openAdminAction.handler = [app] { ProcessUtils::startDetached(app.path, QStringList(), true); };
+            openAdminAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return);
             item.actions = {openAction, openAdminAction};
             item.key = "app_" + app.path;
             results.append(item);

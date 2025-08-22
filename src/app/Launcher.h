@@ -39,6 +39,7 @@ private:
     void setupUi();
     void setupModules();
     void handleActionsNavigation(const bool &right) const;
+    bool executeShortcutAction(const QKeySequence &pressedShortcut);
     void executeCurrentAction();
 
     bool isWindowShown = false;

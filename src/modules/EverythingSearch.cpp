@@ -63,12 +63,15 @@ void EverythingSearch::query(const QString &text)
                 ProcessUtils::startDetached("explorer", {filePath});
                 Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
             };
+            openPathAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_E);
             Action copyAction;
             copyAction.iconGlyph = QChar(0xe173); // File copy.
             copyAction.handler = [filePath, fileName] { QApplication::clipboard()->setText(filePath + "\\" + fileName); };
+            copyAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_C);
             Action copyPathAction;
             copyPathAction.iconGlyph = QChar(0xebbd); // Folder copy.
             copyPathAction.handler = [filePath] { QApplication::clipboard()->setText(filePath); };
+            copyPathAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C);
             item.actions = {openAction, openPathAction, copyAction, copyPathAction};
             item.key = "everything_" + filePath + "\\" + fileName;
             item.score = 1 + log(runCount + 1) * m_runCountWeight;

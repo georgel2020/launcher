@@ -8,7 +8,7 @@ void SystemCommands::query(const QString &text)
 {
     QVector<ResultItem> results;
 
-    if (QString("shutdown").contains(text, Qt::CaseInsensitive) || QString("restart").contains(text, Qt::CaseInsensitive))
+    if (QString("shutdown").contains(text, Qt::CaseInsensitive))
     {
         ResultItem item;
         item.title = "Shutdown";
@@ -17,10 +17,19 @@ void SystemCommands::query(const QString &text)
         item.key = "system_shutdown";
         Action shutdownAction;
         shutdownAction.handler = [] { ProcessUtils::startDetached("slidetoshutdown"); };
+        item.actions = {shutdownAction};
+        results.append(item);
+    }
+    if (QString("restart").contains(text, Qt::CaseInsensitive))
+    {
+        ResultItem item;
+        item.title = "Restart";
+        item.subtitle = "Restart the system";
+        item.iconGlyph = QChar(0xe5d5); // Refresh.
+        item.key = "system_restart";
         Action restartAction;
-        restartAction.iconGlyph = QChar(0xe5d5); // Refresh.
         restartAction.handler = [] { ProcessUtils::startDetached("shutdown", {"-r", "-t", "0"}); };
-        item.actions = {shutdownAction, restartAction};
+        item.actions = {restartAction};
         results.append(item);
     }
     if (QString("lock").contains(text, Qt::CaseInsensitive))

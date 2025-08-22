@@ -329,6 +329,12 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
     {
         const auto keyEvent = dynamic_cast<QKeyEvent *>(event);
 
+        QKeySequence pressedShortcut(keyEvent->modifiers() | keyEvent->key());
+        if (executeShortcutAction(pressedShortcut))
+        {
+            return true;
+        }
+
         // Navigate between actions.
         if (keyEvent->key() == Qt::Key_Tab)
         {
@@ -338,24 +344,20 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
         if (keyEvent->key() == Qt::Key_Right)
         {
             if (m_searchEdit->cursorPosition() < m_searchEdit->text().length())
-            {
                 return QMainWindow::eventFilter(obj, event);
-            }
             handleActionsNavigation(true);
             return true;
         }
         if (keyEvent->key() == Qt::Key_Left)
         {
             if (m_searchEdit->cursorPosition() > 0)
-            {
                 return QMainWindow::eventFilter(obj, event);
-            }
             handleActionsNavigation(false);
             return true;
         }
 
         // Launch current action.
-        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)
+        if (keyEvent->key() == Qt::Key_Return)
         {
             executeCurrentAction();
             return true;
@@ -410,6 +412,37 @@ void Launcher::handleActionsNavigation(const bool &right) const
 
     // Force repaint to show the highlight.
     m_resultsList->viewport()->update();
+}
+
+/**
+ * Launch the action according to its shortcut assigned.
+ *
+ * @param pressedShortcut The actual pressed shortcut.
+ * @return True if an action is executed; false otherwise.
+ */
+bool Launcher::executeShortcutAction(const QKeySequence &pressedShortcut)
+{
+    const QListWidgetItem *currentItem = m_resultsList->currentItem();
+    if (!currentItem)
+        return false;
+
+    const QVariant data = currentItem->data(Qt::UserRole);
+    const auto item = data.value<ResultItem>();
+    for (const auto &action : item.actions)
+    {
+        if (!action.shortcut.isEmpty() && action.shortcut == pressedShortcut)
+        {
+            if (action.handler)
+                action.handler();
+            if (!item.key.isEmpty())
+                HistoryManager::addHistory(item.key);
+
+            setWindowVisibility(false);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
