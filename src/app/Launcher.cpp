@@ -329,37 +329,48 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
     {
         const auto keyEvent = dynamic_cast<QKeyEvent *>(event);
 
-        QKeySequence pressedShortcut(keyEvent->modifiers() | keyEvent->key());
-        if (executeShortcutAction(pressedShortcut))
+        const QListWidgetItem *currentItem = m_resultsList->currentItem();
+        if (!currentItem)
+            return QMainWindow::eventFilter(obj, event);
+
+        const QVariant data = currentItem->data(Qt::UserRole);
+        const auto item = data.value<ResultItem>();
+
+        if (keyEvent->modifiers() != Qt::NoModifier)
         {
-            return true;
+            const QKeySequence pressedShortcut(keyEvent->modifiers() | keyEvent->key());
+            if (executeShortcutAction(item, pressedShortcut))
+            {
+                return true;
+            }
+            return QMainWindow::eventFilter(obj, event);
         }
 
         // Navigate between actions.
         if (keyEvent->key() == Qt::Key_Tab)
         {
-            handleActionsNavigation(true);
+            handleActionsNavigation(item, true);
             return true;
         }
         if (keyEvent->key() == Qt::Key_Right)
         {
             if (m_searchEdit->cursorPosition() < m_searchEdit->text().length())
                 return QMainWindow::eventFilter(obj, event);
-            handleActionsNavigation(true);
+            handleActionsNavigation(item, true);
             return true;
         }
         if (keyEvent->key() == Qt::Key_Left)
         {
-            if (m_searchEdit->cursorPosition() > 0)
+            if (m_resultItemDelegate->getCurrentActionIndex() == 0)
                 return QMainWindow::eventFilter(obj, event);
-            handleActionsNavigation(false);
+            handleActionsNavigation(item, false);
             return true;
         }
 
         // Launch current action.
         if (keyEvent->key() == Qt::Key_Return)
         {
-            executeCurrentAction();
+            executeCurrentAction(item);
             return true;
         }
 
@@ -390,44 +401,37 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
 /**
  * Handle tab navigation to go through actions of current result.
  *
+ * @param item The current result item.
  * @param right Whether to navigate right (true for right; false for left).
  */
-void Launcher::handleActionsNavigation(const bool &right) const
+void Launcher::handleActionsNavigation(const ResultItem &item, const bool &right) const
 {
-    const QListWidgetItem *currentItem = m_resultsList->currentItem();
-    if (!currentItem)
-        return;
-
-    const QVariant data = currentItem->data(Qt::UserRole);
-    const auto item = data.value<ResultItem>();
     if (item.actions.isEmpty())
         return;
 
     // Get current action index from delegate.
     const int currentIndex = m_resultItemDelegate->getCurrentActionIndex();
     const int actionCount = static_cast<int>(item.actions.size());
-    const int newIndex = (currentIndex + (right ? 1 : -1) + actionCount) % actionCount; // Add an additional actionCount to ensure newIndex > 0.
+    const int newIndex = currentIndex + (right ? 1 : -1);
 
-    m_resultItemDelegate->setCurrentActionIndex(newIndex);
+    if (newIndex >= 0 && newIndex < actionCount)
+    {
+        m_resultItemDelegate->setCurrentActionIndex(newIndex);
 
-    // Force repaint to show the highlight.
-    m_resultsList->viewport()->update();
+        // Force repaint to show the highlight.
+        m_resultsList->viewport()->update();
+    }
 }
 
 /**
  * Launch the action according to its shortcut assigned.
  *
+ * @param item The current result item.
  * @param pressedShortcut The actual pressed shortcut.
  * @return True if an action is executed; false otherwise.
  */
-bool Launcher::executeShortcutAction(const QKeySequence &pressedShortcut)
+bool Launcher::executeShortcutAction(const ResultItem &item, const QKeySequence &pressedShortcut)
 {
-    const QListWidgetItem *currentItem = m_resultsList->currentItem();
-    if (!currentItem)
-        return false;
-
-    const QVariant data = currentItem->data(Qt::UserRole);
-    const auto item = data.value<ResultItem>();
     for (const auto &action : item.actions)
     {
         if (!action.shortcut.isEmpty() && action.shortcut == pressedShortcut)
@@ -447,15 +451,11 @@ bool Launcher::executeShortcutAction(const QKeySequence &pressedShortcut)
 
 /**
  * Launch the highlighted action of the current result.
+ *
+ * @param item The current result item.
  */
-void Launcher::executeCurrentAction()
+void Launcher::executeCurrentAction(const ResultItem &item)
 {
-    const QListWidgetItem *currentItem = m_resultsList->currentItem();
-    if (!currentItem)
-        return;
-
-    const QVariant data = currentItem->data(Qt::UserRole);
-    const auto item = data.value<ResultItem>();
     if (item.actions.isEmpty()) // Empty action list is accepted.
     {
         setWindowVisibility(false);
