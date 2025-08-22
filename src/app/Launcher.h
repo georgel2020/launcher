@@ -38,9 +38,9 @@ private:
     void setWindowVisibility(const bool &visibility);
     void setupUi();
     void setupModules();
-    void handleActionsNavigation(const bool &right) const;
-    bool executeShortcutAction(const QKeySequence &pressedShortcut);
-    void executeCurrentAction();
+    void handleActionsNavigation(const ResultItem& item, const bool &right) const;
+    bool executeShortcutAction(const ResultItem& item, const QKeySequence &pressedShortcut);
+    void executeCurrentAction(const ResultItem& item);
 
     bool isWindowShown = false;
     QWidget *m_centralWidget = nullptr;
