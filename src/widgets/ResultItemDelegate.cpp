@@ -65,7 +65,7 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         QPainterPath path;
         path.addRoundedRect(option.rect, CORNER_RADIUS_S, CORNER_RADIUS_S);
         painter->setPen(Qt::NoPen);
-        painter->fillPath(path, ThemeManager::secondaryBackColor());
+        painter->fillPath(path, (isSelected && m_currentActionIndex == 0) ? ThemeManager::accentBackColor() : ThemeManager::activeBackColor());
         painter->drawPath(path);
     }
 
@@ -216,7 +216,7 @@ void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, con
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
     painter->setFont(iconFont);
-    painter->setPen(ThemeManager::primaryTextColor());
+    painter->setPen(ThemeManager::defaultTextColor());
     painter->drawText(rect, Qt::AlignCenter, QString(icon));
 }
 
@@ -233,7 +233,7 @@ void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QS
     const QFontMetrics metrics(font);
     const QString elidedText = metrics.elidedText(text, Qt::ElideRight, rect.width());
     painter->setFont(font);
-    painter->setPen(ThemeManager::primaryTextColor());
+    painter->setPen(ThemeManager::defaultTextColor());
     painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, elidedText);
 }
 
@@ -265,10 +265,12 @@ void ResultItemDelegate::drawActionButtons(QPainter *painter, const QRect &rect,
 
         // Determine background color based on state
         QColor backgroundColor;
-        if ((isSelected && currentActionIndex == actionIndex) || (isHovered && hoveredActionIndex == actionIndex))
-            backgroundColor = ThemeManager::secondaryBackColor();
+        if (isSelected && currentActionIndex == actionIndex)
+            backgroundColor = ThemeManager::accentBackColor();
+        else if (isHovered && hoveredActionIndex == actionIndex)
+            backgroundColor = ThemeManager::activeBackColor();
         else
-            backgroundColor = ThemeManager::primaryBackColor();
+            backgroundColor = ThemeManager::defaultBackColor();
 
         painter->setBrush(backgroundColor);
         painter->drawRoundedRect(buttonRect, CORNER_RADIUS_S, CORNER_RADIUS_S);
