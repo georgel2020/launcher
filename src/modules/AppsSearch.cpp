@@ -9,7 +9,7 @@
 
 AppsSearch::AppsSearch(QObject *parent) : IModule(parent)
 {
-    const QJsonDocument doc = ConfigManager::loadModuleConfig(this);
+    const QJsonDocument doc = ConfigManager::loadConfig(this);
     const QJsonObject rootObject = doc.object();
     const QJsonArray appsArray = rootObject["apps"].toArray();
     for (const QJsonValue app : appsArray)

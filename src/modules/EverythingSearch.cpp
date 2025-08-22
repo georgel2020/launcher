@@ -7,7 +7,7 @@
 
 EverythingSearch::EverythingSearch(QObject *parent) : IModule(parent)
 {
-    const QJsonDocument doc = ConfigManager::loadModuleConfig(this);
+    const QJsonDocument doc = ConfigManager::loadConfig(this);
     const QJsonObject rootObject = doc.object();
     m_maxResults = rootObject["maxResults"].toInt();
     m_runCountWeight = rootObject["runCountWeight"].toDouble();

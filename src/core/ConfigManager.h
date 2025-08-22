@@ -11,10 +11,11 @@ public:
     ConfigManager() = delete;
 
     static QJsonDocument loadConfig(const Launcher *launcher);
-    static QJsonDocument loadModuleConfig(const IModule *module);
+    static QJsonDocument loadConfig(const IModule *module);
+    static QJsonDocument loadConfig(const QString &configPath, const QJsonDocument &defaultConfig);
     static QString toCamelCase(const QString &text);
 
 private:
     static QString getConfigPath();
-    static QString getModuleConfigPath(const QString &moduleName);
+    static QString getConfigPath(const QString &moduleName);
 };
