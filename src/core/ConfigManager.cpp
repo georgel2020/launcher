@@ -1,8 +1,8 @@
+#include "ConfigManager.h"
 #include <QDir>
 #include <QStandardPaths>
 #include "../app/Launcher.h"
 #include "../common/IModule.h"
-#include "ConfigManager.h"
 
 /**
  * Load configuration file for Launcher.
@@ -12,30 +12,7 @@
  * @param launcher A pointer to Launcher main window.
  * @return The QJsonDocument representing the configuration.
  */
-QJsonDocument ConfigManager::loadConfig(const Launcher *launcher)
-{
-    QFile file(getConfigPath());
-
-    if (file.exists())
-    {
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        const QByteArray data = file.readAll();
-        file.close();
-        QJsonParseError error;
-        QJsonDocument doc = QJsonDocument::fromJson(data, &error);
-
-        if (error.error != QJsonParseError::NoError)
-            return {};
-
-        return doc;
-    }
-
-    const QJsonDocument doc = launcher->defaultConfig();
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write(doc.toJson(QJsonDocument::Indented));
-    file.close();
-    return doc;
-}
+QJsonDocument ConfigManager::loadConfig(const Launcher *launcher) { return loadConfig(getConfigPath(), launcher->defaultConfig()); }
 
 /**
  * Load configuration file for a Launcher module.
@@ -45,12 +22,20 @@ QJsonDocument ConfigManager::loadConfig(const Launcher *launcher)
  * @param module A pointer to the module.
  * @return The QJsonDocument representing the configuration.
  */
-QJsonDocument ConfigManager::loadModuleConfig(const IModule *module)
-{
-    if (!module)
-        return {};
+QJsonDocument ConfigManager::loadConfig(const IModule *module) { return loadConfig(getConfigPath(module->name()), module->defaultConfig()); }
 
-    QFile file(getModuleConfigPath(module->name()));
+/**
+ * Load configuration file from a path.
+ *
+ * If the file does not exist, a default configuration will be applied.
+ *
+ * @param configPath The path to the configuration file.
+ * @param defaultConfig The default QJsonDocument configuration.
+ * @return The retrieved configuration.
+ */
+QJsonDocument ConfigManager::loadConfig(const QString &configPath, const QJsonDocument &defaultConfig)
+{
+    QFile file(configPath);
 
     if (file.exists())
     {
@@ -65,11 +50,11 @@ QJsonDocument ConfigManager::loadModuleConfig(const IModule *module)
 
         return doc;
     }
-    const QJsonDocument doc = module->defaultConfig();
+
     file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write(doc.toJson(QJsonDocument::Indented));
+    file.write(defaultConfig.toJson(QJsonDocument::Indented));
     file.close();
-    return doc;
+    return defaultConfig;
 }
 
 /**
@@ -117,7 +102,7 @@ QString ConfigManager::getConfigPath()
  * @param moduleName Name of the module.
  * @return The file path string.
  */
-QString ConfigManager::getModuleConfigPath(const QString &moduleName)
+QString ConfigManager::getConfigPath(const QString &moduleName)
 {
     const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (configDir.isEmpty())
