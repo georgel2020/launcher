@@ -40,6 +40,7 @@ private:
     void setWindowVisibility(const bool &visibility);
     void setupUi();
     void setupModules();
+    void readConfiguration();
     void handleActionsNavigation(const ResultItem& item, const bool &right) const;
     bool executeShortcutAction(const ResultItem& item, const QKeySequence &pressedShortcut);
     void executeCurrentAction(const ResultItem& item);

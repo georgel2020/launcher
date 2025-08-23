@@ -15,6 +15,7 @@ public:
 private:
     static QString getHistoryPath();
 
+    static inline bool m_initialized;
     static inline double m_increment;
     static inline double m_historyScoreWeight;
     static inline QMap<QString, double> m_scores;

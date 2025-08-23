@@ -31,31 +31,7 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
     setupUi();
     setupModules();
 
-    // Read configuration.
-    const QJsonDocument doc = ConfigManager::loadConfig(this);
-    const QJsonObject rootObject = doc.object();
-    const QJsonObject modulesObject = rootObject["modules"].toObject();
-    for (ModuleConfig &config : m_moduleConfigs)
-    {
-        const QJsonObject moduleObject = modulesObject[ConfigManager::toCamelCase(config.name)].toObject();
-        config.enabled = moduleObject["enabled"].toBool();
-        config.global = moduleObject["global"].toBool();
-        config.priority = moduleObject["priority"].toDouble();
-        config.prefix = moduleObject["prefix"].toString()[0];
-
-        if (!config.enabled)
-        {
-            disconnect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
-            m_moduleConfigs.removeOne(config);
-        }
-    }
-    const QJsonObject historyObject = rootObject["history"].toObject();
-    m_decay = historyObject["decay"].toDouble();
-    m_minScore = historyObject["minScore"].toDouble();
-    m_increment = historyObject["increment"].toDouble();
-    m_historyScoreWeight = historyObject["historyScoreWeight"].toDouble();
-    const QJsonObject uiObject = rootObject["ui"].toObject();
-    m_maxVisibleResults = uiObject["maxVisibleResults"].toInt();
+    readConfiguration();
 
     // Configure history.
     HistoryManager::initHistory(m_decay, m_minScore, m_increment, m_historyScoreWeight);
@@ -238,6 +214,34 @@ void Launcher::setupModules()
         config.iconGlyph = config.module->iconGlyph();
         connect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
     }
+}
+
+void Launcher::readConfiguration()
+{
+    const QJsonDocument doc = ConfigManager::loadConfig(this);
+    const QJsonObject rootObject = doc.object();
+    const QJsonObject modulesObject = rootObject["modules"].toObject();
+    for (ModuleConfig &config : m_moduleConfigs)
+    {
+        const QJsonObject moduleObject = modulesObject[ConfigManager::toCamelCase(config.name)].toObject();
+
+        config.enabled = moduleObject["enabled"].toBool();
+        config.global = moduleObject["global"].toBool();
+        config.priority = moduleObject["priority"].toDouble();
+        config.prefix = moduleObject["prefix"].toString(" ")[0]; // If prefix is not provided, use a space character.
+        if (!config.enabled)
+        {
+            disconnect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
+            m_moduleConfigs.removeOne(config);
+        }
+    }
+    const QJsonObject historyObject = rootObject["history"].toObject();
+    m_decay = historyObject["decay"].toDouble();
+    m_minScore = historyObject["minScore"].toDouble();
+    m_increment = historyObject["increment"].toDouble();
+    m_historyScoreWeight = historyObject["historyScoreWeight"].toDouble();
+    const QJsonObject uiObject = rootObject["ui"].toObject();
+    m_maxVisibleResults = uiObject["maxVisibleResults"].toInt();
 }
 
 /**
