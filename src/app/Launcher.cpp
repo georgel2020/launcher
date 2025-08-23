@@ -5,7 +5,6 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMessageBox>
 #include "../common/Constants.h"
 #include "../common/IModule.h"
 #include "../core/ConfigManager.h"
@@ -41,7 +40,7 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
         const QJsonObject moduleObject = modulesObject[ConfigManager::toCamelCase(config.name)].toObject();
         config.enabled = moduleObject["enabled"].toBool();
         config.global = moduleObject["global"].toBool();
-        config.priority = moduleObject["priority"].toInt();
+        config.priority = moduleObject["priority"].toDouble();
         config.prefix = moduleObject["prefix"].toString()[0];
 
         if (!config.enabled)
@@ -223,13 +222,13 @@ void Launcher::setupUi()
 void Launcher::setupModules()
 {
     m_moduleConfigs = {
-        ModuleConfig(new LauncherCommands(this), true, true, 5, ':'), //
-        ModuleConfig(new EverythingSearch(this), true, false, 1, '@'), //
-        ModuleConfig(new Calculator(this), true, true, 5, '='), //
-        ModuleConfig(new AppsSearch(this), true, true, 4, ' '), //
-        ModuleConfig(new SystemCommands(this), true, true, 5, ' '), //
-        ModuleConfig(new WindowsTerminal(this), true, true, 5, '>'), //
-        ModuleConfig(new UnitConverter(this), true, true, 5, ' ') //
+        ModuleConfig(new LauncherCommands(this), true, true, 1.0, ':'), //
+        ModuleConfig(new EverythingSearch(this), true, false, 0.0, '@'), //
+        ModuleConfig(new Calculator(this), true, true, 1.0, '='), //
+        ModuleConfig(new AppsSearch(this), true, true, 0.8, ' '), //
+        ModuleConfig(new SystemCommands(this), true, true, 1.0, ' '), //
+        ModuleConfig(new WindowsTerminal(this), true, true, 1.0, '>'), //
+        ModuleConfig(new UnitConverter(this), true, true, 1.0, ' ') //
     };
 
     // Connect all modules to results ready signal.

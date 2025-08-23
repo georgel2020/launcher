@@ -31,7 +31,7 @@ struct ResultItem
     QString iconPath;
     QVector<Action> actions;
     QString key;
-    int priority = 0;
+    double priority = 1.0;
     double score = 1.0;
 };
 
