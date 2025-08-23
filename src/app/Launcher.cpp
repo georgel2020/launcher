@@ -18,6 +18,7 @@
 #include "../modules/SystemCommands.h"
 #include "../modules/UnitConverter.h"
 #include "../modules/WindowsTerminal.h"
+#include "../utils/DialogUtils.h"
 #include "../widgets/ResultItemDelegate.h"
 #include "../widgets/ResultItemWidget.h"
 
@@ -234,6 +235,9 @@ void Launcher::readConfiguration()
             disconnect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
             m_moduleConfigs.removeOne(config);
         }
+
+        if (config.priority < 0.0 || config.priority > 1.0)
+            DialogUtils::showWarning(QString("Invalid priority %1 for module %2. ").arg(config.priority).arg(config.name));
     }
     const QJsonObject historyObject = rootObject["history"].toObject();
     m_decay = historyObject["decay"].toDouble();
