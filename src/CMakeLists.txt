@@ -13,6 +13,7 @@ qt_add_executable(launcher
         core/HotkeyManager.cpp core/HotkeyManager.h
         # Utilities.
         utils/ProcessUtils.cpp utils/ProcessUtils.h
+        utils/DialogUtils.cpp utils/DialogUtils.h
         # Common.
         common/IModule.h
         common/Action.h
