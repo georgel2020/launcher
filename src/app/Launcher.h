@@ -61,10 +61,10 @@ private:
         QChar iconGlyph;
         bool enabled;
         bool global;
-        int priority;
+        double priority;
         QChar prefix;
 
-        ModuleConfig(IModule *module, const bool &enabled, const bool &global, const int &priority, const QChar &prefix)
+        ModuleConfig(IModule *module, const bool &enabled, const bool &global, const double &priority, const QChar &prefix)
         {
             this->module = module;
             this->name = QString();
