@@ -263,7 +263,7 @@ void Launcher::onHotkeyPressed(long long id)
  */
 void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *module)
 {
-    int priority = 0;
+    double priority = 0.0;
     for (const ModuleConfig &config : m_moduleConfigs)
         if (config.module == module)
             priority = config.priority;

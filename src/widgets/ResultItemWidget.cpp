@@ -6,8 +6,8 @@ ResultItemWidget::ResultItemWidget(QListWidget *parent) : QListWidgetItem(parent
 
 bool ResultItemWidget::operator<(const QListWidgetItem &other) const
 {
-    const int thisPriority = this->data(Qt::UserRole).value<ResultItem>().priority;
-    const int otherPriority = other.data(Qt::UserRole).value<ResultItem>().priority;
+    const double thisPriority = this->data(Qt::UserRole).value<ResultItem>().priority;
+    const double otherPriority = other.data(Qt::UserRole).value<ResultItem>().priority;
     const double thisScore = this->data(Qt::UserRole).value<ResultItem>().score;
     const double otherScore = other.data(Qt::UserRole).value<ResultItem>().score;
     const QString thisKey = this->data(Qt::UserRole).value<ResultItem>().key;
