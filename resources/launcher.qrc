@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>fonts/MaterialSymbolsRounded-Regular.ttf</file>
+        <file>icons/launcher.png</file>
     </qresource>
 </RCC>

@@ -1,8 +1,8 @@
 #include <QApplication>
 #include <QFontDatabase>
 #include <QMessageBox>
-
 #include "app/Launcher.h"
+#include "utils/DialogUtils.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     if (!launcher.registerHotkey())
     {
-        QMessageBox::critical(nullptr, "Launcher", "Failed to register hotkey.");
+        DialogUtils::showError("Failed to register hotkey. ");
         return 1;
     }
 
