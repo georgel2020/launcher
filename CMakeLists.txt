@@ -16,10 +16,10 @@ set(ENABLE_WIDE_CHAR ON)
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
 # Add source directory.
-add_subdirectory("src")
+add_subdirectory(src)
 
 # Add muparser source directory.
-add_subdirectory("third-party/muparser")
+add_subdirectory(third-party/muparser)
 
 # Add units source directory.
-add_subdirectory("third-party/units")
+add_subdirectory(third-party/units)

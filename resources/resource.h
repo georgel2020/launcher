@@ -1,0 +1,1 @@
+#define IDI_ICON_LAUNCHER 101
