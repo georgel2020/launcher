@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include "../common/Constants.h"
 #include "../common/IModule.h"
 #include "../core/ConfigManager.h"
@@ -23,10 +24,6 @@
 
 Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
 {
-    // Register hotkey.
-    connect(HotkeyManager::instance(), &HotkeyManager::hotkeyPressed, this, &Launcher::onHotkeyPressed);
-    HotkeyManager::registerHotkey(MOD_ALT, VK_SPACE, 0);
-
     // Set window attributes.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -89,6 +86,17 @@ QJsonDocument Launcher::defaultConfig() const
     uiObject["maxVisibleResults"] = m_maxVisibleResults;
     rootObject["ui"] = uiObject;
     return QJsonDocument(rootObject);
+}
+
+/**
+ * Use Windows API to register global Alt + Space hotkey.
+ *
+ * @return True if the hotkey is successfully registered; false otherwise.
+ */
+bool Launcher::registerHotkey() const
+{
+    connect(HotkeyManager::instance(), &HotkeyManager::hotkeyPressed, this, &Launcher::onHotkeyPressed);
+    return HotkeyManager::registerHotkey(MOD_ALT, VK_SPACE, 0);
 }
 
 /**

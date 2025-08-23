@@ -1,10 +1,12 @@
 #include <QApplication>
 #include <QFontDatabase>
+#include <QMessageBox>
+
 #include "app/Launcher.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
     // Set application information.
     QCoreApplication::setApplicationName("Launcher");
@@ -13,6 +15,13 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont(":/fonts/MaterialSymbolsRounded-Regular.ttf");
 
     // Create main window.
-    Launcher w;
+    Launcher launcher;
+
+    if (!launcher.registerHotkey())
+    {
+        QMessageBox::critical(nullptr, "Launcher", "Failed to register hotkey.");
+        return 1;
+    }
+
     return QApplication::exec();
 }

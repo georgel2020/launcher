@@ -24,6 +24,8 @@ class Launcher final : public QMainWindow
 public:
     explicit Launcher(QWidget *parent = nullptr);
 
+    bool registerHotkey() const;
+
     [[nodiscard]] QJsonDocument defaultConfig() const;
 
 protected:
