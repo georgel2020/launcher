@@ -35,7 +35,14 @@ qt_add_executable(launcher
 
 target_sources(launcher PRIVATE ../resources/launcher.rc)
 
-set_target_properties(launcher PROPERTIES WIN32_EXECUTABLE TRUE)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set_target_properties(launcher PROPERTIES WIN32_EXECUTABLE TRUE)
+    target_compile_definitions(launcher PUBLIC
+            QT_NO_DEBUG_OUTPUT
+            QT_NO_INFO_OUTPUT
+            QT_NO_WARNING_OUTPUT
+    )
+endif()
 
 # Link Qt libraries.
 target_link_libraries(launcher PRIVATE

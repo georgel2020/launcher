@@ -1,8 +1,10 @@
 #include "HistoryManager.h"
+#include <QApplication>
 #include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QStandardPaths>
+#include "../utils/DialogUtils.h"
 
 /**
  * Initialize history manager.
@@ -32,7 +34,11 @@ void HistoryManager::initHistory(const double &decay, const double &minScore, co
         QJsonDocument doc = QJsonDocument::fromJson(data, &error);
 
         if (error.error != QJsonParseError::NoError)
+        {
+            DialogUtils::showError(QString("Failed to parse history file. "));
+            m_initialized = false;
             return;
+        }
 
         const QJsonObject rootObject = doc.object();
 
@@ -59,6 +65,7 @@ void HistoryManager::initHistory(const double &decay, const double &minScore, co
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         file.write(doc.toJson(QJsonDocument::Indented));
         file.close();
+        m_initialized = true;
         return;
     }
 
@@ -70,16 +77,19 @@ void HistoryManager::initHistory(const double &decay, const double &minScore, co
     const auto doc = QJsonDocument(rootObject);
     file.write(doc.toJson(QJsonDocument::Indented));
     file.close();
+    m_initialized = true;
 }
 
 /**
  * Add a history item.
  *
  * @param key The unique key of the result.
- * @param increment The increment to add to the score.
  */
 void HistoryManager::addHistory(const QString &key)
 {
+    if (!m_initialized)
+        return;
+
     if (m_scores.contains(key))
         m_scores[key] += m_increment;
     else
@@ -110,6 +120,9 @@ void HistoryManager::addHistory(const QString &key)
  */
 double HistoryManager::getHistoryScore(const QString &key)
 {
+    if (!m_initialized)
+        return 1;
+
     if (m_scores.contains(key))
     {
         return 1 + log(m_scores[key] + 1) * m_historyScoreWeight;
@@ -127,8 +140,6 @@ double HistoryManager::getHistoryScore(const QString &key)
 QString HistoryManager::getHistoryPath()
 {
     const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    if (configDir.isEmpty())
-        return {};
 
     const QDir dir(configDir);
     if (!dir.exists())

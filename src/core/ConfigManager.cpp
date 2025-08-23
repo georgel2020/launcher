@@ -1,8 +1,10 @@
 #include "ConfigManager.h"
+#include <QApplication>
 #include <QDir>
 #include <QStandardPaths>
 #include "../app/Launcher.h"
 #include "../common/IModule.h"
+#include "../utils/DialogUtils.h"
 
 /**
  * Load configuration file for Launcher.
@@ -46,7 +48,10 @@ QJsonDocument ConfigManager::loadConfig(const QString &configPath, const QJsonDo
         QJsonDocument doc = QJsonDocument::fromJson(data, &error);
 
         if (error.error != QJsonParseError::NoError)
-            return {};
+        {
+            DialogUtils::showError(QString("Failed to parse configuration file %1. ").arg(configPath));
+            return defaultConfig;
+        }
 
         return doc;
     }
@@ -84,8 +89,6 @@ QString ConfigManager::toCamelCase(const QString &text)
 QString ConfigManager::getConfigPath()
 {
     const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    if (configDir.isEmpty())
-        return {};
 
     const QDir dir(configDir);
     if (!dir.exists())
@@ -105,8 +108,6 @@ QString ConfigManager::getConfigPath()
 QString ConfigManager::getConfigPath(const QString &moduleName)
 {
     const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    if (configDir.isEmpty())
-        return {};
 
     const QDir dir(configDir);
     if (!dir.exists())
