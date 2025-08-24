@@ -14,6 +14,7 @@ void SystemCommands::query(const QString &text)
         item.title = "Shutdown";
         item.subtitle = "Shutdown the system";
         item.iconGlyph = QChar(0xe8ac); // Power settings new.
+        item.iconType = IconType::Font;
         item.key = "system_shutdown";
         Action shutdownAction;
         shutdownAction.handler = [] { ProcessUtils::startDetached("slidetoshutdown"); };
@@ -26,6 +27,7 @@ void SystemCommands::query(const QString &text)
         item.title = "Restart";
         item.subtitle = "Restart the system";
         item.iconGlyph = QChar(0xe5d5); // Refresh.
+        item.iconType = IconType::Font;
         item.key = "system_restart";
         Action restartAction;
         restartAction.handler = [] { ProcessUtils::startDetached("shutdown", {"-r", "-t", "0"}); };
@@ -38,6 +40,7 @@ void SystemCommands::query(const QString &text)
         item.title = "Lock";
         item.subtitle = "Lock the system";
         item.iconGlyph = QChar(0xe897); // Lock.
+        item.iconType = IconType::Font;
         item.key = "system_lock";
         Action lockAction;
         lockAction.handler = [] { LockWorkStation(); };

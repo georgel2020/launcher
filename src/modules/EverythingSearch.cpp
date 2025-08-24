@@ -40,6 +40,7 @@ void EverythingSearch::query(const QString &text)
         item.title = "Everything is not running";
         item.subtitle = "Everything Search";
         item.iconGlyph = QChar(0xf8b6); // Error.
+        item.iconType = IconType::Font;
         results.append(item);
     }
     else if (lastError == EVERYTHING_OK)
@@ -54,6 +55,7 @@ void EverythingSearch::query(const QString &text)
             ResultItem item;
             item.title = fileName;
             item.subtitle = item.iconPath = filePath + "\\" + fileName;
+            item.iconType = IconType::Thumbnail;
             Action openAction;
             openAction.handler = [filePath, fileName]
             {

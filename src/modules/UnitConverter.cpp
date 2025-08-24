@@ -35,6 +35,7 @@ void UnitConverter::query(const QString &text)
         item.title = "Invalid unit conversion";
         item.subtitle = "Unit Converter";
         item.iconGlyph = QChar(0xf8b6); // Error.
+        item.iconType = IconType::Font;
         results.append(item);
     }
     else
@@ -45,6 +46,7 @@ void UnitConverter::query(const QString &text)
         item.title = resultString;
         item.subtitle = "Unit Converter";
         item.iconGlyph = QChar(0xf6af); // Measuring tape.
+        item.iconType = IconType::Font;
         item.key = "unit";
         Action copyAction;
         copyAction.handler = [resultString] { QApplication::clipboard()->setText(resultString); };

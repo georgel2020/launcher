@@ -17,6 +17,7 @@ void LauncherCommands::query(const QString &text)
         item.title = "Version";
         item.subtitle = QString::fromStdString(__DATE__) + " " + QString::fromStdString(__TIME__);
         item.iconGlyph = QChar(0xe88e); // Info.
+        item.iconType = IconType::Font;
         item.key = "launcher_version";
         results.append(item);
     }
@@ -26,6 +27,7 @@ void LauncherCommands::query(const QString &text)
         item.title = "About Launcher";
         item.subtitle = "GitHub - georgel2020/launcher";
         item.iconGlyph = QChar(0xe88e); // Info.
+        item.iconType = IconType::Font;
         item.key = "launcher_about";
         Action aboutAction;
         aboutAction.handler = [] { QDesktopServices::openUrl(QUrl("https://github.com/georgel2020/launcher")); };
@@ -39,6 +41,7 @@ void LauncherCommands::query(const QString &text)
         item.title = "Exit";
         item.subtitle = "Exit Launcher";
         item.iconGlyph = QChar(0xe879); // Exit to app.
+        item.iconType = IconType::Font;
         item.key = "launcher_exit";
         Action exitAction;
         exitAction.handler = [] { QApplication::quit(); };
@@ -59,6 +62,7 @@ void LauncherCommands::query(const QString &text)
         item.title = "Configure";
         item.subtitle = "Open Launcher configuration path";
         item.iconGlyph = QChar(0xe8b8); // Settings.
+        item.iconType = IconType::Font;
         item.key = "launcher_configure";
         Action configureAction;
         configureAction.handler = []

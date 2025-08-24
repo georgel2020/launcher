@@ -17,11 +17,12 @@ AppsSearch::AppsSearch(QObject *parent) : IModule(parent)
         const QJsonObject appObject = app.toObject();
         const QString name = appObject["name"].toString();
         const QString path = appObject["path"].toString();
+        const QString iconPath = appObject["icon"].toString();
         const QJsonArray keywordsArray = appObject["keywords"].toArray();
         QVector<QString> keywords;
         for (const QJsonValue keyword : keywordsArray)
             keywords.append(keyword.toString());
-        m_apps.append({name, path, keywords});
+        m_apps.append({name, path, iconPath, keywords});
     }
 }
 
@@ -75,7 +76,8 @@ void AppsSearch::query(const QString &text)
             ResultItem item;
             item.title = app.name;
             item.subtitle = app.path;
-            item.iconPath = app.path;
+            item.iconPath = (app.iconPath.isEmpty()) ? app.path : app.iconPath;
+            item.iconType = (app.iconPath.isEmpty()) ? IconType::Thumbnail : IconType::Image;
             Action openAction;
             openAction.handler = [app] { ProcessUtils::startDetached(app.path); };
             Action openAdminAction;
