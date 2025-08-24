@@ -18,12 +18,12 @@
  * @param minScore The lowest score to keep in history; if a score is lower,
  * the key is removed.
  * @param increment The value to add to the score after each launch.
- * @param historyScoreWeight The weight of history score.
+ * @param scoreWeight The weight of history score.
  */
-void HistoryManager::initHistory(const double &decay, const double &minScore, const double &increment, const double &historyScoreWeight)
+void HistoryManager::initHistory(const double &decay, const double &minScore, const double &increment, const double &scoreWeight)
 {
     m_increment = increment;
-    m_historyScoreWeight = historyScoreWeight;
+    m_scoreWeight = scoreWeight;
 
     QFile file(ConfigManager::getConfigPath("History.json"));
 
@@ -127,7 +127,7 @@ double HistoryManager::getHistoryScore(const QString &key)
 
     if (m_scores.contains(key))
     {
-        return 1 + log(m_scores[key] + 1) * m_historyScoreWeight;
+        return 1 + log(m_scores[key] + 1) * m_scoreWeight;
     }
     return 1;
 }

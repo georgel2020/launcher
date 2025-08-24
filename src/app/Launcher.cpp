@@ -29,13 +29,12 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
     setAttribute(Qt::WA_TranslucentBackground);
     SetForegroundWindow(reinterpret_cast<HWND>(winId()));
 
-    setupUi();
-    setupModules();
-
     readConfiguration();
 
-    // Configure history.
-    HistoryManager::initHistory(m_decay, m_minScore, m_increment, m_historyScoreWeight);
+    ThemeManager::initTheme();
+    HistoryManager::initHistory(m_historyDecay, m_historyMinScore, m_historyIncrement, m_historyScoreWeight);
+
+    setupUi();
 }
 
 QJsonDocument Launcher::defaultConfig() const
@@ -55,13 +54,14 @@ QJsonDocument Launcher::defaultConfig() const
     const QJsonObject rootObject{
         {"modules", modulesObject},
         {"history", QJsonObject{
-            {"decay", m_decay},
-            {"increment", m_increment},
-            {"minScore", m_minScore},
+            {"decay", m_historyDecay},
+            {"increment", m_historyIncrement},
+            {"minScore", m_historyMinScore},
             {"historyScoreWeight", m_historyScoreWeight}
         }},
         {"ui", QJsonObject{
-            {"maxVisibleResults", m_maxVisibleResults}
+            {"maxVisibleResults", m_maxVisibleResults},
+            {"placeholderText", m_placeholderText}
         }}
     };
     // clang-format on
@@ -109,8 +109,6 @@ void Launcher::setWindowVisibility(const bool &visibility)
  */
 void Launcher::setupUi()
 {
-    ThemeManager::initTheme();
-
     // Shadow effects.
     auto *searchFrameShadowEffect = new QGraphicsDropShadowEffect(this);
     searchFrameShadowEffect->setBlurRadius(SHADOW_BLUR_RADIUS);
@@ -153,7 +151,7 @@ void Launcher::setupUi()
     m_searchIcon->setAlignment(Qt::AlignCenter);
     m_searchIcon->setStyleSheet(QString("QLabel { border: none; background: transparent; color: %1; }").arg(ThemeManager::defaultTextColorHex()));
     m_searchEdit = new QLineEdit(this);
-    m_searchEdit->setPlaceholderText("Start typing...");
+    m_searchEdit->setPlaceholderText(m_placeholderText);
     m_searchEdit->setFixedHeight(BUTTON_SIZE);
     m_searchEdit->setFocus();
     m_searchEdit->setContextMenuPolicy(Qt::NoContextMenu);
@@ -200,9 +198,9 @@ void Launcher::setupUi()
 }
 
 /**
- * Setup modules and connect to slots.
+ * Load launcher configuration from file.
  */
-void Launcher::setupModules()
+void Launcher::readConfiguration()
 {
     m_moduleConfigs = {
         ModuleConfig(new LauncherCommands(this), true, true, 1.0, ':'), //
@@ -221,10 +219,7 @@ void Launcher::setupModules()
         config.iconGlyph = config.module->iconGlyph();
         connect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
     }
-}
 
-void Launcher::readConfiguration()
-{
     const QJsonDocument doc = ConfigManager::loadConfig("Launcher.json", defaultConfig());
     const QJsonObject rootObject = doc.object();
     const QJsonObject modulesObject = rootObject["modules"].toObject();
@@ -251,12 +246,13 @@ void Launcher::readConfiguration()
             DialogUtils::showWarning(QString("Invalid priority %1 for module %2. ").arg(config.priority).arg(config.name));
     }
     const QJsonObject historyObject = rootObject["history"].toObject();
-    m_decay = historyObject["decay"].toDouble();
-    m_minScore = historyObject["minScore"].toDouble();
-    m_increment = historyObject["increment"].toDouble();
+    m_historyDecay = historyObject["decay"].toDouble();
+    m_historyMinScore = historyObject["minScore"].toDouble();
+    m_historyIncrement = historyObject["increment"].toDouble();
     m_historyScoreWeight = historyObject["historyScoreWeight"].toDouble();
     const QJsonObject uiObject = rootObject["ui"].toObject();
     m_maxVisibleResults = uiObject["maxVisibleResults"].toInt();
+    m_placeholderText = uiObject["placeholderText"].toString();
 }
 
 /**
