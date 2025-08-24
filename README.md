@@ -19,14 +19,15 @@ Launcher offers a set of built-in modules:
 
 Find and launch applications installed on your system.
 
-Configuration: 
+Configuration:
 
 ```json
 {
   "apps": [
     {
       "keywords": [
-        "yourapp", "anothername"
+        "yourapp",
+        "anothername"
       ],
       "name": "Your App",
       "path": "C:\\Program Files\\YourApp\\YourApp.exe"
@@ -39,9 +40,10 @@ On the first run, a default configuration file will be generated based on Start 
 
 ### Calculator
 
-Perform mathematical calculations directly in the search bar. This feature is based on [muparser](https://github.com/beltoforion/muparser). 
+Perform mathematical calculations directly in the search bar. This feature is based
+on [muparser](https://github.com/beltoforion/muparser).
 
-For example: 
+For example:
 
 - `(265+239)/7`
 - `sin(_pi/6)`
@@ -49,14 +51,17 @@ For example:
 
 ### Everything Search
 
-Provides instant full-disk file and folder searches with [Everything](https://www.voidtools.com/). Everything must be running in the background for this feature to work.
+Provides instant full-disk file and folder searches with [Everything](https://www.voidtools.com/). Everything must be
+running in the background for this feature to work.
 
 Configuration:
 
 ```json
 {
-    "maxResults": 50, // Max number of results to show.
-    "runCountWeight": 1 // Weight of the run count in the search results. Set to 0 to disable.
+  "maxResults": 50,
+  // Max number of results to show.
+  "runCountWeight": 1
+  // Weight of the run count in the search results. Set to 0 to disable.
 }
 ```
 
@@ -93,26 +98,70 @@ Core commands to control Launcher itself.
 
 ## Configuration
 
-A default configuration file will be generated in `%APPDATA%\Launcher\` on the first run.
+Default configuration files will be generated in `%APPDATA%\Launcher\` on the first run.
+
+`Launcher.json`
 
 ```json
 {
-    "history": {
-        "decay": 0.95, // After each day, the scores of previously launched results are multiplied by this value.
-        "historyScoreWeight": 1, // Weight of the history score in the search results. Set to 0 to disable.
-        "increment": 1, // After each launch, the score of the result is incremented by this value.
-        "minScore": 0.01 // If the score of a result is lower than this value, it will be removed from history.
-    },
-    "modules": {
-        "moduleName": {
-            "enabled": true,
-            "global": true, // If false, the results will only be shown when the search query starts with the assigned prefix.
-            "prefix": " ", // Prefix to use for the module. Set to ' ' to disable.
-            "priority": 1
-        }
-    },
-    "ui": {
-        "maxVisibleResults": 5 // Max number of results shown before scrolling.
+  "history": {
+    "decay": 0.95,
+    // After each day, the scores of previously launched results are multiplied by this value.
+    "historyScoreWeight": 1,
+    // Weight of the history score in the search results. Set to 0 to disable.
+    "increment": 1,
+    // After each launch, the score of the result is incremented by this value.
+    "minScore": 0.01
+    // If the score of a result is lower than this value, it will be removed from history.
+  },
+  "modules": {
+    "moduleName": {
+      "enabled": true,
+      "global": true,
+      // If false, the results will only be shown when the search query starts with the assigned prefix.
+      "prefix": " ",
+      // Prefix to use for the module. Set to ' ' to disable.
+      "priority": 1
     }
+  },
+  "ui": {
+    "maxVisibleResults": 5
+    // Max number of results shown before scrolling.
+  }
+}
+```
+
+### Theme
+
+`Theme.json`
+
+```json
+{
+  "colors": {
+    "dark": {
+      "background": {
+        "accent": "#82d5c7",
+        "active": "#334b47",
+        "default": "#252b2a"
+      },
+      "text": {
+        "accent": "#003731",
+        "default": "#dde4e1"
+      }
+    },
+    "light": {
+      "background": {
+        "accent": "#006b60",
+        "active": "#cae6df",
+        "default": "#e3eae7"
+      },
+      "text": {
+        "accent": "#ffffff",
+        "default": "#171d1b"
+      }
+    }
+  },
+  "theme": "auto",
+  // "auto" to automatically detect the system theme; "dark" or "light" to force a specific theme.
 }
 ```
