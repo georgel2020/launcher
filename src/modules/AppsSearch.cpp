@@ -42,13 +42,17 @@ QJsonDocument AppsSearch::defaultConfig() const
             if (!getShortcutPath(shortcutPath, targetPath))
                 continue;
 
-            QJsonObject appObject;
-            appObject["name"] = QFileInfo(shortcutPath).baseName();
-            appObject["path"] = targetPath;
-            QJsonArray keywordsArray;
-            keywordsArray.append(QFileInfo(shortcutPath).baseName().toLower().replace(" ", ""));
-            appObject["keywords"] = keywordsArray;
-            appsArray.append(appObject);
+            if (QFileInfo(targetPath).suffix().toLower() == "exe")
+            {
+                QJsonObject appObject;
+                appObject["name"] = QFileInfo(shortcutPath).completeBaseName();
+                appObject["path"] = targetPath;
+                QJsonArray keywordsArray;
+                static QRegularExpression regex("[^A-Za-z0-9]"); // Remove all non-alphanumeric characters.
+                keywordsArray.append(QFileInfo(shortcutPath).completeBaseName().remove(regex).toLower());
+                appObject["keywords"] = keywordsArray;
+                appsArray.append(appObject);
+            }
         }
     }
     rootObject["apps"] = appsArray;
