@@ -39,7 +39,7 @@ private slots:
 private:
     void setWindowVisibility(const bool &visibility);
     void setupUi();
-    void setupModules();
+    void configureModules();
     void readConfiguration();
     void handleActionsNavigation(const ResultItem& item, const bool &right) const;
     bool executeShortcutAction(const ResultItem& item, const QKeySequence &pressedShortcut);
@@ -79,10 +79,12 @@ private:
         bool operator==(const ModuleConfig &other) const { return module == other.module; }
     };
     QVector<ModuleConfig> m_moduleConfigs;
-    double m_decay = 0.95;
-    double m_minScore = 0.01;
-    double m_increment = 1.0;
+
+    double m_historyDecay = 0.95;
+    double m_historyMinScore = 0.01;
+    double m_historyIncrement = 1.0;
     double m_historyScoreWeight = 1.0;
 
     int m_maxVisibleResults = 5;
+    QString m_placeholderText = "Start typing...";
 };
