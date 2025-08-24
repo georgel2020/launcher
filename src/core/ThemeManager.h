@@ -9,6 +9,8 @@ public:
 
     static void initTheme();
 
+    static QJsonDocument defaultConfig();
+
     static QColor defaultBackColor();
     static QColor activeBackColor();
     static QColor accentBackColor();
@@ -23,4 +25,10 @@ public:
 
 private:
     static inline bool m_isDarkMode;
+
+    static inline QString m_defaultBackLight, m_defaultBackDark;
+    static inline QString m_activeBackLight, m_activeBackDark;
+    static inline QString m_accentBackLight, m_accentBackDark;
+    static inline QString m_defaultTextLight, m_defaultTextDark;
+    static inline QString m_accentTextLight, m_accentTextDark;
 };
