@@ -1,11 +1,10 @@
 #pragma once
 
 // Window.
-constexpr auto WINDOW_MARGIN = 50;
+constexpr auto WINDOW_MARGIN = 100;
 constexpr auto WINDOW_WIDTH = 600;
 constexpr auto PADDING_L = 12;
-constexpr auto PADDING_M = 8;
-constexpr auto PADDING_S = 4;
+constexpr auto PADDING_S = 8;
 constexpr auto CORNER_RADIUS_L = 20;
 constexpr auto CORNER_RADIUS_M = 16;
 constexpr auto CORNER_RADIUS_S = 8;
