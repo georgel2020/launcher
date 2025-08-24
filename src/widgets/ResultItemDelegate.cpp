@@ -72,18 +72,29 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     }
 
     // Draw icon.
-    if (item.iconGlyph != QChar())
+    switch (item.iconType)
     {
-        // Draw font icon.
+    case IconType::Font:
+    {
         drawIconGlyph(painter, iconRect, item.iconGlyph, isPrimarySelected ? ThemeManager::accentTextColor() : ThemeManager::defaultTextColor());
+        break;
     }
-    else if (item.iconPath != QString())
+    case IconType::Thumbnail:
     {
-        // Draw icon from the given file.
         const QFileIconProvider iconProvider;
         const QFileInfo iconInfo(item.iconPath);
         const QIcon fileIcon = iconProvider.icon(iconInfo);
         drawIcon(painter, iconRect, fileIcon);
+        break;
+    }
+    case IconType::Image:
+    {
+        const QIcon imageIcon(item.iconPath);
+        drawIcon(painter, iconRect, QIcon(imageIcon));
+        break;
+    }
+    default:
+        break;
     }
 
     // Draw title.

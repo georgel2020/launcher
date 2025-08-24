@@ -18,6 +18,7 @@ void Calculator::query(const QString &text)
         item.title = QString::number(value);
         item.subtitle = "Calculator";
         item.iconGlyph = QChar(0xea5f); // Calculate.
+        item.iconType = IconType::Font;
         Action copyAction;
         copyAction.handler = [value] { QApplication::clipboard()->setText(QString::number(value)); };
         copyAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_C);

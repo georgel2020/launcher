@@ -41,6 +41,7 @@ void WindowsTerminal::query(const QString &text)
             item.title = profileName;
             item.subtitle = "Open in Windows Terminal";
             item.iconGlyph = QChar(0xeb8e); // Terminal.
+            item.iconType = IconType::Font;
             item.key = "terminal_" + profileName;
             Action openAction;
             openAction.handler = [profileName] { ProcessUtils::startDetached("wt", {"-p", profileName}); };

@@ -19,6 +19,7 @@ private:
     {
         QString name;
         QString path;
+        QString iconPath;
         QVector<QString> keywords;
     };
 
