@@ -51,6 +51,8 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
     const bool isHovered = option.state & QStyle::State_MouseOver;
     const bool isSelected = option.state & QStyle::State_Selected;
+    const bool isPrimaryHovered = isHovered && m_hoveredActionIndex == 0;
+    const bool isPrimarySelected = isSelected && m_selectedActionIndex == 0;
 
     // Calculate rects for different components.
     const int visibleActionCount = (isSelected || isHovered) ? static_cast<int>(item.actions.size()) : 1; // Including the primary action.
@@ -60,12 +62,12 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     const QRect actionsRect = getActionsRect(option.rect, visibleActionCount);
 
     // Draw selection background if hovered or selected.
-    if ((isSelected && m_currentActionIndex == 0) || (isHovered && m_hoveredActionIndex == 0))
+    if (isPrimaryHovered || isPrimarySelected)
     {
         QPainterPath path;
-        path.addRoundedRect(option.rect, CORNER_RADIUS_S, CORNER_RADIUS_S);
+        path.addRoundedRect(option.rect, CORNER_RADIUS_M, CORNER_RADIUS_M);
         painter->setPen(Qt::NoPen);
-        painter->fillPath(path, (isSelected && m_currentActionIndex == 0) ? ThemeManager::accentBackColor() : ThemeManager::activeBackColor());
+        painter->fillPath(path, isPrimarySelected ? ThemeManager::accentBackColor() : ThemeManager::activeBackColor());
         painter->drawPath(path);
     }
 
@@ -73,7 +75,7 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     if (item.iconGlyph != QChar())
     {
         // Draw font icon.
-        drawIconGlyph(painter, iconRect, item.iconGlyph);
+        drawIconGlyph(painter, iconRect, item.iconGlyph, isPrimarySelected ? ThemeManager::accentTextColor() : ThemeManager::defaultTextColor());
     }
     else if (item.iconPath != QString())
     {
@@ -88,16 +90,16 @@ void ResultItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     QFont titleFont = option.font;
     titleFont.setBold(true);
     titleFont.setPixelSize(TITLE_FONT_SIZE);
-    drawText(painter, titleRect, item.title, titleFont);
+    drawText(painter, titleRect, item.title, titleFont, isPrimarySelected ? ThemeManager::accentTextColor() : ThemeManager::defaultTextColor());
 
     // Draw subtitle.
     QFont subtitleFont = option.font;
     subtitleFont.setPixelSize(SUBTITLE_FONT_SIZE);
-    drawText(painter, subtitleRect, item.subtitle, subtitleFont);
+    drawText(painter, subtitleRect, item.subtitle, subtitleFont, isPrimarySelected ? ThemeManager::accentTextColor() : ThemeManager::defaultTextColor());
 
     // Draw action buttons.
     if (isSelected || isHovered) // Action buttons are hidden by default.
-        drawActionButtons(painter, actionsRect, item.actions, m_currentActionIndex, m_hoveredActionIndex, isSelected, isHovered);
+        drawActionButtons(painter, actionsRect, item.actions, m_selectedActionIndex, m_hoveredActionIndex, isSelected, isHovered);
 
     painter->restore();
 }
@@ -118,7 +120,7 @@ QSize ResultItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMo
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
-    return {-1, PADDING_L + BUTTON_SIZE + PADDING_L};
+    return {-1, PADDING_M + BUTTON_SIZE + PADDING_M};
 }
 
 /**
@@ -179,14 +181,14 @@ bool ResultItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
  *
  * @return An integer representing the action index.
  */
-int ResultItemDelegate::getCurrentActionIndex() const { return m_currentActionIndex; }
+int ResultItemDelegate::getCurrentActionIndex() const { return m_selectedActionIndex; }
 
 /**
  * Set the focused action index.
  *
  * @param index An integer representing the action index
  */
-void ResultItemDelegate::setCurrentActionIndex(const int index) const { m_currentActionIndex = index; }
+void ResultItemDelegate::setCurrentActionIndex(const int index) const { m_selectedActionIndex = index; }
 
 /**
  * Draw a QIcon at the given location.
@@ -209,14 +211,15 @@ void ResultItemDelegate::drawIcon(QPainter *painter, const QRect &rect, const QI
  * @param painter The QPainter object used for rendering the item.
  * @param rect The QRect specifying where to paint the icon.
  * @param icon The QIcon to be rendered.
+ * @param color The color of the icon.
  */
-void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon)
+void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon, const QColor &color)
 {
     QFont iconFont;
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
     painter->setFont(iconFont);
-    painter->setPen(ThemeManager::defaultTextColor());
+    painter->setPen(color);
     painter->drawText(rect, Qt::AlignCenter, QString(icon));
 }
 
@@ -227,13 +230,14 @@ void ResultItemDelegate::drawIconGlyph(QPainter *painter, const QRect &rect, con
  * @param rect The QRect specifying where to paint the text.
  * @param text The text to be rendered.
  * @param font The font of the text.
+ * @param color The color of the text.
  */
-void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font)
+void ResultItemDelegate::drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font, const QColor &color)
 {
     const QFontMetrics metrics(font);
     const QString elidedText = metrics.elidedText(text, Qt::ElideRight, rect.width());
     painter->setFont(font);
-    painter->setPen(ThemeManager::defaultTextColor());
+    painter->setPen(color);
     painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, elidedText);
 }
 
@@ -258,8 +262,8 @@ void ResultItemDelegate::drawActionButtons(QPainter *painter, const QRect &rect,
 
     for (int actionIndex = actionCount - 1; actionIndex >= 1; actionIndex--) // The first action is the primary action.
     {
-        const int buttonX = rect.right() - (actionCount - actionIndex) * (BUTTON_SIZE + PADDING_L);
-        const QRect buttonRect(buttonX, rect.top() + PADDING_L, BUTTON_SIZE, BUTTON_SIZE);
+        const int buttonX = rect.right() - (actionCount - actionIndex) * (BUTTON_SIZE + PADDING_M);
+        const QRect buttonRect(buttonX, rect.top() + PADDING_M, BUTTON_SIZE, BUTTON_SIZE);
 
         painter->setPen(Qt::NoPen);
 
@@ -276,7 +280,8 @@ void ResultItemDelegate::drawActionButtons(QPainter *painter, const QRect &rect,
         painter->drawRoundedRect(buttonRect, CORNER_RADIUS_S, CORNER_RADIUS_S);
 
         // Paint the icon separately to control the size.
-        drawIconGlyph(painter, buttonRect, actions[actionIndex].iconGlyph);
+        drawIconGlyph(painter, buttonRect, actions[actionIndex].iconGlyph,
+                      (isSelected && currentActionIndex == actionIndex) ? ThemeManager::accentTextColor() : ThemeManager::defaultTextColor());
     }
 }
 
@@ -289,7 +294,7 @@ void ResultItemDelegate::drawActionButtons(QPainter *painter, const QRect &rect,
 QRect ResultItemDelegate::getIconRect(const QRect &itemRect)
 {
     return {
-        itemRect.left() + PADDING_L + (BUTTON_SIZE - ICON_SIZE) / 2, //
+        itemRect.left() + PADDING_M + (BUTTON_SIZE - ICON_SIZE) / 2, //
         itemRect.center().y() - ICON_SIZE / 2, //
         ICON_SIZE, //
         ICON_SIZE //
@@ -305,8 +310,8 @@ QRect ResultItemDelegate::getIconRect(const QRect &itemRect)
  */
 QRect ResultItemDelegate::getTitleRect(const QRect &itemRect, const int &actionsCount)
 {
-    constexpr int leftMargin = PADDING_L + BUTTON_SIZE + PADDING_L;
-    constexpr int topMargin = PADDING_L;
+    constexpr int leftMargin = PADDING_M + BUTTON_SIZE + PADDING_M;
+    constexpr int topMargin = PADDING_M;
     return {
         itemRect.left() + leftMargin, //
         itemRect.top() + topMargin, //
@@ -324,13 +329,13 @@ QRect ResultItemDelegate::getTitleRect(const QRect &itemRect, const int &actions
  */
 QRect ResultItemDelegate::getSubtitleRect(const QRect &itemRect, const int &actionsCount)
 {
-    constexpr int leftMargin = PADDING_L + BUTTON_SIZE + PADDING_L;
+    constexpr int leftMargin = PADDING_M + BUTTON_SIZE + PADDING_M;
     const int topPosition = itemRect.top() + itemRect.height() / 2;
     return {
         itemRect.left() + leftMargin, //
         topPosition, //
         itemRect.width() - leftMargin - getActionsRect(itemRect, actionsCount).width(), //
-        itemRect.height() / 2 - PADDING_L //
+        itemRect.height() / 2 - PADDING_M //
     };
 }
 
@@ -343,7 +348,7 @@ QRect ResultItemDelegate::getSubtitleRect(const QRect &itemRect, const int &acti
  */
 QRect ResultItemDelegate::getActionsRect(const QRect &itemRect, const int &actionsCount)
 {
-    const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + PADDING_L) + PADDING_L; // The primary action is not displayed as a button.
+    const int actionsWidth = (actionsCount - 1) * (BUTTON_SIZE + PADDING_M) + PADDING_M; // The primary action is not displayed as a button.
 
     return {
         itemRect.right() - actionsWidth + 2, // For perfect button alignment.
@@ -362,8 +367,7 @@ QRect ResultItemDelegate::getActionsRect(const QRect &itemRect, const int &actio
  * @param pos The QPoint representing the position to check, in item rectangle coordinates.
  * @param actionsRect The QRect representing the bounding rectangle of the action buttons.
  * @param actionCount The total number of action buttons within the rectangle.
- * @return The zero-based index of the button if found, or 0 if no valid button is found
- * (the mouse is on the primary action area).
+ * @return The zero-based index of the action if found, or 0 if no valid action is found.
  */
 int ResultItemDelegate::getActionButtonIndex(const QPoint &pos, const QRect &actionsRect, const int &actionCount)
 {
@@ -372,17 +376,17 @@ int ResultItemDelegate::getActionButtonIndex(const QPoint &pos, const QRect &act
         return 0;
     }
 
-    const int startX = actionsRect.left() + PADDING_L;
+    const int startX = actionsRect.left() + PADDING_M;
     const int relativeX = pos.x() - startX;
     const int relativeY = pos.y() - actionsRect.top();
 
     if (relativeX < 0)
         return 0;
-    if (relativeY < PADDING_L || relativeY > PADDING_L + BUTTON_SIZE)
+    if (relativeY < PADDING_M || relativeY > PADDING_M + BUTTON_SIZE)
         return 0;
 
-    const int buttonIndex = relativeX / (BUTTON_SIZE + PADDING_L);
-    const int buttonOffset = relativeX % (BUTTON_SIZE + PADDING_L);
+    const int buttonIndex = relativeX / (BUTTON_SIZE + PADDING_M);
+    const int buttonOffset = relativeX % (BUTTON_SIZE + PADDING_M);
 
     if (buttonOffset < BUTTON_SIZE && buttonIndex < actionCount)
         return buttonIndex + 1; // The first action is not a button.

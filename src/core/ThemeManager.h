@@ -13,11 +13,13 @@ public:
     static QColor activeBackColor();
     static QColor accentBackColor();
     static QColor defaultTextColor();
+    static QColor accentTextColor();
 
     static QString defaultBackColorHex();
     static QString activeBackColorHex();
     static QString accentBackColorHex();
     static QString defaultTextColorHex();
+    static QString accentTextColorHex();
 
 private:
     static inline bool m_isDarkMode;

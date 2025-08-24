@@ -117,9 +117,9 @@ void Launcher::setupUi()
     resultsListShadowEffect->setOffset(0, SHADOW_OFFSET_V);
 
     // Main layout.
-    const int maxResultsListHeight = m_maxVisibleResults * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S;
+    const int maxResultsListHeight = m_maxVisibleResults * (PADDING_S + PADDING_M + BUTTON_SIZE + PADDING_M) + PADDING_S;
     resize(WINDOW_MARGIN + WINDOW_WIDTH + WINDOW_MARGIN,
-           WINDOW_MARGIN + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_L + maxResultsListHeight + PADDING_S + WINDOW_MARGIN);
+           WINDOW_MARGIN + PADDING_M + BUTTON_SIZE + PADDING_M + PADDING_L + maxResultsListHeight + PADDING_S + WINDOW_MARGIN);
     m_centralWidget = new QWidget(this);
     setCentralWidget(m_centralWidget);
     m_mainLayout = new QVBoxLayout(m_centralWidget);
@@ -132,14 +132,14 @@ void Launcher::setupUi()
     iconFont.setFamily("Material Symbols Rounded");
     iconFont.setPixelSize(ICON_SIZE);
     m_searchFrame = new QFrame(this);
-    m_searchFrame->setFixedHeight(PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L + PADDING_S);
+    m_searchFrame->setFixedHeight(PADDING_S + PADDING_M + BUTTON_SIZE + PADDING_M + PADDING_S);
     m_searchFrame->setFixedWidth(WINDOW_WIDTH);
     m_searchFrame->setStyleSheet(
-        QString("QFrame { border: none; border-radius: %1px; background-color: %2 }").arg(CORNER_RADIUS_L).arg(ThemeManager::defaultBackColorHex()));
+        QString("QFrame { border: none; border-radius: %1px; background-color: %2; }").arg(CORNER_RADIUS_L).arg(ThemeManager::defaultBackColorHex()));
     m_searchFrame->setGraphicsEffect(searchFrameShadowEffect);
     m_searchLayout = new QHBoxLayout(m_searchFrame);
-    m_searchLayout->setContentsMargins(PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L, PADDING_S + PADDING_L);
-    m_searchLayout->setSpacing(PADDING_L);
+    m_searchLayout->setContentsMargins(PADDING_S + PADDING_M, PADDING_S + PADDING_M, PADDING_S + PADDING_M, PADDING_S + PADDING_M);
+    m_searchLayout->setSpacing(PADDING_M);
     m_searchIcon = new QLabel(this);
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
     m_searchIcon->setFont(iconFont);
@@ -166,6 +166,7 @@ void Launcher::setupUi()
     m_resultsList->setFocusPolicy(Qt::NoFocus);
     m_resultsList->setMouseTracking(true);
     m_resultsList->setSpacing(PADDING_S / 2); // Set spacing and padding separately to keep the spacing between items and the list widget padding the same.
+    m_resultsList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_resultsList->setStyleSheet(QString("QListWidget { border: none; border-radius: %1px; background-color: %2; padding: %3px; }")
                                      .arg(CORNER_RADIUS_L)
                                      .arg(ThemeManager::defaultBackColorHex())
@@ -222,8 +223,9 @@ void Launcher::readConfiguration()
     const QJsonDocument doc = ConfigManager::loadConfig(this);
     const QJsonObject rootObject = doc.object();
     const QJsonObject modulesObject = rootObject["modules"].toObject();
-    for (ModuleConfig &config : m_moduleConfigs)
+    for (auto iterator = m_moduleConfigs.begin(); iterator != m_moduleConfigs.end();)
     {
+        ModuleConfig& config = *iterator;
         const QJsonObject moduleObject = modulesObject[ConfigManager::toCamelCase(config.name)].toObject();
 
         config.enabled = moduleObject["enabled"].toBool();
@@ -233,7 +235,11 @@ void Launcher::readConfiguration()
         if (!config.enabled)
         {
             disconnect(config.module, &IModule::resultsReady, this, &Launcher::onResultsReady);
-            m_moduleConfigs.removeOne(config);
+            iterator = m_moduleConfigs.erase(iterator);
+        }
+        else
+        {
+            ++iterator;
         }
 
         if (config.priority < 0.0 || config.priority > 1.0)
@@ -289,7 +295,7 @@ void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *modul
     if (m_resultsList->count() > 0)
     {
         m_resultsList->show();
-        m_resultsList->setFixedHeight(std::min(m_resultsList->count(), m_maxVisibleResults) * (PADDING_S + PADDING_L + BUTTON_SIZE + PADDING_L) + PADDING_S);
+        m_resultsList->setFixedHeight(std::min(m_resultsList->count(), m_maxVisibleResults) * (PADDING_S + PADDING_M + BUTTON_SIZE + PADDING_M) + PADDING_S);
         m_resultsList->setCurrentRow(0);
         m_resultItemDelegate->setCurrentActionIndex(0);
     }

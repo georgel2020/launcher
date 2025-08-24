@@ -20,8 +20,8 @@ public:
 
 private:
     static void drawIcon(QPainter *painter, const QRect &rect, const QIcon &icon);
-    static void drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon);
-    static void drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font);
+    static void drawIconGlyph(QPainter *painter, const QRect &rect, const QChar &icon, const QColor &color);
+    static void drawText(QPainter *painter, const QRect &rect, const QString &text, const QFont &font, const QColor &color);
     static void drawActionButtons(QPainter *painter, const QRect &rect, const QVector<Action> &actions,
                                   const int &currentActionIndex = 0, const int &hoveredActionIndex = 0, const bool &isSelected = false,
                                   const bool &isHovered = false);
@@ -34,7 +34,7 @@ private:
 
     QAbstractItemView *m_view;
 
-    mutable int m_currentActionIndex = 0;
+    mutable int m_selectedActionIndex = 0;
     mutable int m_hoveredActionIndex = 0;
 
 signals:
