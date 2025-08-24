@@ -220,7 +220,7 @@ void Launcher::setupModules()
 
 void Launcher::readConfiguration()
 {
-    const QJsonDocument doc = ConfigManager::loadConfig(this);
+    const QJsonDocument doc = ConfigManager::loadConfig("Launcher.json", defaultConfig());
     const QJsonObject rootObject = doc.object();
     const QJsonObject modulesObject = rootObject["modules"].toObject();
     for (auto iterator = m_moduleConfigs.begin(); iterator != m_moduleConfigs.end();)

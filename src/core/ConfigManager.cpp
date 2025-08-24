@@ -7,16 +7,6 @@
 #include "../utils/DialogUtils.h"
 
 /**
- * Load configuration file for Launcher.
- *
- * If the file does not exist, a default configuration will be applied.
- *
- * @param launcher A pointer to Launcher main window.
- * @return The QJsonDocument representing the configuration.
- */
-QJsonDocument ConfigManager::loadConfig(const Launcher *launcher) { return loadConfig(getConfigPath(), launcher->defaultConfig()); }
-
-/**
  * Load configuration file for a Launcher module.
  *
  * If the file does not exist, a default configuration will be applied.
@@ -24,19 +14,24 @@ QJsonDocument ConfigManager::loadConfig(const Launcher *launcher) { return loadC
  * @param module A pointer to the module.
  * @return The QJsonDocument representing the configuration.
  */
-QJsonDocument ConfigManager::loadConfig(const IModule *module) { return loadConfig(getConfigPath(module->name()), module->defaultConfig()); }
+QJsonDocument ConfigManager::loadConfig(const IModule *module)
+{
+    return loadConfig(getConfigPath(QString(R"(Modules\%1.json)").arg(module->name())), module->defaultConfig());
+}
 
 /**
  * Load configuration file from a path.
  *
  * If the file does not exist, a default configuration will be applied.
  *
- * @param configPath The path to the configuration file.
+ * @param fileName Configuration file name. If the file is under a subdirectory,
+ * backslashes are accepted.
  * @param defaultConfig The default QJsonDocument configuration.
  * @return The retrieved configuration.
  */
-QJsonDocument ConfigManager::loadConfig(const QString &configPath, const QJsonDocument &defaultConfig)
+QJsonDocument ConfigManager::loadConfig(const QString &fileName, const QJsonDocument &defaultConfig)
 {
+    const QString configPath = getConfigPath(fileName);
     QFile file(configPath);
 
     if (file.exists())
@@ -80,41 +75,20 @@ QString ConfigManager::toCamelCase(const QString &text)
 }
 
 /**
- * Get the configuration file path for Launcher.
+ * Get the configuration file path.
  *
  * If the path does not exist, create the folders automatically.
  *
+ * @param fileName Name of the configuration file.
  * @return The file path string.
  */
-QString ConfigManager::getConfigPath()
+QString ConfigManager::getConfigPath(const QString &fileName)
 {
     const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-
     const QDir dir(configDir);
-    if (!dir.exists())
-        if (!dir.mkpath("."))
+    const QFileInfo fileInfo(dir.filePath(fileName));
+    if (!fileInfo.absoluteDir().exists())
+        if (!fileInfo.absoluteDir().mkpath("."))
             return {};
-    return dir.filePath("Launcher.json");
-}
-
-/**
- * Get the configuration file path for a module.
- *
- * If the path does not exist, create the folders automatically.
- *
- * @param moduleName Name of the module.
- * @return The file path string.
- */
-QString ConfigManager::getConfigPath(const QString &moduleName)
-{
-    const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-
-    const QDir dir(configDir);
-    if (!dir.exists())
-        if (!dir.mkpath("."))
-            return {};
-    if (!dir.exists("Modules"))
-        if (!dir.mkdir("Modules"))
-            return {};
-    return dir.filePath("Modules/" + moduleName + ".json");
+    return dir.filePath(fileName);
 }
