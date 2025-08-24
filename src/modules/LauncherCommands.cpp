@@ -46,7 +46,7 @@ void LauncherCommands::query(const QString &text)
         reloadAction.iconGlyph = QChar(0xe5d5); // Refresh.
         reloadAction.handler = []
         {
-            ProcessUtils::startDetached(QCoreApplication::applicationDirPath() + "\\Launcher.exe");
+            ProcessUtils::startDetached(QApplication::arguments()[0], {}); // Does not work in Debug mode, when the build is a console application.
             QApplication::quit();
         };
         reloadAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_R);
