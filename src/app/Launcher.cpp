@@ -40,7 +40,6 @@ Launcher::Launcher(QWidget *parent) : QMainWindow(parent)
 
 QJsonDocument Launcher::defaultConfig() const
 {
-    QJsonObject rootObject;
     QJsonObject modulesObject;
     for (const ModuleConfig &config : m_moduleConfigs)
     {
@@ -51,16 +50,22 @@ QJsonDocument Launcher::defaultConfig() const
         moduleObject["prefix"] = QString(config.prefix);
         modulesObject[ConfigManager::toCamelCase(config.name)] = moduleObject;
     }
-    rootObject["modules"] = modulesObject;
-    QJsonObject historyObject;
-    historyObject["decay"] = m_decay;
-    historyObject["minScore"] = m_minScore;
-    historyObject["increment"] = m_increment;
-    historyObject["historyScoreWeight"] = m_historyScoreWeight;
-    rootObject["history"] = historyObject;
-    QJsonObject uiObject;
-    uiObject["maxVisibleResults"] = m_maxVisibleResults;
-    rootObject["ui"] = uiObject;
+
+    // clang-format off
+    const QJsonObject rootObject{
+        {"modules", modulesObject},
+        {"history", QJsonObject{
+            {"decay", m_decay},
+            {"increment", m_increment},
+            {"minScore", m_minScore},
+            {"historyScoreWeight", m_historyScoreWeight}
+        }},
+        {"ui", QJsonObject{
+            {"maxVisibleResults", m_maxVisibleResults}
+        }}
+    };
+    // clang-format on
+
     return QJsonDocument(rootObject);
 }
 

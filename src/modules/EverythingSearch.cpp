@@ -15,9 +15,13 @@ EverythingSearch::EverythingSearch(QObject *parent) : IModule(parent)
 
 QJsonDocument EverythingSearch::defaultConfig() const
 {
-    QJsonObject rootObject;
-    rootObject["maxResults"] = m_maxResults;
-    rootObject["runCountWeight"] = m_runCountWeight;
+    // clang-format off
+    const QJsonObject rootObject{
+        {"maxResults", m_maxResults},
+        {"runCountWeight", m_runCountWeight}
+    };
+    // clang-format on
+
     return QJsonDocument(rootObject);
 }
 
