@@ -13,8 +13,6 @@ public:
     static double getHistoryScore(const QString &key);
 
 private:
-    static QString getHistoryPath();
-
     static inline bool m_initialized;
     static inline double m_increment;
     static inline double m_historyScoreWeight;

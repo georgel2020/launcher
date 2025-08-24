@@ -3,8 +3,8 @@
 #include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QStandardPaths>
 #include "../utils/DialogUtils.h"
+#include "ConfigManager.h"
 
 /**
  * Initialize history manager.
@@ -17,13 +17,15 @@
  * @param decay The factor to multiply the score by each day.
  * @param minScore The lowest score to keep in history; if a score is lower,
  * the key is removed.
+ * @param increment The value to add to the score after each launch.
+ * @param historyScoreWeight The weight of history score.
  */
 void HistoryManager::initHistory(const double &decay, const double &minScore, const double &increment, const double &historyScoreWeight)
 {
     m_increment = increment;
     m_historyScoreWeight = historyScoreWeight;
 
-    QFile file(getHistoryPath());
+    QFile file(ConfigManager::getConfigPath("History.json"));
 
     if (file.exists())
     {
@@ -106,7 +108,7 @@ void HistoryManager::addHistory(const QString &key)
     }
     rootObject["scores"] = scoresObject;
     const auto doc = QJsonDocument(rootObject);
-    QFile file(getHistoryPath());
+    QFile file(ConfigManager::getConfigPath("History.json"));
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     file.write(doc.toJson(QJsonDocument::Indented));
     file.close();
@@ -128,22 +130,4 @@ double HistoryManager::getHistoryScore(const QString &key)
         return 1 + log(m_scores[key] + 1) * m_historyScoreWeight;
     }
     return 1;
-}
-
-/**
- * Get the history file path for Launcher.
- *
- * If the path does not exist, create the folders automatically.
- *
- * @return The file path string.
- */
-QString HistoryManager::getHistoryPath()
-{
-    const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-
-    const QDir dir(configDir);
-    if (!dir.exists())
-        if (!dir.mkpath("."))
-            return {};
-    return dir.filePath("History.json");
 }
