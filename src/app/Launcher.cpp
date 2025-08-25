@@ -203,7 +203,7 @@ void Launcher::setupUi()
 void Launcher::readConfiguration()
 {
     m_moduleConfigs = {
-        ModuleConfig(new LauncherCommands(this), true, true, 1.0, ':'), //
+        ModuleConfig(new LauncherCommands(this), true, true, 0.5, ':'), //
         ModuleConfig(new EverythingSearch(this), true, false, 0.0, '@'), //
         ModuleConfig(new Calculator(this), true, true, 1.0, '='), //
         ModuleConfig(new AppsSearch(this), true, true, 0.8, ' '), //

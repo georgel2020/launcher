@@ -19,7 +19,7 @@ void LauncherCommands::query(const QString &text)
         item.iconGlyph = QChar(0xe88e); // Info.
         item.iconType = IconType::Font;
         item.key = "launcher_version";
-        item.score = QString("version").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
+        item.score = QString("version").startsWith(text, Qt::CaseInsensitive) ? 0.5 : 0.1;
         results.append(item);
     }
     if (QString("about").contains(text, Qt::CaseInsensitive))
@@ -33,7 +33,7 @@ void LauncherCommands::query(const QString &text)
         Action aboutAction;
         aboutAction.handler = [] { QDesktopServices::openUrl(QUrl("https://github.com/georgel2020/launcher")); };
         item.actions = {aboutAction};
-        item.score = QString("about").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
+        item.score = QString("about").startsWith(text, Qt::CaseInsensitive) ? 0.5 : 0.1;
         results.append(item);
     }
     if (QString("exit").contains(text, Qt::CaseInsensitive) || QString("quit").contains(text, Qt::CaseInsensitive) ||
