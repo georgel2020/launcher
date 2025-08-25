@@ -373,21 +373,21 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
         // Navigate between actions.
         if (keyEvent->key() == Qt::Key_Tab)
         {
-            handleActionsNavigation(item, true);
+            handleActionsNavigation(item, true, true);
             return true;
         }
         if (keyEvent->key() == Qt::Key_Right)
         {
             if (m_searchEdit->cursorPosition() < m_searchEdit->text().length())
                 return QMainWindow::eventFilter(obj, event);
-            handleActionsNavigation(item, true);
+            handleActionsNavigation(item, true, false);
             return true;
         }
         if (keyEvent->key() == Qt::Key_Left)
         {
             if (m_resultItemDelegate->getCurrentActionIndex() == 0)
                 return QMainWindow::eventFilter(obj, event);
-            handleActionsNavigation(item, false);
+            handleActionsNavigation(item, false, false);
             return true;
         }
 
@@ -433,8 +433,9 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
  *
  * @param item The current result item.
  * @param right Whether to navigate right (true for right; false for left).
+ * @param loop Whether to return to the primary action when the last action is selected.
  */
-void Launcher::handleActionsNavigation(const ResultItem &item, const bool &right) const
+void Launcher::handleActionsNavigation(const ResultItem &item, const bool &right, const bool &loop) const
 {
     if (item.actions.isEmpty())
         return;
@@ -444,9 +445,9 @@ void Launcher::handleActionsNavigation(const ResultItem &item, const bool &right
     const int actionCount = static_cast<int>(item.actions.size());
     const int newIndex = currentIndex + (right ? 1 : -1);
 
-    if (newIndex >= 0 && newIndex < actionCount)
+    if ((newIndex >= 0 && newIndex < actionCount) || (newIndex >= 0 && loop))
     {
-        m_resultItemDelegate->setCurrentActionIndex(newIndex);
+        m_resultItemDelegate->setCurrentActionIndex(newIndex % actionCount);
 
         // Force repaint to show the highlight.
         m_resultsList->viewport()->update();
