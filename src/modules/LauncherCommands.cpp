@@ -19,6 +19,7 @@ void LauncherCommands::query(const QString &text)
         item.iconGlyph = QChar(0xe88e); // Info.
         item.iconType = IconType::Font;
         item.key = "launcher_version";
+        item.score = QString("version").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
         results.append(item);
     }
     if (QString("about").contains(text, Qt::CaseInsensitive))
@@ -32,6 +33,7 @@ void LauncherCommands::query(const QString &text)
         Action aboutAction;
         aboutAction.handler = [] { QDesktopServices::openUrl(QUrl("https://github.com/georgel2020/launcher")); };
         item.actions = {aboutAction};
+        item.score = QString("about").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
         results.append(item);
     }
     if (QString("exit").contains(text, Qt::CaseInsensitive) || QString("quit").contains(text, Qt::CaseInsensitive) ||
@@ -54,6 +56,10 @@ void LauncherCommands::query(const QString &text)
         };
         reloadAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_R);
         item.actions = {exitAction, reloadAction};
+        item.score = QString("exit").startsWith(text, Qt::CaseInsensitive) || QString("quit").startsWith(text, Qt::CaseInsensitive) ||
+                QString("reload").startsWith(text, Qt::CaseInsensitive)
+            ? 2.0
+            : 1.0;
         results.append(item);
     }
     if (QString("configure").contains(text, Qt::CaseInsensitive))
@@ -71,6 +77,7 @@ void LauncherCommands::query(const QString &text)
             ProcessUtils::startDetached("explorer", {configPath});
         };
         item.actions = {configureAction};
+        item.score = QString("configure").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
         results.append(item);
     }
 

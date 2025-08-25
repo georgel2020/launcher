@@ -50,6 +50,7 @@ void WindowsTerminal::query(const QString &text)
             openAdminAction.handler = [profileName] { ProcessUtils::startDetached("wt", {"-p", profileName}, true); };
             openAdminAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return);
             item.actions = {openAction, openAdminAction};
+            item.score = profileName.startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
             results.append(item);
         }
     }

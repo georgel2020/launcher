@@ -19,6 +19,7 @@ void SystemCommands::query(const QString &text)
         Action shutdownAction;
         shutdownAction.handler = [] { ProcessUtils::startDetached("slidetoshutdown"); };
         item.actions = {shutdownAction};
+        item.score = QString("shutdown").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
         results.append(item);
     }
     if (QString("restart").contains(text, Qt::CaseInsensitive))
@@ -32,6 +33,7 @@ void SystemCommands::query(const QString &text)
         Action restartAction;
         restartAction.handler = [] { ProcessUtils::startDetached("shutdown", {"-r", "-t", "0"}); };
         item.actions = {restartAction};
+        item.score = QString("restart").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
         results.append(item);
     }
     if (QString("lock").contains(text, Qt::CaseInsensitive))
@@ -45,6 +47,7 @@ void SystemCommands::query(const QString &text)
         Action lockAction;
         lockAction.handler = [] { LockWorkStation(); };
         item.actions = {lockAction};
+        item.score = QString("lock").startsWith(text, Qt::CaseInsensitive) ? 2.0 : 1.0;
         results.append(item);
     }
 
