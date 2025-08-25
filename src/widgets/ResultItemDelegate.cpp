@@ -168,6 +168,12 @@ bool ResultItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
     {
         m_hoveredActionIndex = buttonIndex;
         m_view->viewport()->update();
+
+        // Emit action description for hovered action
+        if (buttonIndex >= 0 && buttonIndex < item.actions.size())
+            emit actionDescriptionChanged(item.actions[buttonIndex].description);
+        else
+            emit actionDescriptionChanged("");
         return QStyledItemDelegate::editorEvent(event, model, option, index);
     }
 
@@ -197,9 +203,24 @@ int ResultItemDelegate::getCurrentActionIndex() const { return m_selectedActionI
 /**
  * Set the focused action index.
  *
- * @param index An integer representing the action index
+ * @param index An integer representing the action index.
  */
-void ResultItemDelegate::setCurrentActionIndex(const int index) const { m_selectedActionIndex = index; }
+void ResultItemDelegate::setCurrentActionIndex(const int index) const 
+{ 
+    m_selectedActionIndex = index;
+
+    // Get current item to emit action description.
+    if (m_view && m_view->currentIndex().isValid())
+    {
+        const QVariant data = m_view->currentIndex().data(Qt::UserRole);
+        const auto item = data.value<ResultItem>();
+
+        if (index >= 0 && index < item.actions.size())
+            emit const_cast<ResultItemDelegate*>(this)->actionDescriptionChanged(item.actions[index].description);
+        else
+            emit const_cast<ResultItemDelegate*>(this)->actionDescriptionChanged("");
+    }
+}
 
 /**
  * Draw a QIcon at the given location.

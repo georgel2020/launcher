@@ -35,6 +35,7 @@ private slots:
     void onHotkeyPressed(long long id);
     void onInputTextChanged(const QString &text);
     void onResultsReady(QVector<ResultItem> &results, const IModule *module);
+    void onActionDescriptionChanged(const QString &description) const;
 
 private:
     void setWindowVisibility(const bool &visibility);
@@ -51,6 +52,7 @@ private:
     QHBoxLayout *m_searchLayout = nullptr;
     QLabel *m_searchIcon = nullptr;
     QLineEdit *m_searchEdit = nullptr;
+    QLabel *m_actionDescription = nullptr;
     QListWidget *m_resultsList = nullptr;
     ResultItemDelegate *m_resultItemDelegate = nullptr;
 

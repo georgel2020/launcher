@@ -14,7 +14,7 @@ constexpr auto SHADOW_OPACITY = 0.6f;
 constexpr auto SHADOW_OFFSET_V = 8;
 
 // Result item.
-constexpr auto TITLE_FONT_SIZE = 14;
+constexpr auto TITLE_FONT_SIZE = 12;
 constexpr auto SUBTITLE_FONT_SIZE = 12;
 constexpr auto ICON_SIZE = 24;
 constexpr auto BUTTON_SIZE = 32;
