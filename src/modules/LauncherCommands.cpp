@@ -31,6 +31,7 @@ void LauncherCommands::query(const QString &text)
         item.iconType = IconType::Font;
         item.key = "launcher_about";
         Action aboutAction;
+        aboutAction.description = "Open GitHub page";
         aboutAction.handler = [] { QDesktopServices::openUrl(QUrl("https://github.com/georgel2020/launcher")); };
         item.actions = {aboutAction};
         item.score = QString("about").startsWith(text, Qt::CaseInsensitive) ? 0.5 : 0.1;
@@ -46,8 +47,10 @@ void LauncherCommands::query(const QString &text)
         item.iconType = IconType::Font;
         item.key = "launcher_exit";
         Action exitAction;
+        exitAction.description = "Exit";
         exitAction.handler = [] { QApplication::quit(); };
         Action reloadAction;
+        reloadAction.description = "Reload";
         reloadAction.iconGlyph = QChar(0xe5d5); // Refresh.
         reloadAction.handler = []
         {
@@ -71,6 +74,7 @@ void LauncherCommands::query(const QString &text)
         item.iconType = IconType::Font;
         item.key = "launcher_configure";
         Action configureAction;
+        configureAction.description = "Open configuration path";
         configureAction.handler = []
         {
             const QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).replace("/", "\\");

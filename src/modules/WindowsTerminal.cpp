@@ -44,8 +44,10 @@ void WindowsTerminal::query(const QString &text)
             item.iconType = IconType::Font;
             item.key = "terminal_" + profileName;
             Action openAction;
+            openAction.description = "Open";
             openAction.handler = [profileName] { ProcessUtils::startDetached("wt", {"-p", profileName}); };
             Action openAdminAction;
+            openAdminAction.description = "Open as admin";
             openAdminAction.iconGlyph = QChar(0xe9e0); // Shield.
             openAdminAction.handler = [profileName] { ProcessUtils::startDetached("wt", {"-p", profileName}, true); };
             openAdminAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return);

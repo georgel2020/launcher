@@ -159,8 +159,19 @@ void Launcher::setupUi()
                                     .arg(ThemeManager::defaultTextColorHex())
                                     .arg(TITLE_FONT_SIZE));
     connect(m_searchEdit, &QLineEdit::textChanged, this, &Launcher::onInputTextChanged);
+    m_actionDescription = new QLabel(this);
+    m_actionDescription->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_actionDescription->setFixedHeight(BUTTON_SIZE);
+    m_actionDescription->setStyleSheet(
+        QString("QLabel { border: none; border-radius: %1px; background: %2; color: %3; font-size: %4px; padding-left: %5px; padding-right: %5px; }")
+            .arg(CORNER_RADIUS_S)
+            .arg(ThemeManager::activeBackColorHex(), ThemeManager::defaultTextColorHex())
+            .arg(TITLE_FONT_SIZE)
+            .arg(PADDING_S));
+    m_actionDescription->hide();
     m_searchLayout->addWidget(m_searchIcon);
     m_searchLayout->addWidget(m_searchEdit);
+    m_searchLayout->addWidget(m_actionDescription);
 
     // Results list.
     m_resultsList = new QListWidget(this);
@@ -181,6 +192,7 @@ void Launcher::setupUi()
     m_resultItemDelegate = new ResultItemDelegate(m_resultsList, this);
     m_resultsList->setItemDelegate(m_resultItemDelegate);
     connect(m_resultItemDelegate, &ResultItemDelegate::hideWindow, this, [&] { setWindowVisibility(false); });
+    connect(m_resultItemDelegate, &ResultItemDelegate::actionDescriptionChanged, this, &Launcher::onActionDescriptionChanged);
 
     // Install event filter to handle keyboard navigation.
     m_searchEdit->installEventFilter(this);
@@ -225,7 +237,7 @@ void Launcher::readConfiguration()
     const QJsonObject modulesObject = rootObject["modules"].toObject();
     for (auto iterator = m_moduleConfigs.begin(); iterator != m_moduleConfigs.end();)
     {
-        ModuleConfig& config = *iterator;
+        ModuleConfig &config = *iterator;
         const QJsonObject moduleObject = modulesObject[ConfigManager::toCamelCase(config.name)].toObject();
 
         config.enabled = moduleObject["enabled"].toBool();
@@ -292,6 +304,8 @@ void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *modul
     if (m_resultsList->count() == 0)
     {
         m_resultsList->hide();
+        m_actionDescription->setText("");
+        m_actionDescription->hide();
     }
     if (m_resultsList->count() > 0)
     {
@@ -299,6 +313,19 @@ void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *modul
         m_resultsList->setFixedHeight(std::min(m_resultsList->count(), m_maxVisibleResults) * (PADDING_S + PADDING_S + BUTTON_SIZE + PADDING_S) + PADDING_S);
         m_resultsList->setCurrentRow(0);
         m_resultItemDelegate->setCurrentActionIndex(0);
+
+        // Update action description for the first selected item
+        const QListWidgetItem *firstItem = m_resultsList->item(0);
+        if (firstItem)
+        {
+            const QVariant data = firstItem->data(Qt::UserRole);
+            const auto resultItem = data.value<ResultItem>();
+            if (!resultItem.actions.isEmpty())
+            {
+                m_actionDescription->setText(resultItem.actions[0].description);
+                m_actionDescription->show();
+            }
+        }
     }
 }
 
@@ -310,6 +337,9 @@ void Launcher::onResultsReady(QVector<ResultItem> &results, const IModule *modul
 void Launcher::onInputTextChanged(const QString &text)
 {
     m_resultsList->clear();
+    m_actionDescription->setText("");
+    m_actionDescription->hide();
+    m_resultsList->hide();
     m_searchIcon->setText(QChar(0xe8b6)); // Search.
 
     if (!text.isEmpty())
@@ -333,10 +363,6 @@ void Launcher::onInputTextChanged(const QString &text)
                 config.module->query(text.trimmed());
             }
         }
-    }
-    else
-    {
-        m_resultsList->hide();
     }
 }
 
@@ -362,7 +388,7 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
 
         if (keyEvent->modifiers() != Qt::NoModifier)
         {
-            const QKeySequence pressedShortcut(keyEvent->modifiers() | keyEvent->key());
+            const QKeySequence pressedShortcut(static_cast<int>(keyEvent->modifiers() | keyEvent->key()));
             if (executeShortcutAction(item, pressedShortcut))
             {
                 return true;
@@ -399,21 +425,31 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
         }
 
         // Navigate between results.
-        if (keyEvent->key() == Qt::Key_Down)
+        if (keyEvent->key() == Qt::Key_Up || keyEvent->key() == Qt::Key_Down)
         {
-            if (m_resultsList->currentRow() + 1 < m_resultsList->count())
+            if ((keyEvent->key() == Qt::Key_Up && m_resultsList->currentRow() - 1 >= 0) ||
+                (keyEvent->key() == Qt::Key_Down && m_resultsList->currentRow() + 1 < m_resultsList->count()))
             {
-                m_resultsList->setCurrentRow(m_resultsList->currentRow() + 1);
+                m_resultsList->setCurrentRow(m_resultsList->currentRow() + (keyEvent->key() == Qt::Key_Up ? -1 : 1));
                 m_resultItemDelegate->setCurrentActionIndex(0);
-                return true;
-            }
-        }
-        if (keyEvent->key() == Qt::Key_Up)
-        {
-            if (m_resultsList->currentRow() - 1 >= 0)
-            {
-                m_resultsList->setCurrentRow(m_resultsList->currentRow() - 1);
-                m_resultItemDelegate->setCurrentActionIndex(0);
+
+                // Update action description for the newly selected item.
+                const QListWidgetItem *newCurrentItem = m_resultsList->currentItem();
+                if (newCurrentItem)
+                {
+                    const QVariant newData = newCurrentItem->data(Qt::UserRole);
+                    const auto newItem = newData.value<ResultItem>();
+                    if (!newItem.actions.isEmpty())
+                    {
+                        m_actionDescription->setText(newItem.actions[0].description);
+                        m_actionDescription->show();
+                    }
+                    else
+                    {
+                        m_actionDescription->setText("");
+                        m_actionDescription->hide();
+                    }
+                }
                 return true;
             }
         }
@@ -504,3 +540,10 @@ void Launcher::executeCurrentAction(const ResultItem &item)
             HistoryManager::addHistory(item.key);
     }
 }
+
+/**
+ * Handle action description changes from the result item delegate.
+ *
+ * @param description The description of the currently selected / hovered action.
+ */
+void Launcher::onActionDescriptionChanged(const QString &description) const { m_actionDescription->setText(description); }

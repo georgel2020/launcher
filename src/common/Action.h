@@ -11,6 +11,7 @@
  *
  * Members:
  *
+ * - description: A brief description of the action.
  * - iconGlyph: A single character representing an icon in glyph form.
  * - handler: The action handler to be called when triggered.
  * - shortcut: An optional shortcut to directly trigger the action.
@@ -19,6 +20,7 @@
  */
 struct Action
 {
+    QString description;
     QChar iconGlyph;
     std::function<void()> handler;
     QKeySequence shortcut;

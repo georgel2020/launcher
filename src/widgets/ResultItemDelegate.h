@@ -39,4 +39,5 @@ private:
 
 signals:
     void hideWindow();
+    void actionDescriptionChanged(const QString &description);
 };

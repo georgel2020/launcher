@@ -20,9 +20,15 @@ void Calculator::query(const QString &text)
         item.iconGlyph = QChar(0xea5f); // Calculate.
         item.iconType = IconType::Font;
         Action copyAction;
+        copyAction.description = "Copy result";
         copyAction.handler = [value] { QApplication::clipboard()->setText(QString::number(value)); };
         copyAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_C);
-        item.actions = {copyAction};
+        Action copyExpressionAction;
+        copyExpressionAction.description = "Copy expression";
+        copyExpressionAction.iconGlyph = QChar(0xe2ec); // Copy all;
+        copyExpressionAction.handler = [text, value] { QApplication::clipboard()->setText(text + "=" + QString::number(value)); };
+        copyExpressionAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C);
+        item.actions = {copyAction, copyExpressionAction};
         item.key = "calculator";
         results.append(item);
 

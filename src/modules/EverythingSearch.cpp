@@ -57,12 +57,14 @@ void EverythingSearch::query(const QString &text)
             item.subtitle = item.iconPath = filePath + "\\" + fileName;
             item.iconType = IconType::Thumbnail;
             Action openAction;
+            openAction.description = "Open";
             openAction.handler = [filePath, fileName]
             {
                 ProcessUtils::startDetached("explorer", {filePath + "\\" + fileName});
                 Everything_IncRunCountFromFileNameW((filePath + "\\" + fileName).toStdWString().c_str());
             };
             Action openPathAction;
+            openPathAction.description = "Open path";
             openPathAction.iconGlyph = QChar(0xe2c8); // Folder open.
             openPathAction.handler = [filePath, fileName]
             {
@@ -71,10 +73,12 @@ void EverythingSearch::query(const QString &text)
             };
             openPathAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_E);
             Action copyAction;
+            copyAction.description = "Copy";
             copyAction.iconGlyph = QChar(0xe173); // File copy.
             copyAction.handler = [filePath, fileName] { QApplication::clipboard()->setText(filePath + "\\" + fileName); };
             copyAction.shortcut = QKeySequence(Qt::CTRL | Qt::Key_C);
             Action copyPathAction;
+            copyPathAction.description = "Copy path";
             copyPathAction.iconGlyph = QChar(0xebbd); // Folder copy.
             copyPathAction.handler = [filePath] { QApplication::clipboard()->setText(filePath); };
             copyPathAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C);

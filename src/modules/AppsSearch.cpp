@@ -88,8 +88,10 @@ void AppsSearch::query(const QString &text)
             item.iconPath = (app.iconPath.isEmpty()) ? app.path : app.iconPath;
             item.iconType = (app.iconPath.isEmpty()) ? IconType::Thumbnail : IconType::Image;
             Action openAction;
+            openAction.description = "Open";
             openAction.handler = [app] { ProcessUtils::startDetached(app.path); };
             Action openAdminAction;
+            openAdminAction.description = "Open as admin";
             openAdminAction.iconGlyph = QChar(0xe9e0); // Shield.
             openAdminAction.handler = [app] { ProcessUtils::startDetached(app.path, QStringList(), true); };
             openAdminAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return);
