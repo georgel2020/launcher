@@ -26,6 +26,8 @@ void UnitConverter::query(const QString &text)
         originalMeasurementStr = list.at(0);
         convertedUnitStr = list.at(2);
     }
+    else
+        return;
     const auto originalMeasurement = units::measurement_from_string(originalMeasurementStr.toStdString());
     const auto convertedUnit = units::unit_from_string(convertedUnitStr.toStdString());
 
