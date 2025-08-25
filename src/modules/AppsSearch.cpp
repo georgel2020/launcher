@@ -66,12 +66,21 @@ void AppsSearch::query(const QString &text)
 
     for (const AppInfo &app : m_apps)
     {
-        bool isMatch = false;
+        double score = 0.0;
         for (const QString &keyword : app.keywords)
+        {
             if (keyword.contains(text, Qt::CaseInsensitive))
-                isMatch = true;
+            {
+                score = 1.0;
+                if (keyword.startsWith(text, Qt::CaseInsensitive))
+                {
+                    score = 2.0;
+                    break;
+                }
+            }
+        }
 
-        if (isMatch)
+        if (score > 0.0)
         {
             ResultItem item;
             item.title = app.name;
@@ -86,6 +95,7 @@ void AppsSearch::query(const QString &text)
             openAdminAction.shortcut = QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return);
             item.actions = {openAction, openAdminAction};
             item.key = "app_" + app.path;
+            item.score = score;
             results.append(item);
         }
     }
