@@ -39,7 +39,6 @@ private slots:
 private:
     void setWindowVisibility(const bool &visibility);
     void setupUi();
-    void configureModules();
     void readConfiguration();
     void handleActionsNavigation(const ResultItem& item, const bool &right) const;
     bool executeShortcutAction(const ResultItem& item, const QKeySequence &pressedShortcut);

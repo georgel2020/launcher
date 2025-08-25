@@ -419,6 +419,12 @@ bool Launcher::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
+    if (event->type() == QEvent::WindowDeactivate)
+    {
+        setWindowVisibility(false);
+        // The event should be processed further, so do not return true here.
+    }
+
     return QMainWindow::eventFilter(obj, event);
 }
 
