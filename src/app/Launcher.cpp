@@ -260,7 +260,7 @@ void Launcher::readConfiguration()
  *
  * @param id The hotkey id.
  */
-void Launcher::onHotkeyPressed(long long id)
+void Launcher::onHotkeyPressed(const long long id)
 {
     if (id == 0)
         setWindowVisibility(!isWindowShown);
