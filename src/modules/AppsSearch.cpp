@@ -128,7 +128,7 @@ bool AppsSearch::getShortcutPath(const QString &shortcutPath, QString &targetPat
     }
 
     // Create an IShellLink object.
-    hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (void **)&pShellLink);
+    hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, reinterpret_cast<void **>(&pShellLink));
     if (FAILED(hr))
     {
         CoUninitialize();
@@ -136,7 +136,7 @@ bool AppsSearch::getShortcutPath(const QString &shortcutPath, QString &targetPat
     }
 
     // Query for IPersistFile.
-    hr = pShellLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile);
+    hr = pShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<void **>(&pPersistFile));
     if (FAILED(hr))
     {
         pShellLink->Release();
