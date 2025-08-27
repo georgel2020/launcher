@@ -15,7 +15,7 @@ void LauncherCommands::query(const QString &text)
     {
         ResultItem item;
         item.title = "Version";
-        item.subtitle = QString::fromStdString(__DATE__) + " " + QString::fromStdString(__TIME__);
+        item.subtitle = "1.0.0 (2025.08.27)";
         item.iconGlyph = QChar(0xe88e); // Info.
         item.iconType = IconType::Font;
         item.key = "launcher_version";
