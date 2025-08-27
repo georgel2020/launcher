@@ -53,6 +53,7 @@ target_link_libraries(launcher PRIVATE
 add_custom_command(
         TARGET launcher POST_BUILD
         COMMAND windeployqt
+        --no-translations --no-system-d3d-compiler --no-system-dxc-compiler
         --dir "$<TARGET_FILE_DIR:launcher>"
         "$<TARGET_FILE:launcher>"
         COMMENT "Running windeployqt to deploy Qt libraries. "
