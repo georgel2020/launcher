@@ -6,6 +6,7 @@
 
 - Press Alt + Space to bring up the search bar
 - Type your query to see the results
+- Add a prefix to the query to limit the results to a specific module
 - Use the up / down arrow keys to navigate the result list
 - Press Enter to execute the default action for the selected item
 - Press Tab or left / right arrow keys to select other available actions for the highlighted item (if any)
@@ -30,7 +31,9 @@ Configuration:
         "anothername"
       ],
       "name": "Your App",
-      "path": "C:\\Program Files\\YourApp\\YourApp.exe"
+      "path": "C:\\Program Files\\YourApp\\YourApp.exe",
+      "icon": "C:\\Program Files\\YourApp\\Icon.png"
+      // Optional. If not specified, the icon will be retrieved from the executable.
     }
   ]
 }
@@ -125,8 +128,10 @@ Default configuration files will be generated in `%APPDATA%\Launcher\` on the fi
     }
   },
   "ui": {
-    "maxVisibleResults": 5
+    "maxVisibleResults": 5,
     // Max number of results shown before scrolling.
+    "placeholderText": "Start typing..."
+    // Placeholder text shown in the search bar.
   }
 }
 ```
@@ -161,7 +166,7 @@ Default configuration files will be generated in `%APPDATA%\Launcher\` on the fi
       }
     }
   },
-  "theme": "auto",
+  "theme": "auto"
   // "auto" to automatically detect the system theme; "dark" or "light" to force a specific theme.
 }
 ```
